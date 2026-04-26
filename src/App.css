@@ -1,26 +1,30 @@
 /* =========================================
-   DESIGN SYSTEM (Stripe-grade SaaS v2)
+   DESIGN SYSTEM (Stripe-inspired SaaS)
 ========================================= */
 
 :root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+
   --bg: #f6f8fb;
   --card: #ffffff;
   --text: #0f172a;
   --muted: #64748b;
-
   --primary: #2563eb;
   --primary-hover: #1d4ed8;
-
   --border: #e2e8f0;
 
-  --radius: 14px;
-  --radius-lg: 18px;
+  --radius-md: 14px;
+  --radius-full: 999px;
+
+  --shadow-sm: 0 6px 18px rgba(15, 23, 42, 0.06);
 }
 
-/* =========================================
-   GLOBAL
-========================================= */
-
+/* RESET */
 * {
   margin: 0;
   padding: 0;
@@ -29,36 +33,30 @@
 }
 
 body {
-  font-family: Poppins, system-ui, sans-serif;
+  font-family: Poppins, system-ui, -apple-system, sans-serif;
   background: var(--bg);
   color: var(--text);
 }
 
-/* =========================================
-   APP LAYOUT
-========================================= */
-
+/* APP */
 .app {
+  min-height: 100vh;
   display: flex;
   justify-content: center;
-  min-height: 100vh;
 }
 
 .container {
   width: 100%;
   max-width: 920px;
-  padding: 26px 20px;
+  padding: var(--space-6);
 }
 
-/* =========================================
-   HEADER
-========================================= */
-
+/* HEADER */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 14px;
+  margin-bottom: var(--space-4);
 }
 
 .header h1 {
@@ -73,27 +71,24 @@ body {
   margin-top: 4px;
 }
 
-/* =========================================
-   LANGUAGE SWITCHER
-========================================= */
-
+/* LANG */
 .lang {
   display: flex;
   gap: 6px;
-  padding: 4px;
   background: white;
+  padding: 4px;
+  border-radius: var(--radius-full);
   border: 1px solid var(--border);
-  border-radius: 999px;
 }
 
 .lang button {
   border: none;
+  background: transparent;
   padding: 6px 10px;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
-  background: transparent;
   color: var(--muted);
 }
 
@@ -102,85 +97,56 @@ body {
   color: white;
 }
 
-/* =========================================
-   PROGRESS BAR
-========================================= */
-
+/* PROGRESS */
 .progress {
   height: 6px;
   background: var(--border);
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   overflow: hidden;
-  margin-bottom: 16px;
+  margin-bottom: var(--space-4);
 }
 
 .progress > div {
   height: 100%;
   background: linear-gradient(90deg, var(--primary), #60a5fa);
-  transition: width 0.25s ease;
 }
 
-/* =========================================
-   LOADING
-========================================= */
-
-.loading {
-  font-size: 13px;
-  color: var(--muted);
-  margin-bottom: 10px;
-}
-
-/* =========================================
-   STACK SYSTEM (CRITICAL FIX)
-========================================= */
-
+/* STACK */
 .stack {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-/* =========================================
-   BUTTON SYSTEM (FIXED CONSISTENCY)
-========================================= */
-
+/* BUTTONS */
 .btn {
   width: 100%;
-  padding: 13px 14px;
-
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-
-  background: white;
   text-align: left;
-
+  padding: 13px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: white;
   font-size: 14px;
   font-weight: 500;
-
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: 0.15s ease;
 }
 
 .btn:hover {
   transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
   border-color: #cbd5e1;
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
 }
 
-/* PRIMARY BUTTON */
+/* PRIMARY */
 .btn-primary {
   width: 100%;
   padding: 13px 14px;
-
-  border-radius: var(--radius);
+  border-radius: var(--radius-md);
   border: none;
-
   background: var(--primary);
   color: white;
-
-  font-size: 14px;
   font-weight: 600;
-
   cursor: pointer;
 }
 
@@ -188,44 +154,33 @@ body {
   background: var(--primary-hover);
 }
 
-/* =========================================
-   RESULT CARD (PRODUCT FEEL FIX)
-========================================= */
-
+/* RESULT */
 .card {
-  background: var(--card);
+  background: white;
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-
-  padding: 18px;
+  border-radius: 18px;
+  padding: 22px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
   text-align: center;
-
   display: flex;
   flex-direction: column;
-  gap: 10px;
-
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  gap: 12px;
 }
 
 .price {
   font-size: 38px;
   font-weight: 800;
-  letter-spacing: -0.5px;
 }
 
 .range {
-  font-size: 14px;
   color: var(--muted);
 }
 
-/* =========================================
-   AD
-========================================= */
-
+/* AD */
 .ad {
-  margin-top: 12px;
+  margin-top: 16px;
   height: 170px;
-  border-radius: var(--radius);
+  border-radius: 14px;
   overflow: hidden;
   border: 1px solid var(--border);
 }
@@ -236,17 +191,38 @@ body {
   object-fit: cover;
 }
 
+/* LOADING */
+.loading {
+  font-size: 13px;
+  color: var(--muted);
+}
+
 /* =========================================
-   MOBILE FIX
+   PREMIUM BACK BUTTON (FIXED)
 ========================================= */
 
-@media (max-width: 600px) {
-  .header {
-    flex-direction: column;
-    gap: 10px;
-  }
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 
-  .price {
-    font-size: 32px;
-  }
+  padding: 6px 10px;
+
+  border: none;
+  background: transparent;
+
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  border-radius: 10px;
+
+  transition: all 0.15s ease;
+}
+
+.back-btn:hover {
+  color: var(--primary);
+  background: rgba(37, 99, 235, 0.06);
 }
