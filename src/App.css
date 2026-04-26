@@ -1,3 +1,4 @@
+/* ===== BASE RESET ===== */
 * {
   box-sizing: border-box;
 }
@@ -13,6 +14,7 @@ body {
 .app-container {
   position: relative;
   max-width: 900px;
+  width: 100%;
   margin: 0 auto;
   padding: 20px;
 }
@@ -61,17 +63,20 @@ body {
   color: #2563eb;
 }
 
-/* ===== LANGUAGE BUTTONS ===== */
+/* ===== LANGUAGE BUTTONS (FIXED HORIZONTAL) ===== */
 .lang-box {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-  align-items: flex-end;
-  flex-shrink: 0;
+  flex-direction: row;
+  gap: 6px;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
 }
 
+/* ensure consistent sizing */
 .lang-btn,
 .lang-active {
+  height: 28px;
   padding: 6px 10px;
   border-radius: 999px;
   border: none;
@@ -79,6 +84,10 @@ body {
   font-weight: 600;
   cursor: pointer;
   transition: 0.2s ease;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .lang-btn {
@@ -122,12 +131,17 @@ body {
   transition: width 0.3s ease;
 }
 
-/* ===== STEPS ===== */
+/* ===== STEPS (FIXED WIDTH CONSISTENCY) ===== */
 .step-column {
   display: flex;
   flex-direction: column;
   gap: 10px;
   margin-top: 10px;
+
+  width: 100%;
+  max-width: 520px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* ===== BUTTONS ===== */
