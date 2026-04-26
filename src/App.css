@@ -1,152 +1,246 @@
-.app-container {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 22px;
-  font-family: Poppins, sans-serif;
-  box-sizing: border-box;
-  color: #0f172a;
+/* =========================
+   BASE SYSTEM (SaaS STYLE)
+========================= */
+
+:root {
+  --bg: #f8fafc;
+  --card: #ffffff;
+  --text: #0f172a;
+  --muted: #64748b;
+  --primary: #2563eb;
+  --border: #e2e8f0;
+  --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  --shadow-hover: 0 18px 40px rgba(15, 23, 42, 0.12);
+  --radius: 14px;
 }
 
-/* HEADER */
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Poppins, sans-serif;
+}
+
+/* =========================
+   MAIN CONTAINER
+========================= */
+
+.app-container {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 28px 22px;
+  box-sizing: border-box;
+}
+
+/* =========================
+   HEADER
+========================= */
+
 .header-top {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin: 6px 0;
+  gap: 10px;
+  margin: 8px 0 18px;
 }
 
-.logo { height: 24px; }
+.logo {
+  height: 26px;
+}
 
 .username {
   font-size: 12px;
-  color: #64748b;
+  color: var(--muted);
 }
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 10px;
+  margin-bottom: 14px;
 }
 
 .header h1 {
-  font-size: 28px;
+  font-size: 30px;
   font-weight: 800;
   margin: 0;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.6px;
 }
 
 .header p {
   font-size: 13px;
-  color: #2563eb;
-  margin-top: 4px;
+  margin-top: 6px;
+  color: var(--primary);
 }
 
-/* LANG */
+/* =========================
+   LANGUAGE + BACK UI
+========================= */
+
 .lang-box {
   display: flex;
   gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .lang-btn,
 .lang-active {
   min-width: 44px;
-  padding: 6px 10px;
+  padding: 7px 11px;
   border-radius: 999px;
-  border: none;
+  border: 1px solid var(--border);
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.lang-btn { background: #f8fafc; color: #475569; }
-.lang-active { background: #2563eb; color: white; }
+.lang-btn {
+  background: white;
+  color: var(--muted);
+}
 
-/* BACK */
+.lang-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+
+.lang-active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
 .back-btn {
-  padding: 5px 10px;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
-  background: transparent;
+  padding: 6px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: white;
   font-size: 12px;
-  color: #64748b;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-/* PROGRESS */
+.back-btn:hover {
+  box-shadow: var(--shadow);
+  transform: translateY(-1px);
+}
+
+/* =========================
+   PROGRESS BAR
+========================= */
+
 .progress-bar {
-  height: 6px;
+  height: 7px;
   background: #e2e8f0;
   border-radius: 999px;
   overflow: hidden;
-  margin-bottom: 14px;
+  margin: 14px 0 18px;
 }
 
 .progress-bar > div {
   height: 100%;
-  background: #2563eb;
+  background: linear-gradient(90deg, #2563eb, #60a5fa);
   transition: width 0.35s ease;
 }
 
-/* STEPS */
+/* =========================
+   STEP CONTAINER
+========================= */
+
 .step-column {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  margin-top: 10px;
 }
 
-/* BUTTONS */
+/* =========================
+   PREMIUM BUTTON SYSTEM
+========================= */
+
 .btn {
   width: 100%;
   text-align: left;
-  padding: 12px 14px;
-  border-radius: 12px;
-  border: 1px solid #e2e8f0;
+  padding: 13px 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
   background: white;
   cursor: pointer;
+  font-weight: 500;
   transition: all 0.18s ease;
 }
 
 .btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.08);
+  box-shadow: var(--shadow-hover);
+  border-color: #cbd5f5;
+}
+
+.btn:active {
+  transform: translateY(0px);
 }
 
 .btn-primary {
   width: 100%;
-  padding: 12px 14px;
-  border-radius: 12px;
+  padding: 13px 14px;
+  border-radius: var(--radius);
   border: none;
-  background: #2563eb;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
   color: white;
   font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-/* RESULT */
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+/* =========================
+   RESULT PANEL (KEY UPGRADE)
+========================= */
+
 .result {
   text-align: center;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
+  margin-top: 10px;
 }
 
 .result h2 {
-  font-size: 34px;
-  font-weight: 800;
+  font-size: 38px;
+  font-weight: 900;
   margin: 0;
+  letter-spacing: -1px;
 }
 
 .result p {
-  color: #475569;
+  color: var(--muted);
   margin: 0;
+  font-size: 14px;
 }
 
-/* AD */
+/* =========================
+   AD CARD (PREMIUM FEEL)
+========================= */
+
 .ad {
-  margin-top: 14px;
-  height: 170px;
-  border-radius: 14px;
+  margin-top: 16px;
+  height: 180px;
+  border-radius: var(--radius);
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+  box-shadow: var(--shadow);
+  transition: all 0.25s ease;
+}
+
+.ad:hover {
+  transform: scale(1.01);
+  box-shadow: var(--shadow-hover);
 }
 
 .ad img {
@@ -155,8 +249,24 @@
   object-fit: cover;
 }
 
-/* LOADING */
+/* =========================
+   LOADING
+========================= */
+
 .loading {
   font-size: 14px;
-  color: #64748b;
+  color: var(--muted);
+}
+
+/* =========================
+   SMALL POLISH FIXES
+========================= */
+
+button {
+  font-family: inherit;
+}
+
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }

@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import PriceScatter from "./components/PriceScatter";
-import "./App.css";
 
 export default function App() {
   const [step, setStep] = useState(1);
@@ -19,16 +18,14 @@ export default function App() {
   const [animatedValue, setAnimatedValue] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  // ✅ DEPLOYMENT SAFE API SWITCH
+  const [lang, setLang] = useState(
+    localStorage.getItem("lang") || "tr"
+  );
+
+  // ✅ PRODUCTION SAFE API SWITCH
   const API =
     process.env.REACT_APP_API_URL ||
     "https://car-valuation-backend.onrender.com";
-
-  const [lang, setLang] = useState(
-    typeof window !== "undefined"
-      ? localStorage.getItem("lang") || "tr"
-      : "tr"
-  );
 
   const changeLang = (l) => {
     setLang(l);
@@ -95,11 +92,15 @@ export default function App() {
 
   const progress = Math.min(100, Math.max(0, ((step - 1) / 3) * 100));
 
+  // ===== API CALLS =====
+
   useEffect(() => {
     fetch(`${API}/years`)
       .then((r) => r.json())
       .then((data) => {
-        const normalized = Array.isArray(data) ? data : data.years || [];
+        const normalized = Array.isArray(data)
+          ? data
+          : data.years || [];
         setYears([...normalized].sort((a, b) => b - a));
       });
   }, []);
@@ -107,8 +108,10 @@ export default function App() {
   const handleYear = async (v) => {
     setYear(v);
     setLoading(true);
+
     const res = await fetch(`${API}/brands?year=${v}`);
     setBrands(await res.json());
+
     setLoading(false);
     setStep(2);
   };
@@ -116,8 +119,10 @@ export default function App() {
   const handleBrand = async (v) => {
     setBrand(v);
     setLoading(true);
+
     const res = await fetch(`${API}/models?year=${year}&brand=${v}`);
     setModels(await res.json());
+
     setLoading(false);
     setStep(3);
   };
@@ -131,9 +136,12 @@ export default function App() {
     );
 
     const data = await res.json();
-    const normalized = Array.isArray(data) ? data : data.categories || [];
+    const normalized = Array.isArray(data)
+      ? data
+      : data.categories || [];
 
     setCategories(normalized);
+
     setLoading(false);
     setStep(4);
   };
@@ -163,11 +171,19 @@ export default function App() {
   };
 
   const goBack = () => {
-    if (step === 4) setStep(3), setCategory("");
-    else if (step === 3) setStep(2), setModel("");
-    else if (step === 2) setStep(1), setBrand("");
+    if (step === 4) {
+      setStep(3);
+      setCategory("");
+    } else if (step === 3) {
+      setStep(2);
+      setModel("");
+    } else if (step === 2) {
+      setStep(1);
+      setBrand("");
+    }
   };
 
+  // ===== ANIMATION =====
   useEffect(() => {
     if (!result?.median_price) return;
 
@@ -179,7 +195,9 @@ export default function App() {
     const animate = (t) => {
       const p = Math.min((t - startTime) / duration, 1);
       const eased = 1 - Math.pow(1 - p, 3);
-      setAnimatedValue(Math.floor(start + (end - start) * eased));
+      setAnimatedValue(
+        Math.floor(start + (end - start) * eased)
+      );
       if (p < 1) requestAnimationFrame(animate);
     };
 
@@ -188,16 +206,17 @@ export default function App() {
 
   return (
     <div className="app-container">
-
-      {/* HEADER */}
+      {/* HEADER TOP */}
       <div className="header-top">
         <img
           src="https://res.cloudinary.com/dtaihpiwt/image/upload/v1777154527/SHOPTECH_LOGO_9_hnwij5.png"
           className="logo"
+          alt="logo"
         />
         <div className="username">@analist.kibris</div>
       </div>
 
+      {/* HEADER */}
       <div className="header">
         <div>
           <h1>{text.title}</h1>
@@ -289,7 +308,7 @@ export default function App() {
 
           <div className="ad">
             <a href={ads[adIndex].url} target="_blank">
-              <img src={ads[adIndex].img} />
+              <img src={ads[adIndex].img} alt="ad" />
             </a>
           </div>
 
