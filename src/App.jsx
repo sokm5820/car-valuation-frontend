@@ -7,7 +7,7 @@ export default function App() {
     process.env.REACT_APP_API_URL ||
     "https://car-valuation-backend.onrender.com";
 
-  // ===== STATE =====
+  // ================= STATE =================
   const [step, setStep] = useState(1);
 
   const [year, setYear] = useState("");
@@ -30,6 +30,7 @@ export default function App() {
       : "tr"
   );
 
+  // ================= TEXT =================
   const text = useMemo(
     () => ({
       en: {
@@ -54,7 +55,7 @@ export default function App() {
 
   const progress = (step - 1) * 25;
 
-  // ===== ADS =====
+  // ================= ADS =================
   const ads = [
     {
       img: "https://res.cloudinary.com/dtaihpiwt/image/upload/v1777148944/ChatGPT_Image_Apr_25_2026_11_26_08_PM_r8afuy.png",
@@ -70,20 +71,20 @@ export default function App() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setAdIndex((prev) => (prev + 1) % ads.length);
+      setAdIndex((p) => (p + 1) % ads.length);
     }, 3500);
     return () => clearInterval(interval);
   }, []);
 
-  // ===== INIT =====
+  // ================= INIT =================
   useEffect(() => {
     fetch(`${API}/years`)
       .then((r) => r.json())
       .then((d) => setYears(d.years || d))
       .catch(console.error);
-  }, []);
+  }, [API]);
 
-  // ===== FLOW =====
+  // ================= FLOW =================
   const handleYear = async (v) => {
     setYear(v);
     setLoading(true);
@@ -136,7 +137,20 @@ export default function App() {
     setAnimatedValue(0);
   };
 
-  // ===== ANIMATION =====
+  const goBack = () => {
+    if (step === 4) {
+      setStep(3);
+      setCategory("");
+    } else if (step === 3) {
+      setStep(2);
+      setModel("");
+    } else if (step === 2) {
+      setStep(1);
+      setBrand("");
+    }
+  };
+
+  // ================= ANIMATION =================
   useEffect(() => {
     if (!result?.median_price) return;
 
@@ -156,12 +170,12 @@ export default function App() {
     requestAnimationFrame(animate);
   }, [result]);
 
-  // ===== UI =====
+  // ================= UI =================
   return (
     <div className="app">
       <div className="container">
 
-        {/* ===== TOP BRAND BAR (RESTORED) ===== */}
+        {/* HEADER TOP (LOGO FIXED) */}
         <div className="header-top">
           <img
             src="https://res.cloudinary.com/dtaihpiwt/image/upload/v1777154527/SHOPTECH_LOGO_9_hnwij5.png"
@@ -171,85 +185,100 @@ export default function App() {
           <div className="username">@analist.kibris</div>
         </div>
 
-        {/* ===== HEADER ===== */}
+        {/* HEADER (FIXED ALIGNMENT) */}
         <div className="header">
-          <div>
+
+          <div className="header-left">
             <h1>{text.title}</h1>
             <p>{text.subtitle}</p>
           </div>
 
-          <div className="lang">
-            {["tr", "en"].map((l) => (
-              <button
-                key={l}
-                className={lang === l ? "active" : ""}
-                onClick={() => setLang(l)}
-              >
-                {l.toUpperCase()}
+          <div className="header-right">
+
+            <div className="lang">
+              {["tr", "en"].map((l) => (
+                <button
+                  key={l}
+                  className={lang === l ? "active" : ""}
+                  onClick={() => setLang(l)}
+                >
+                  {l.toUpperCase()}
+                </button>
+              ))}
+            </div>
+
+            {step > 1 && step < 5 && (
+              <button className="back-btn" onClick={goBack}>
+                ← {text.back}
               </button>
-            ))}
+            )}
+
           </div>
         </div>
 
-        {/* ===== PROGRESS ===== */}
+        {/* PROGRESS */}
         <div className="progress">
           <div style={{ width: `${progress}%` }} />
         </div>
 
-        {loading && <div className="loading">Loading...</div>}
+        {loading && <div className="loading">{text.loading}</div>}
 
-        {/* ===== STEPS ===== */}
-        {step === 1 && (
-          <div className="stack">
-            {years.map((y) => (
-              <button key={y} className="btn" onClick={() => handleYear(y)}>
-                {y}
-              </button>
-            ))}
-          </div>
-        )}
+        {/* CENTERED STEPS */}
+        <div className="step-wrapper">
 
-        {step === 2 && (
-          <div className="stack">
-            {brands.map((b) => (
-              <button key={b} className="btn" onClick={() => handleBrand(b)}>
-                {b}
-              </button>
-            ))}
-          </div>
-        )}
+          {step === 1 && (
+            <div className="stack center">
+              {years.map((y) => (
+                <button key={y} className="btn" onClick={() => handleYear(y)}>
+                  {y}
+                </button>
+              ))}
+            </div>
+          )}
 
-        {step === 3 && (
-          <div className="stack">
-            {models.map((m) => (
-              <button key={m} className="btn" onClick={() => handleModel(m)}>
-                {m}
-              </button>
-            ))}
-          </div>
-        )}
+          {step === 2 && (
+            <div className="stack center">
+              {brands.map((b) => (
+                <button key={b} className="btn" onClick={() => handleBrand(b)}>
+                  {b}
+                </button>
+              ))}
+            </div>
+          )}
 
-        {step === 4 && (
-          <div className="stack">
-            {categories.map((c) => (
-              <button
-                key={c}
-                className="btn"
-                onClick={() => setCategory(c)}
-              >
-                {c}
-              </button>
-            ))}
+          {step === 3 && (
+            <div className="stack center">
+              {models.map((m) => (
+                <button key={m} className="btn" onClick={() => handleModel(m)}>
+                  {m}
+                </button>
+              ))}
+            </div>
+          )}
 
-            {category && (
-              <button className="btn-primary" onClick={getValuation}>
-                {text.getValuation}
-              </button>
-            )}
-          </div>
-        )}
+          {step === 4 && (
+            <div className="stack center">
+              {categories.map((c) => (
+                <button
+                  key={c}
+                  className="btn"
+                  onClick={() => setCategory(c)}
+                >
+                  {c}
+                </button>
+              ))}
 
-        {/* ===== RESULT ===== */}
+              {category && (
+                <button className="btn-primary" onClick={getValuation}>
+                  {text.getValuation}
+                </button>
+              )}
+            </div>
+          )}
+
+        </div>
+
+        {/* RESULT */}
         {step === 5 && result && (
           <div className="card">
             <div className="price">
@@ -262,13 +291,8 @@ export default function App() {
 
             <PriceScatter data={result.scatter} lang={lang} />
 
-            {/* ===== AD (RESTORED + FIXED POSITION) ===== */}
             <div className="ad">
-              <a
-                href={ads[adIndex].url}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <a href={ads[adIndex].url} target="_blank" rel="noreferrer">
                 <img src={ads[adIndex].img} />
               </a>
             </div>
@@ -278,6 +302,7 @@ export default function App() {
             </button>
           </div>
         )}
+
       </div>
     </div>
   );
