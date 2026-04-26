@@ -20,7 +20,9 @@ export default function App() {
   const [loading, setLoading] = useState(false);
 
   const [lang, setLang] = useState(
-    localStorage.getItem("lang") || "tr"
+    typeof window !== "undefined"
+      ? localStorage.getItem("lang") || "tr"
+      : "tr"
   );
 
   const API = "https://car-valuation-backend.onrender.com";
@@ -92,7 +94,10 @@ export default function App() {
   useEffect(() => {
     fetch(`${API}/years`)
       .then((r) => r.json())
-      .then(setYears);
+      .then((data) => {
+        const normalized = Array.isArray(data) ? data : data.years || [];
+        setYears([...normalized].sort((a, b) => b - a));
+      });
   }, []);
 
   const handleYear = async (v) => {
@@ -121,7 +126,10 @@ export default function App() {
       `${API}/categories?year=${year}&brand=${brand}&model=${v}`
     );
 
-    setCategories(await res.json());
+    const data = await res.json();
+    const normalized = Array.isArray(data) ? data : data.categories || [];
+
+    setCategories(normalized);
     setLoading(false);
     setStep(4);
   };
@@ -151,9 +159,16 @@ export default function App() {
   };
 
   const goBack = () => {
-    if (step === 4) setStep(3), setCategory("");
-    else if (step === 3) setStep(2), setModel("");
-    else if (step === 2) setStep(1), setBrand("");
+    if (step === 4) {
+      setStep(3);
+      setCategory("");
+    } else if (step === 3) {
+      setStep(2);
+      setModel("");
+    } else if (step === 2) {
+      setStep(1);
+      setBrand("");
+    }
   };
 
   useEffect(() => {
@@ -175,100 +190,114 @@ export default function App() {
   }, [result]);
 
   return (
-    <div style={{ fontFamily: "Poppins, sans-serif", padding: 20 }}>
+    <div className="app-container">
+
+      {/* HEADER TOP */}
+      <div className="header-top">
+        <img
+          src="https://res.cloudinary.com/dtaihpiwt/image/upload/v1777154527/SHOPTECH_LOGO_9_hnwij5.png"
+          className="logo"
+        />
+        <div className="username">@analist.kibris</div>
+      </div>
 
       {/* HEADER */}
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
+      <div className="header">
         <div>
-          <h1 style={{ margin: 0 }}>{text.title}</h1>
-          <p style={{ marginTop: 4, color: "#2563eb" }}>{text.subtitle}</p>
+          <h1>{text.title}</h1>
+          <p>{text.subtitle}</p>
         </div>
 
-        <div style={{ display: "flex", gap: 6 }}>
+        <div className="lang-box">
           {["tr", "en", "ru", "ar"].map((l) => (
             <button
               key={l}
               onClick={() => changeLang(l)}
-              style={{
-                padding: "6px 10px",
-                borderRadius: 8,
-                border: "1px solid #ddd",
-                background: lang === l ? "#2563eb" : "transparent",
-                color: lang === l ? "#fff" : "#000",
-              }}
+              className={lang === l ? "lang-active" : "lang-btn"}
             >
               {l.toUpperCase()}
             </button>
           ))}
+
+          {step > 1 && step < 5 && (
+            <button className="back-btn" onClick={goBack}>
+              ← {text.back}
+            </button>
+          )}
         </div>
       </div>
 
       {/* PROGRESS */}
       {step < 5 && (
-        <div style={{ height: 6, background: "#eee", margin: "10px 0" }}>
-          <div style={{ width: `${progress}%`, height: "100%", background: "#2563eb" }} />
+        <div className="progress-bar">
+          <div style={{ width: `${progress}%` }} />
         </div>
       )}
 
-      {loading && <p>{text.loading}</p>}
+      {loading && <p className="loading">{text.loading}</p>}
 
       {step === 1 && (
-        <div>
+        <div className="step-column">
           {years.map((y) => (
-            <button key={y} onClick={() => handleYear(y)}>{y}</button>
+            <button key={y} onClick={() => handleYear(y)} className="btn">
+              {y}
+            </button>
           ))}
         </div>
       )}
 
       {step === 2 && (
-        <div>
+        <div className="step-column">
           {brands.map((b) => (
-            <button key={b} onClick={() => handleBrand(b)}>{b}</button>
+            <button key={b} onClick={() => handleBrand(b)} className="btn">
+              {b}
+            </button>
           ))}
         </div>
       )}
 
       {step === 3 && (
-        <div>
+        <div className="step-column">
           {models.map((m) => (
-            <button key={m} onClick={() => handleModel(m)}>{m}</button>
+            <button key={m} onClick={() => handleModel(m)} className="btn">
+              {m}
+            </button>
           ))}
         </div>
       )}
 
       {step === 4 && (
-        <div>
+        <div className="step-column">
           {categories.map((c) => (
-            <button key={c} onClick={() => setCategory(c)}>{c}</button>
+            <button key={c} onClick={() => setCategory(c)} className="btn">
+              {c}
+            </button>
           ))}
 
           {category && (
-            <button onClick={getValuation}>{text.getValuation}</button>
+            <button className="btn-primary" onClick={getValuation}>
+              {text.getValuation}
+            </button>
           )}
         </div>
       )}
 
       {step === 5 && result && (
-        <div style={{ textAlign: "center" }}>
+        <div className="result">
           <h2>£{animatedValue.toLocaleString()}</h2>
-
           <p>
-            £{result.min_price} - £{result.max_price}
+            £{result.min_price} – £{result.max_price}
           </p>
 
           <PriceScatter data={result.scatter} lang={lang} />
 
-          {/* AD */}
-          <div style={{ marginTop: 20 }}>
-            <a href={ads[adIndex].url} target="_blank" rel="noreferrer">
-              <img
-                src={ads[adIndex].img}
-                style={{ width: "100%", borderRadius: 12 }}
-              />
+          <div className="ad">
+            <a href={ads[adIndex].url} target="_blank">
+              <img src={ads[adIndex].img} />
             </a>
           </div>
 
-          <button onClick={resetFlow} style={{ marginTop: 20 }}>
+          <button className="btn-primary" onClick={resetFlow}>
             {text.restart}
           </button>
         </div>
