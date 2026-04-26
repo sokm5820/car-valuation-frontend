@@ -51,9 +51,29 @@ export default function App() {
     [lang]
   );
 
+  const ads = [
+    {
+      img: "https://res.cloudinary.com/dtaihpiwt/image/upload/v1777148944/ChatGPT_Image_Apr_25_2026_11_26_08_PM_r8afuy.png",
+      url: "https://wa.me/+905338760100",
+    },
+    {
+      img: "https://res.cloudinary.com/dtaihpiwt/image/upload/v1777148950/ChatGPT_Image_Apr_25_2026_11_26_50_PM_qq8lfa.png",
+      url: "https://wa.me/+905338760100",
+    },
+  ];
+
+  const [adIndex, setAdIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setAdIndex((prev) => (prev + 1) % ads.length);
+    }, 3500);
+    return () => clearInterval(interval);
+  }, []);
+
   const progress = (step - 1) * 25;
 
-  // INIT YEARS
+  // DATA LOAD
   useEffect(() => {
     fetch(`${API}/years`)
       .then((r) => r.json())
@@ -61,12 +81,10 @@ export default function App() {
       .catch(console.error);
   }, []);
 
-  // STEP FLOW
   const handleYear = async (v) => {
     setYear(v);
     setLoading(true);
-    const res = await fetch(`${API}/brands?year=${v}`);
-    setBrands(await res.json());
+    setBrands(await (await fetch(`${API}/brands?year=${v}`)).json());
     setLoading(false);
     setStep(2);
   };
@@ -74,8 +92,7 @@ export default function App() {
   const handleBrand = async (v) => {
     setBrand(v);
     setLoading(true);
-    const res = await fetch(`${API}/models?year=${year}&brand=${v}`);
-    setModels(await res.json());
+    setModels(await (await fetch(`${API}/models?year=${year}&brand=${v}`)).json());
     setLoading(false);
     setStep(3);
   };
@@ -143,12 +160,7 @@ export default function App() {
 
     const animate = (t) => {
       const p = Math.min((t - startTime) / duration, 1);
-      const eased = 1 - Math.pow(1 - p, 3);
-
-      setAnimatedValue(
-        Math.floor(start + (end - start) * eased)
-      );
-
+      setAnimatedValue(Math.floor(start + (end - start) * (1 - (1 - p) ** 3)));
       if (p < 1) requestAnimationFrame(animate);
     };
 
@@ -158,6 +170,15 @@ export default function App() {
   return (
     <div className="app">
       <div className="container">
+
+        {/* LOGO + USERNAME */}
+        <div className="header-top">
+          <img
+            className="logo"
+            src="https://res.cloudinary.com/dtaihpiwt/image/upload/v1777154527/SHOPTECH_LOGO_9_hnwij5.png"
+          />
+          <div className="username">@analist.kibris</div>
+        </div>
 
         {/* HEADER */}
         <div className="header">
@@ -179,7 +200,7 @@ export default function App() {
           </div>
         </div>
 
-        {/* BACK BUTTON (premium placement restored) */}
+        {/* BACK BUTTON */}
         {step > 1 && step < 5 && (
           <div style={{ marginBottom: 12 }}>
             <button className="back-btn" onClick={goBack}>
@@ -195,56 +216,33 @@ export default function App() {
           </div>
         )}
 
-        {loading && (
-          <div className="loading">{text.loading}</div>
-        )}
+        {loading && <div className="loading">{text.loading}</div>}
 
         {/* STEPS */}
-        {step === 1 && (
-          <div className="stack">
-            {years.map((y) => (
-              <button
-                key={y}
-                className="btn"
-                onClick={() => handleYear(y)}
-              >
+        <div className="stack">
+          {step === 1 &&
+            years.map((y) => (
+              <button key={y} className="btn" onClick={() => handleYear(y)}>
                 {y}
               </button>
             ))}
-          </div>
-        )}
 
-        {step === 2 && (
-          <div className="stack">
-            {brands.map((b) => (
-              <button
-                key={b}
-                className="btn"
-                onClick={() => handleBrand(b)}
-              >
+          {step === 2 &&
+            brands.map((b) => (
+              <button key={b} className="btn" onClick={() => handleBrand(b)}>
                 {b}
               </button>
             ))}
-          </div>
-        )}
 
-        {step === 3 && (
-          <div className="stack">
-            {models.map((m) => (
-              <button
-                key={m}
-                className="btn"
-                onClick={() => handleModel(m)}
-              >
+          {step === 3 &&
+            models.map((m) => (
+              <button key={m} className="btn" onClick={() => handleModel(m)}>
                 {m}
               </button>
             ))}
-          </div>
-        )}
 
-        {step === 4 && (
-          <div className="stack">
-            {categories.map((c) => (
+          {step === 4 &&
+            categories.map((c) => (
               <button
                 key={c}
                 className="btn"
@@ -254,16 +252,12 @@ export default function App() {
               </button>
             ))}
 
-            {category && (
-              <button
-                className="btn-primary"
-                onClick={getValuation}
-              >
-                {text.getValuation}
-              </button>
-            )}
-          </div>
-        )}
+          {step === 4 && category && (
+            <button className="btn-primary" onClick={getValuation}>
+              {text.getValuation}
+            </button>
+          )}
+        </div>
 
         {/* RESULT */}
         {step === 5 && result && (
@@ -276,10 +270,14 @@ export default function App() {
               £{result.min_price} – £{result.max_price}
             </div>
 
-            <PriceScatter
-              data={result.scatter}
-              lang={lang}
-            />
+            <PriceScatter data={result.scatter} lang={lang} />
+
+            {/* AD (RESTORED) */}
+            <div className="ad">
+              <a href={ads[adIndex].url} target="_blank">
+                <img src={ads[adIndex].img} />
+              </a>
+            </div>
 
             <button className="btn-primary" onClick={reset}>
               {text.restart}
