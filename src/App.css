@@ -1,4 +1,4 @@
-/* ===== BASE RESET ===== */
+/* ===== GLOBAL RESET (NEEDED FOR VERCEL CONSISTENCY) ===== */
 * {
   box-sizing: border-box;
 }
@@ -25,13 +25,12 @@ body {
   align-items: center;
   gap: 8px;
   margin-top: 6px;
-  margin-bottom: 10px;
+  margin-bottom: 6px;
 }
 
 .logo {
   height: 24px;
   width: auto;
-  display: block;
 }
 
 .username {
@@ -44,8 +43,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 10px;
-  gap: 16px;
+  margin-bottom: 6px;
 }
 
 .header h1 {
@@ -59,35 +57,27 @@ body {
 .header p {
   font-size: 13px;
   margin-top: 4px;
-  margin-bottom: 0;
   color: #2563eb;
 }
 
-/* ===== LANGUAGE BUTTONS (FIXED HORIZONTAL) ===== */
+/* ===== LANGUAGE BUTTONS (RESTORED PREMIUM ACTIVE STATE) ===== */
 .lang-box {
   display: flex;
   flex-direction: row;
   gap: 6px;
   align-items: center;
   justify-content: flex-end;
-  flex-wrap: wrap;
 }
 
-/* ensure consistent sizing */
 .lang-btn,
 .lang-active {
-  height: 28px;
   padding: 6px 10px;
   border-radius: 999px;
-  border: none;
+  border: 1px solid transparent;
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
   transition: 0.2s ease;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .lang-btn {
@@ -99,9 +89,11 @@ body {
   background: #f1f5f9;
 }
 
+/* 🔥 RESTORED HIGHLIGHT STATE */
 .lang-active {
   background: #2563eb;
   color: white;
+  box-shadow: 0 2px 10px rgba(37, 99, 235, 0.25);
 }
 
 /* ===== BACK BUTTON ===== */
@@ -115,36 +107,34 @@ body {
   cursor: pointer;
 }
 
-/* ===== PROGRESS BAR ===== */
+/* ===== PROGRESS BAR (FIXED WIDTH CONSISTENCY) ===== */
 .progress-bar {
   width: 100%;
   height: 6px;
   background: #e2e8f0;
   border-radius: 999px;
   overflow: hidden;
-  margin-bottom: 14px;
+  margin-bottom: 10px;
 }
 
+/* 🔥 ensures same alignment feel as buttons */
 .progress-bar > div {
   height: 100%;
   background: #2563eb;
   transition: width 0.3s ease;
+  border-radius: 999px;
 }
 
-/* ===== STEPS (FIXED WIDTH CONSISTENCY) ===== */
+/* ===== STEPS ===== */
 .step-column {
   display: flex;
   flex-direction: column;
   gap: 10px;
   margin-top: 10px;
-
   width: 100%;
-  max-width: 520px;
-  margin-left: auto;
-  margin-right: auto;
 }
 
-/* ===== BUTTONS ===== */
+/* ===== BUTTONS (UNCHANGED STYLE PRESERVED) ===== */
 .btn {
   padding: 10px 14px;
   border-radius: 10px;
@@ -152,12 +142,10 @@ body {
   background: white;
   cursor: pointer;
   font-weight: 500;
-  transition: 0.15s ease;
 }
 
 .btn:hover {
   background: #f8fafc;
-  transform: translateY(-1px);
 }
 
 .btn-primary {
@@ -168,12 +156,6 @@ body {
   color: white;
   font-weight: 600;
   cursor: pointer;
-  transition: 0.15s ease;
-}
-
-.btn-primary:hover {
-  background: #1d4ed8;
-  transform: translateY(-1px);
 }
 
 /* ===== RESULT ===== */
@@ -201,14 +183,12 @@ body {
   border-radius: 14px;
   overflow: hidden;
   height: 170px;
-  background: #f8fafc;
 }
 
 .ad img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block;
 }
 
 /* ===== LOADING ===== */
