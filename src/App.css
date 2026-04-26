@@ -1,322 +1,184 @@
-import { useEffect, useState } from "react";
-import PriceScatter from "./components/PriceScatter";
+.counter {
+  font-size: 16px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  color: var(--accent);
+  background: var(--accent-bg);
+  border: 2px solid transparent;
+  transition: border-color 0.3s;
+  margin-bottom: 24px;
 
-export default function App() {
-  const [step, setStep] = useState(1);
+  &:hover {
+    border-color: var(--accent-border);
+  }
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+}
 
-  const [year, setYear] = useState("");
-  const [brand, setBrand] = useState("");
-  const [model, setModel] = useState("");
-  const [category, setCategory] = useState("");
+.hero {
+  position: relative;
 
-  const [years, setYears] = useState([]);
-  const [brands, setBrands] = useState([]);
-  const [models, setModels] = useState([]);
-  const [categories, setCategories] = useState([]);
+  .base,
+  .framework,
+  .vite {
+    inset-inline: 0;
+    margin: 0 auto;
+  }
 
-  const [result, setResult] = useState(null);
-  const [animatedValue, setAnimatedValue] = useState(0);
-  const [loading, setLoading] = useState(false);
+  .base {
+    width: 170px;
+    position: relative;
+    z-index: 0;
+  }
 
-  const [lang, setLang] = useState(
-    localStorage.getItem("lang") || "tr"
-  );
+  .framework,
+  .vite {
+    position: absolute;
+  }
 
-  // ✅ PRODUCTION SAFE API SWITCH
-  const API =
-    process.env.REACT_APP_API_URL ||
-    "https://car-valuation-backend.onrender.com";
+  .framework {
+    z-index: 1;
+    top: 34px;
+    height: 28px;
+    transform: perspective(2000px) rotateZ(300deg) rotateX(44deg) rotateY(39deg)
+      scale(1.4);
+  }
 
-  const changeLang = (l) => {
-    setLang(l);
-    localStorage.setItem("lang", l);
-  };
+  .vite {
+    z-index: 0;
+    top: 107px;
+    height: 26px;
+    width: auto;
+    transform: perspective(2000px) rotateZ(300deg) rotateX(40deg) rotateY(39deg)
+      scale(0.8);
+  }
+}
 
-  const t = {
-    en: {
-      title: "VEHICLE VALUATION",
-      subtitle: "Step-by-step market pricing",
-      getValuation: "Get valuation",
-      restart: "Search another car",
-      back: "Back",
-      loading: "Loading...",
-    },
-    tr: {
-      title: "ARAÇ DEĞERLEME",
-      subtitle: "Adım adım piyasa fiyatlandırması",
-      getValuation: "Değeri getir",
-      restart: "Yeni araç ara",
-      back: "Geri",
-      loading: "Yükleniyor...",
-    },
-    ru: {
-      title: "ОЦЕНКА АВТОМОБИЛЯ",
-      subtitle: "Пошаговая рыночная оценка",
-      getValuation: "Получить оценку",
-      restart: "Новый поиск",
-      back: "Назад",
-      loading: "Загрузка...",
-    },
-    ar: {
-      title: "تقييم المركبة",
-      subtitle: "تسعير السوق خطوة بخطوة",
-      getValuation: "احصل على التقييم",
-      restart: "بحث جديد",
-      back: "رجوع",
-      loading: "جار التحميل...",
-    },
-  };
+#center {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  place-content: center;
+  place-items: center;
+  flex-grow: 1;
 
-  const text = t[lang] || t.en;
+  @media (max-width: 1024px) {
+    padding: 32px 20px 24px;
+    gap: 18px;
+  }
+}
 
-  const ads = [
-    {
-      img: "https://res.cloudinary.com/dtaihpiwt/image/upload/v1777148944/ChatGPT_Image_Apr_25_2026_11_26_08_PM_r8afuy.png",
-      url: "https://wa.me/+905338760100",
-    },
-    {
-      img: "https://res.cloudinary.com/dtaihpiwt/image/upload/v1777148950/ChatGPT_Image_Apr_25_2026_11_26_50_PM_qq8lfa.png",
-      url: "https://wa.me/+905338760100",
-    },
-  ];
+#next-steps {
+  display: flex;
+  border-top: 1px solid var(--border);
+  text-align: left;
 
-  const [adIndex, setAdIndex] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setAdIndex((prev) => (prev + 1) % ads.length);
-    }, 3500);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const progress = Math.min(100, Math.max(0, ((step - 1) / 3) * 100));
-
-  // ===== API CALLS =====
-
-  useEffect(() => {
-    fetch(`${API}/years`)
-      .then((r) => r.json())
-      .then((data) => {
-        const normalized = Array.isArray(data)
-          ? data
-          : data.years || [];
-        setYears([...normalized].sort((a, b) => b - a));
-      });
-  }, []);
-
-  const handleYear = async (v) => {
-    setYear(v);
-    setLoading(true);
-
-    const res = await fetch(`${API}/brands?year=${v}`);
-    setBrands(await res.json());
-
-    setLoading(false);
-    setStep(2);
-  };
-
-  const handleBrand = async (v) => {
-    setBrand(v);
-    setLoading(true);
-
-    const res = await fetch(`${API}/models?year=${year}&brand=${v}`);
-    setModels(await res.json());
-
-    setLoading(false);
-    setStep(3);
-  };
-
-  const handleModel = async (v) => {
-    setModel(v);
-    setLoading(true);
-
-    const res = await fetch(
-      `${API}/categories?year=${year}&brand=${brand}&model=${v}`
-    );
-
-    const data = await res.json();
-    const normalized = Array.isArray(data)
-      ? data
-      : data.categories || [];
-
-    setCategories(normalized);
-
-    setLoading(false);
-    setStep(4);
-  };
-
-  const getValuation = async () => {
-    setLoading(true);
-
-    const res = await fetch(`${API}/get_valuation`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ year, brand, model, category }),
-    });
-
-    setResult(await res.json());
-    setLoading(false);
-    setStep(5);
-  };
-
-  const resetFlow = () => {
-    setStep(1);
-    setYear("");
-    setBrand("");
-    setModel("");
-    setCategory("");
-    setResult(null);
-    setAnimatedValue(0);
-  };
-
-  const goBack = () => {
-    if (step === 4) {
-      setStep(3);
-      setCategory("");
-    } else if (step === 3) {
-      setStep(2);
-      setModel("");
-    } else if (step === 2) {
-      setStep(1);
-      setBrand("");
+  & > div {
+    flex: 1 1 0;
+    padding: 32px;
+    @media (max-width: 1024px) {
+      padding: 24px 20px;
     }
-  };
+  }
 
-  // ===== ANIMATION =====
-  useEffect(() => {
-    if (!result?.median_price) return;
+  .icon {
+    margin-bottom: 16px;
+    width: 22px;
+    height: 22px;
+  }
 
-    const start = 0;
-    const end = result.median_price;
-    const duration = 900;
-    const startTime = performance.now();
+  @media (max-width: 1024px) {
+    flex-direction: column;
+    text-align: center;
+  }
+}
 
-    const animate = (t) => {
-      const p = Math.min((t - startTime) / duration, 1);
-      const eased = 1 - Math.pow(1 - p, 3);
-      setAnimatedValue(
-        Math.floor(start + (end - start) * eased)
-      );
-      if (p < 1) requestAnimationFrame(animate);
-    };
+#docs {
+  border-right: 1px solid var(--border);
 
-    requestAnimationFrame(animate);
-  }, [result]);
+  @media (max-width: 1024px) {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+}
 
-  return (
-    <div className="app-container">
-      {/* HEADER TOP */}
-      <div className="header-top">
-        <img
-          src="https://res.cloudinary.com/dtaihpiwt/image/upload/v1777154527/SHOPTECH_LOGO_9_hnwij5.png"
-          className="logo"
-          alt="logo"
-        />
-        <div className="username">@analist.kibris</div>
-      </div>
+#next-steps ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  gap: 8px;
+  margin: 32px 0 0;
 
-      {/* HEADER */}
-      <div className="header">
-        <div>
-          <h1>{text.title}</h1>
-          <p>{text.subtitle}</p>
-        </div>
+  .logo {
+    height: 18px;
+  }
 
-        <div className="lang-box">
-          {["tr", "en", "ru", "ar"].map((l) => (
-            <button
-              key={l}
-              onClick={() => changeLang(l)}
-              className={lang === l ? "lang-active" : "lang-btn"}
-            >
-              {l.toUpperCase()}
-            </button>
-          ))}
+  a {
+    color: var(--text-h);
+    font-size: 16px;
+    border-radius: 6px;
+    background: var(--social-bg);
+    display: flex;
+    padding: 6px 12px;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    transition: box-shadow 0.3s;
 
-          {step > 1 && step < 5 && (
-            <button className="back-btn" onClick={goBack}>
-              ← {text.back}
-            </button>
-          )}
-        </div>
-      </div>
+    &:hover {
+      box-shadow: var(--shadow);
+    }
+    .button-icon {
+      height: 18px;
+      width: 18px;
+    }
+  }
 
-      {/* PROGRESS */}
-      {step < 5 && (
-        <div className="progress-bar">
-          <div style={{ width: `${progress}%` }} />
-        </div>
-      )}
+  @media (max-width: 1024px) {
+    margin-top: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
 
-      {loading && <p className="loading">{text.loading}</p>}
+    li {
+      flex: 1 1 calc(50% - 8px);
+    }
 
-      {step === 1 && (
-        <div className="step-column">
-          {years.map((y) => (
-            <button key={y} onClick={() => handleYear(y)} className="btn">
-              {y}
-            </button>
-          ))}
-        </div>
-      )}
+    a {
+      width: 100%;
+      justify-content: center;
+      box-sizing: border-box;
+    }
+  }
+}
 
-      {step === 2 && (
-        <div className="step-column">
-          {brands.map((b) => (
-            <button key={b} onClick={() => handleBrand(b)} className="btn">
-              {b}
-            </button>
-          ))}
-        </div>
-      )}
+#spacer {
+  height: 88px;
+  border-top: 1px solid var(--border);
+  @media (max-width: 1024px) {
+    height: 48px;
+  }
+}
 
-      {step === 3 && (
-        <div className="step-column">
-          {models.map((m) => (
-            <button key={m} onClick={() => handleModel(m)} className="btn">
-              {m}
-            </button>
-          ))}
-        </div>
-      )}
+.ticks {
+  position: relative;
+  width: 100%;
 
-      {step === 4 && (
-        <div className="step-column">
-          {categories.map((c) => (
-            <button key={c} onClick={() => setCategory(c)} className="btn">
-              {c}
-            </button>
-          ))}
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: -4.5px;
+    border: 5px solid transparent;
+  }
 
-          {category && (
-            <button className="btn-primary" onClick={getValuation}>
-              {text.getValuation}
-            </button>
-          )}
-        </div>
-      )}
-
-      {step === 5 && result && (
-        <div className="result">
-          <h2>£{animatedValue.toLocaleString()}</h2>
-          <p>
-            £{result.min_price} – £{result.max_price}
-          </p>
-
-          <PriceScatter data={result.scatter} lang={lang} />
-
-          <div className="ad">
-            <a href={ads[adIndex].url} target="_blank">
-              <img src={ads[adIndex].img} alt="ad" />
-            </a>
-          </div>
-
-          <button className="btn-primary" onClick={resetFlow}>
-            {text.restart}
-          </button>
-        </div>
-      )}
-    </div>
-  );
+  &::before {
+    left: 0;
+    border-left-color: var(--border);
+  }
+  &::after {
+    right: 0;
+    border-right-color: var(--border);
+  }
 }
