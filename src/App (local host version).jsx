@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import PriceScatter from "./components/PriceScatter";
 
+// ✅ IMPORTANT: replace this with your deployed backend URL
+const API_BASE = "https://car-valuation-backend.onrender.com";
+
 export default function App() {
   const [step, setStep] = useState(1);
 
@@ -19,7 +22,9 @@ export default function App() {
   const [loading, setLoading] = useState(false);
 
   const [lang, setLang] = useState(
-    localStorage.getItem("lang") || "tr"
+    typeof window !== "undefined"
+      ? localStorage.getItem("lang") || "tr"
+      : "tr"
   );
 
   const changeLang = (l) => {
@@ -81,14 +86,14 @@ export default function App() {
     const interval = setInterval(() => {
       setAdIndex((prev) => (prev + 1) % ads.length);
     }, 3500);
-
     return () => clearInterval(interval);
   }, []);
 
   const progress = Math.min(100, Math.max(0, ((step - 1) / 3) * 100));
 
+  // 🔁 DEPLOY FIXED API CALLS
   useEffect(() => {
-    fetch("http://127.0.0.1:5000/years")
+    fetch(`${API_BASE}/years`)
       .then((r) => r.json())
       .then((data) => {
         const normalized = Array.isArray(data) ? data : data.years || [];
@@ -99,8 +104,10 @@ export default function App() {
   const handleYear = async (v) => {
     setYear(v);
     setLoading(true);
-    const res = await fetch(`http://127.0.0.1:5000/brands?year=${v}`);
+
+    const res = await fetch(`${API_BASE}/brands?year=${v}`);
     setBrands(await res.json());
+
     setLoading(false);
     setStep(2);
   };
@@ -108,8 +115,10 @@ export default function App() {
   const handleBrand = async (v) => {
     setBrand(v);
     setLoading(true);
-    const res = await fetch(`http://127.0.0.1:5000/models?year=${year}&brand=${v}`);
+
+    const res = await fetch(`${API_BASE}/models?year=${year}&brand=${v}`);
     setModels(await res.json());
+
     setLoading(false);
     setStep(3);
   };
@@ -119,14 +128,11 @@ export default function App() {
     setLoading(true);
 
     const res = await fetch(
-      `http://127.0.0.1:5000/categories?year=${year}&brand=${brand}&model=${v}`
+      `${API_BASE}/categories?year=${year}&brand=${brand}&model=${v}`
     );
 
     const data = await res.json();
-
-    const normalized = Array.isArray(data)
-      ? data
-      : data.categories || [];
+    const normalized = Array.isArray(data) ? data : data.categories || [];
 
     setCategories(normalized);
 
@@ -137,7 +143,7 @@ export default function App() {
   const getValuation = async () => {
     setLoading(true);
 
-    const res = await fetch("http://127.0.0.1:5000/get_valuation", {
+    const res = await fetch(`${API_BASE}/get_valuation`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ year, brand, model, category }),
@@ -188,135 +194,59 @@ export default function App() {
       style={{
         position: "relative",
         fontFamily: "Poppins, sans-serif",
+        maxWidth: 900,
+        margin: "0 auto",
       }}
     >
-      {/* LOGO + USERNAME */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 8,
-          marginTop: 6,
-          marginBottom: 6,
-        }}
-      >
+      {/* LOGO */}
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 6 }}>
         <img
           src="https://res.cloudinary.com/dtaihpiwt/image/upload/v1777154527/SHOPTECH_LOGO_9_hnwij5.png"
-          style={{ height: 24, width: "auto" }}
+          style={{ height: 24 }}
         />
         <div style={{ fontSize: 12, color: "#0f172a" }}>
           @analist.kibris
         </div>
       </div>
 
-      {/* HEADER + LANGUAGE ROW */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "flex-start",
-          marginBottom: 4, // 🔥 reduced spacing (was 10)
-        }}
-      >
-        <div style={{ textAlign: "left" }}>
-          <div
-            style={{
-              fontSize: 28,
-              fontWeight: 800,
-              textTransform: "uppercase",
-              letterSpacing: "-0.5px",
-            }}
-          >
-            {text.title}
-          </div>
-
-          <div
-            style={{
-              fontSize: 13,
-              marginTop: 2,
-              color: "#2563eb",
-            }}
-          >
-            {text.subtitle}
-          </div>
+      {/* HEADER */}
+      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+        <div>
+          <div style={{ fontSize: 28, fontWeight: 800 }}>{text.title}</div>
+          <div style={{ fontSize: 13, color: "#2563eb" }}>{text.subtitle}</div>
         </div>
 
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: 8,
-            alignItems: "flex-end",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              background: "#f1f5f9",
-              borderRadius: 999,
-              padding: 4,
-              gap: 4,
-              border: "1px solid #e2e8f0",
-            }}
-          >
-            {["tr", "en", "ru", "ar"].map((l) => (
-              <button
-                key={l}
-                onClick={() => changeLang(l)}
-                style={{
-                  padding: "6px 10px",
-                  borderRadius: 999,
-                  border: "none",
-                  fontSize: 12,
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  background: lang === l ? "#2563eb" : "transparent",
-                  color: lang === l ? "white" : "#475569",
-                }}
-              >
-                {l.toUpperCase()}
-              </button>
-            ))}
-          </div>
-
-          {step > 1 && step < 5 && (
+        {/* LANG */}
+        <div style={{ display: "flex", gap: 6 }}>
+          {["tr", "en", "ru", "ar"].map((l) => (
             <button
-              onClick={goBack}
+              key={l}
+              onClick={() => changeLang(l)}
               style={{
-                padding: "5px 10px",
-                borderRadius: 8,
-                border: "1px solid #e2e8f0",
-                background: "transparent",
-                color: "#64748b",
+                padding: "6px 10px",
+                borderRadius: 999,
+                border: "none",
                 fontSize: 12,
-                fontWeight: 500,
+                background: lang === l ? "#2563eb" : "#f1f5f9",
+                color: lang === l ? "white" : "#475569",
                 cursor: "pointer",
               }}
             >
-              ← {text.back}
+              {l.toUpperCase()}
             </button>
-          )}
+          ))}
         </div>
       </div>
 
-      {/* PROGRESS BAR */}
+      {/* PROGRESS */}
       {step < 5 && (
-        <div
-          style={{
-            width: "100%",
-            height: 6,
-            background: "#e2e8f0",
-            borderRadius: 999,
-            overflow: "hidden",
-            marginBottom: 10,
-          }}
-        >
+        <div style={{ height: 6, background: "#e2e8f0", borderRadius: 999 }}>
           <div
             style={{
               width: `${progress}%`,
               height: "100%",
               background: "#2563eb",
-              transition: "width 0.3s ease",
+              transition: "width 0.3s",
             }}
           />
         </div>
@@ -324,6 +254,7 @@ export default function App() {
 
       {loading && <p>{text.loading}</p>}
 
+      {/* STEPS */}
       {step === 1 && (
         <div className="step-column">
           {years.map((y) => (
@@ -370,57 +301,28 @@ export default function App() {
         </div>
       )}
 
+      {/* RESULT */}
       {step === 5 && result && (
-        <div
-          style={{
-            textAlign: "center",
-            marginTop: 2, // 🔥 tighter spacing to header area
-            display: "flex",
-            flexDirection: "column",
-            gap: 6,
-          }}
-        >
-          <h1 style={{ fontWeight: 800 }}>
-            £{animatedValue.toLocaleString()}
-          </h1>
-
-          <p style={{ marginTop: 0, color: "#475569", fontWeight: 500 }}>
-            £{result.min_price.toLocaleString()} – £{result.max_price.toLocaleString()}
+        <div style={{ textAlign: "center" }}>
+          <h1>£{animatedValue.toLocaleString()}</h1>
+          <p>
+            £{result.min_price} – £{result.max_price}
           </p>
 
           <PriceScatter data={result.scatter} lang={lang} />
 
-          <div style={{ marginTop: 14 }}>
-            <div
-              style={{
-                borderRadius: 14,
-                overflow: "hidden",
-                height: 170,
-                cursor: "pointer",
-              }}
-            >
-              <a
-                href={ads[adIndex].url}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <img
-                  src={ads[adIndex].img}
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                  }}
-                />
-              </a>
-            </div>
+          <div style={{ marginTop: 12 }}>
+            <a href={ads[adIndex].url}>
+              <img
+                src={ads[adIndex].img}
+                style={{ width: "100%", borderRadius: 12 }}
+              />
+            </a>
           </div>
 
-          <div style={{ marginTop: 14 }}>
-            <button onClick={resetFlow} className="btn-primary">
-              {text.restart}
-            </button>
-          </div>
+          <button className="btn-primary" onClick={resetFlow}>
+            {text.restart}
+          </button>
         </div>
       )}
     </div>
