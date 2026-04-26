@@ -22,11 +22,6 @@ export default function App() {
     localStorage.getItem("lang") || "tr"
   );
 
-  // ✅ PRODUCTION SAFE API SWITCH
-  const API =
-    process.env.REACT_APP_API_URL ||
-    "https://car-valuation-backend.onrender.com";
-
   const changeLang = (l) => {
     setLang(l);
     localStorage.setItem("lang", l);
@@ -92,15 +87,11 @@ export default function App() {
 
   const progress = Math.min(100, Math.max(0, ((step - 1) / 3) * 100));
 
-  // ===== API CALLS =====
-
   useEffect(() => {
-    fetch(`${API}/years`)
+    fetch("http://127.0.0.1:5000/years")
       .then((r) => r.json())
       .then((data) => {
-        const normalized = Array.isArray(data)
-          ? data
-          : data.years || [];
+        const normalized = Array.isArray(data) ? data : data.years || [];
         setYears([...normalized].sort((a, b) => b - a));
       });
   }, []);
@@ -108,10 +99,8 @@ export default function App() {
   const handleYear = async (v) => {
     setYear(v);
     setLoading(true);
-
-    const res = await fetch(`${API}/brands?year=${v}`);
+    const res = await fetch(`http://127.0.0.1:5000/brands?year=${v}`);
     setBrands(await res.json());
-
     setLoading(false);
     setStep(2);
   };
@@ -119,10 +108,8 @@ export default function App() {
   const handleBrand = async (v) => {
     setBrand(v);
     setLoading(true);
-
-    const res = await fetch(`${API}/models?year=${year}&brand=${v}`);
+    const res = await fetch(`http://127.0.0.1:5000/models?year=${year}&brand=${v}`);
     setModels(await res.json());
-
     setLoading(false);
     setStep(3);
   };
@@ -132,10 +119,11 @@ export default function App() {
     setLoading(true);
 
     const res = await fetch(
-      `${API}/categories?year=${year}&brand=${brand}&model=${v}`
+      `http://127.0.0.1:5000/categories?year=${year}&brand=${brand}&model=${v}`
     );
 
     const data = await res.json();
+
     const normalized = Array.isArray(data)
       ? data
       : data.categories || [];
@@ -149,7 +137,7 @@ export default function App() {
   const getValuation = async () => {
     setLoading(true);
 
-    const res = await fetch(`${API}/get_valuation`, {
+    const res = await fetch("http://127.0.0.1:5000/get_valuation", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ year, brand, model, category }),
@@ -171,19 +159,11 @@ export default function App() {
   };
 
   const goBack = () => {
-    if (step === 4) {
-      setStep(3);
-      setCategory("");
-    } else if (step === 3) {
-      setStep(2);
-      setModel("");
-    } else if (step === 2) {
-      setStep(1);
-      setBrand("");
-    }
+    if (step === 4) setStep(3), setCategory("");
+    else if (step === 3) setStep(2), setModel("");
+    else if (step === 2) setStep(1), setBrand("");
   };
 
-  // ===== ANIMATION =====
   useEffect(() => {
     if (!result?.median_price) return;
 
@@ -195,9 +175,7 @@ export default function App() {
     const animate = (t) => {
       const p = Math.min((t - startTime) / duration, 1);
       const eased = 1 - Math.pow(1 - p, 3);
-      setAnimatedValue(
-        Math.floor(start + (end - start) * eased)
-      );
+      setAnimatedValue(Math.floor(start + (end - start) * eased));
       if (p < 1) requestAnimationFrame(animate);
     };
 
@@ -205,51 +183,146 @@ export default function App() {
   }, [result]);
 
   return (
-    <div className="app-container">
-      {/* HEADER TOP */}
-      <div className="header-top">
+    <div
+      className="app-container"
+      style={{
+        position: "relative",
+        fontFamily: "Poppins, sans-serif",
+      }}
+    >
+      {/* LOGO + USERNAME */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+          marginTop: 6,
+          marginBottom: 6,
+        }}
+      >
         <img
           src="https://res.cloudinary.com/dtaihpiwt/image/upload/v1777154527/SHOPTECH_LOGO_9_hnwij5.png"
-          className="logo"
-          alt="logo"
+          style={{ height: 24, width: "auto" }}
         />
-        <div className="username">@analist.kibris</div>
+        <div style={{ fontSize: 12, color: "#0f172a" }}>
+          @analist.kibris
+        </div>
       </div>
 
-      {/* HEADER */}
-      <div className="header">
-        <div>
-          <h1>{text.title}</h1>
-          <p>{text.subtitle}</p>
+      {/* HEADER + LANGUAGE ROW */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "flex-start",
+          marginBottom: 4, // 🔥 reduced spacing (was 10)
+        }}
+      >
+        <div style={{ textAlign: "left" }}>
+          <div
+            style={{
+              fontSize: 28,
+              fontWeight: 800,
+              textTransform: "uppercase",
+              letterSpacing: "-0.5px",
+            }}
+          >
+            {text.title}
+          </div>
+
+          <div
+            style={{
+              fontSize: 13,
+              marginTop: 2,
+              color: "#2563eb",
+            }}
+          >
+            {text.subtitle}
+          </div>
         </div>
 
-        <div className="lang-box">
-          {["tr", "en", "ru", "ar"].map((l) => (
-            <button
-              key={l}
-              onClick={() => changeLang(l)}
-              className={lang === l ? "lang-active" : "lang-btn"}
-            >
-              {l.toUpperCase()}
-            </button>
-          ))}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 8,
+            alignItems: "flex-end",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              background: "#f1f5f9",
+              borderRadius: 999,
+              padding: 4,
+              gap: 4,
+              border: "1px solid #e2e8f0",
+            }}
+          >
+            {["tr", "en", "ru", "ar"].map((l) => (
+              <button
+                key={l}
+                onClick={() => changeLang(l)}
+                style={{
+                  padding: "6px 10px",
+                  borderRadius: 999,
+                  border: "none",
+                  fontSize: 12,
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  background: lang === l ? "#2563eb" : "transparent",
+                  color: lang === l ? "white" : "#475569",
+                }}
+              >
+                {l.toUpperCase()}
+              </button>
+            ))}
+          </div>
 
           {step > 1 && step < 5 && (
-            <button className="back-btn" onClick={goBack}>
+            <button
+              onClick={goBack}
+              style={{
+                padding: "5px 10px",
+                borderRadius: 8,
+                border: "1px solid #e2e8f0",
+                background: "transparent",
+                color: "#64748b",
+                fontSize: 12,
+                fontWeight: 500,
+                cursor: "pointer",
+              }}
+            >
               ← {text.back}
             </button>
           )}
         </div>
       </div>
 
-      {/* PROGRESS */}
+      {/* PROGRESS BAR */}
       {step < 5 && (
-        <div className="progress-bar">
-          <div style={{ width: `${progress}%` }} />
+        <div
+          style={{
+            width: "100%",
+            height: 6,
+            background: "#e2e8f0",
+            borderRadius: 999,
+            overflow: "hidden",
+            marginBottom: 10,
+          }}
+        >
+          <div
+            style={{
+              width: `${progress}%`,
+              height: "100%",
+              background: "#2563eb",
+              transition: "width 0.3s ease",
+            }}
+          />
         </div>
       )}
 
-      {loading && <p className="loading">{text.loading}</p>}
+      {loading && <p>{text.loading}</p>}
 
       {step === 1 && (
         <div className="step-column">
@@ -298,23 +371,56 @@ export default function App() {
       )}
 
       {step === 5 && result && (
-        <div className="result">
-          <h2>£{animatedValue.toLocaleString()}</h2>
-          <p>
-            £{result.min_price} – £{result.max_price}
+        <div
+          style={{
+            textAlign: "center",
+            marginTop: 2, // 🔥 tighter spacing to header area
+            display: "flex",
+            flexDirection: "column",
+            gap: 6,
+          }}
+        >
+          <h1 style={{ fontWeight: 800 }}>
+            £{animatedValue.toLocaleString()}
+          </h1>
+
+          <p style={{ marginTop: 0, color: "#475569", fontWeight: 500 }}>
+            £{result.min_price.toLocaleString()} – £{result.max_price.toLocaleString()}
           </p>
 
           <PriceScatter data={result.scatter} lang={lang} />
 
-          <div className="ad">
-            <a href={ads[adIndex].url} target="_blank">
-              <img src={ads[adIndex].img} alt="ad" />
-            </a>
+          <div style={{ marginTop: 14 }}>
+            <div
+              style={{
+                borderRadius: 14,
+                overflow: "hidden",
+                height: 170,
+                cursor: "pointer",
+              }}
+            >
+              <a
+                href={ads[adIndex].url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img
+                  src={ads[adIndex].img}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                  }}
+                />
+              </a>
+            </div>
           </div>
 
-          <button className="btn-primary" onClick={resetFlow}>
-            {text.restart}
-          </button>
+          <div style={{ marginTop: 14 }}>
+            <button onClick={resetFlow} className="btn-primary">
+              {text.restart}
+            </button>
+          </div>
         </div>
       )}
     </div>

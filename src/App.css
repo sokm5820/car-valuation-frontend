@@ -1,228 +1,322 @@
-/* =========================================
-   DESIGN SYSTEM (Stripe-inspired SaaS)
-========================================= */
+import { useEffect, useState } from "react";
+import PriceScatter from "./components/PriceScatter";
 
-:root {
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-5: 20px;
-  --space-6: 24px;
+export default function App() {
+  const [step, setStep] = useState(1);
 
-  --bg: #f6f8fb;
-  --card: #ffffff;
-  --text: #0f172a;
-  --muted: #64748b;
-  --primary: #2563eb;
-  --primary-hover: #1d4ed8;
-  --border: #e2e8f0;
+  const [year, setYear] = useState("");
+  const [brand, setBrand] = useState("");
+  const [model, setModel] = useState("");
+  const [category, setCategory] = useState("");
 
-  --radius-md: 14px;
-  --radius-full: 999px;
+  const [years, setYears] = useState([]);
+  const [brands, setBrands] = useState([]);
+  const [models, setModels] = useState([]);
+  const [categories, setCategories] = useState([]);
 
-  --shadow-sm: 0 6px 18px rgba(15, 23, 42, 0.06);
-}
+  const [result, setResult] = useState(null);
+  const [animatedValue, setAnimatedValue] = useState(0);
+  const [loading, setLoading] = useState(false);
 
-/* RESET */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  -webkit-font-smoothing: antialiased;
-}
+  const [lang, setLang] = useState(
+    localStorage.getItem("lang") || "tr"
+  );
 
-body {
-  font-family: Poppins, system-ui, -apple-system, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-}
+  // ✅ PRODUCTION SAFE API SWITCH
+  const API =
+    process.env.REACT_APP_API_URL ||
+    "https://car-valuation-backend.onrender.com";
 
-/* APP */
-.app {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-}
+  const changeLang = (l) => {
+    setLang(l);
+    localStorage.setItem("lang", l);
+  };
 
-.container {
-  width: 100%;
-  max-width: 920px;
-  padding: var(--space-6);
-}
+  const t = {
+    en: {
+      title: "VEHICLE VALUATION",
+      subtitle: "Step-by-step market pricing",
+      getValuation: "Get valuation",
+      restart: "Search another car",
+      back: "Back",
+      loading: "Loading...",
+    },
+    tr: {
+      title: "ARAÇ DEĞERLEME",
+      subtitle: "Adım adım piyasa fiyatlandırması",
+      getValuation: "Değeri getir",
+      restart: "Yeni araç ara",
+      back: "Geri",
+      loading: "Yükleniyor...",
+    },
+    ru: {
+      title: "ОЦЕНКА АВТОМОБИЛЯ",
+      subtitle: "Пошаговая рыночная оценка",
+      getValuation: "Получить оценку",
+      restart: "Новый поиск",
+      back: "Назад",
+      loading: "Загрузка...",
+    },
+    ar: {
+      title: "تقييم المركبة",
+      subtitle: "تسعير السوق خطوة بخطوة",
+      getValuation: "احصل على التقييم",
+      restart: "بحث جديد",
+      back: "رجوع",
+      loading: "جار التحميل...",
+    },
+  };
 
-/* HEADER */
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: var(--space-4);
-}
+  const text = t[lang] || t.en;
 
-.header h1 {
-  font-size: 28px;
-  font-weight: 800;
-  letter-spacing: -0.6px;
-}
+  const ads = [
+    {
+      img: "https://res.cloudinary.com/dtaihpiwt/image/upload/v1777148944/ChatGPT_Image_Apr_25_2026_11_26_08_PM_r8afuy.png",
+      url: "https://wa.me/+905338760100",
+    },
+    {
+      img: "https://res.cloudinary.com/dtaihpiwt/image/upload/v1777148950/ChatGPT_Image_Apr_25_2026_11_26_50_PM_qq8lfa.png",
+      url: "https://wa.me/+905338760100",
+    },
+  ];
 
-.header p {
-  font-size: 13px;
-  color: var(--primary);
-  margin-top: 4px;
-}
+  const [adIndex, setAdIndex] = useState(0);
 
-/* LANG */
-.lang {
-  display: flex;
-  gap: 6px;
-  background: white;
-  padding: 4px;
-  border-radius: var(--radius-full);
-  border: 1px solid var(--border);
-}
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setAdIndex((prev) => (prev + 1) % ads.length);
+    }, 3500);
 
-.lang button {
-  border: none;
-  background: transparent;
-  padding: 6px 10px;
-  border-radius: var(--radius-full);
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  color: var(--muted);
-}
+    return () => clearInterval(interval);
+  }, []);
 
-.lang button.active {
-  background: var(--primary);
-  color: white;
-}
+  const progress = Math.min(100, Math.max(0, ((step - 1) / 3) * 100));
 
-/* PROGRESS */
-.progress {
-  height: 6px;
-  background: var(--border);
-  border-radius: var(--radius-full);
-  overflow: hidden;
-  margin-bottom: var(--space-4);
-}
+  // ===== API CALLS =====
 
-.progress > div {
-  height: 100%;
-  background: linear-gradient(90deg, var(--primary), #60a5fa);
-}
+  useEffect(() => {
+    fetch(`${API}/years`)
+      .then((r) => r.json())
+      .then((data) => {
+        const normalized = Array.isArray(data)
+          ? data
+          : data.years || [];
+        setYears([...normalized].sort((a, b) => b - a));
+      });
+  }, []);
 
-/* STACK */
-.stack {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
+  const handleYear = async (v) => {
+    setYear(v);
+    setLoading(true);
 
-/* BUTTONS */
-.btn {
-  width: 100%;
-  text-align: left;
-  padding: 13px 14px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border);
-  background: white;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: 0.15s ease;
-}
+    const res = await fetch(`${API}/brands?year=${v}`);
+    setBrands(await res.json());
 
-.btn:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-sm);
-  border-color: #cbd5e1;
-}
+    setLoading(false);
+    setStep(2);
+  };
 
-/* PRIMARY */
-.btn-primary {
-  width: 100%;
-  padding: 13px 14px;
-  border-radius: var(--radius-md);
-  border: none;
-  background: var(--primary);
-  color: white;
-  font-weight: 600;
-  cursor: pointer;
-}
+  const handleBrand = async (v) => {
+    setBrand(v);
+    setLoading(true);
 
-.btn-primary:hover {
-  background: var(--primary-hover);
-}
+    const res = await fetch(`${API}/models?year=${year}&brand=${v}`);
+    setModels(await res.json());
 
-/* RESULT */
-.card {
-  background: white;
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  padding: 22px;
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
+    setLoading(false);
+    setStep(3);
+  };
 
-.price {
-  font-size: 38px;
-  font-weight: 800;
-}
+  const handleModel = async (v) => {
+    setModel(v);
+    setLoading(true);
 
-.range {
-  color: var(--muted);
-}
+    const res = await fetch(
+      `${API}/categories?year=${year}&brand=${brand}&model=${v}`
+    );
 
-/* AD */
-.ad {
-  margin-top: 16px;
-  height: 170px;
-  border-radius: 14px;
-  overflow: hidden;
-  border: 1px solid var(--border);
-}
+    const data = await res.json();
+    const normalized = Array.isArray(data)
+      ? data
+      : data.categories || [];
 
-.ad img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
+    setCategories(normalized);
 
-/* LOADING */
-.loading {
-  font-size: 13px;
-  color: var(--muted);
-}
+    setLoading(false);
+    setStep(4);
+  };
 
-/* =========================================
-   PREMIUM BACK BUTTON (FIXED)
-========================================= */
+  const getValuation = async () => {
+    setLoading(true);
 
-.back-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+    const res = await fetch(`${API}/get_valuation`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ year, brand, model, category }),
+    });
 
-  padding: 6px 10px;
+    setResult(await res.json());
+    setLoading(false);
+    setStep(5);
+  };
 
-  border: none;
-  background: transparent;
+  const resetFlow = () => {
+    setStep(1);
+    setYear("");
+    setBrand("");
+    setModel("");
+    setCategory("");
+    setResult(null);
+    setAnimatedValue(0);
+  };
 
-  color: #64748b;
-  font-size: 13px;
-  font-weight: 500;
+  const goBack = () => {
+    if (step === 4) {
+      setStep(3);
+      setCategory("");
+    } else if (step === 3) {
+      setStep(2);
+      setModel("");
+    } else if (step === 2) {
+      setStep(1);
+      setBrand("");
+    }
+  };
 
-  cursor: pointer;
+  // ===== ANIMATION =====
+  useEffect(() => {
+    if (!result?.median_price) return;
 
-  border-radius: 10px;
+    const start = 0;
+    const end = result.median_price;
+    const duration = 900;
+    const startTime = performance.now();
 
-  transition: all 0.15s ease;
-}
+    const animate = (t) => {
+      const p = Math.min((t - startTime) / duration, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      setAnimatedValue(
+        Math.floor(start + (end - start) * eased)
+      );
+      if (p < 1) requestAnimationFrame(animate);
+    };
 
-.back-btn:hover {
-  color: var(--primary);
-  background: rgba(37, 99, 235, 0.06);
+    requestAnimationFrame(animate);
+  }, [result]);
+
+  return (
+    <div className="app-container">
+      {/* HEADER TOP */}
+      <div className="header-top">
+        <img
+          src="https://res.cloudinary.com/dtaihpiwt/image/upload/v1777154527/SHOPTECH_LOGO_9_hnwij5.png"
+          className="logo"
+          alt="logo"
+        />
+        <div className="username">@analist.kibris</div>
+      </div>
+
+      {/* HEADER */}
+      <div className="header">
+        <div>
+          <h1>{text.title}</h1>
+          <p>{text.subtitle}</p>
+        </div>
+
+        <div className="lang-box">
+          {["tr", "en", "ru", "ar"].map((l) => (
+            <button
+              key={l}
+              onClick={() => changeLang(l)}
+              className={lang === l ? "lang-active" : "lang-btn"}
+            >
+              {l.toUpperCase()}
+            </button>
+          ))}
+
+          {step > 1 && step < 5 && (
+            <button className="back-btn" onClick={goBack}>
+              ← {text.back}
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* PROGRESS */}
+      {step < 5 && (
+        <div className="progress-bar">
+          <div style={{ width: `${progress}%` }} />
+        </div>
+      )}
+
+      {loading && <p className="loading">{text.loading}</p>}
+
+      {step === 1 && (
+        <div className="step-column">
+          {years.map((y) => (
+            <button key={y} onClick={() => handleYear(y)} className="btn">
+              {y}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {step === 2 && (
+        <div className="step-column">
+          {brands.map((b) => (
+            <button key={b} onClick={() => handleBrand(b)} className="btn">
+              {b}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {step === 3 && (
+        <div className="step-column">
+          {models.map((m) => (
+            <button key={m} onClick={() => handleModel(m)} className="btn">
+              {m}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {step === 4 && (
+        <div className="step-column">
+          {categories.map((c) => (
+            <button key={c} onClick={() => setCategory(c)} className="btn">
+              {c}
+            </button>
+          ))}
+
+          {category && (
+            <button className="btn-primary" onClick={getValuation}>
+              {text.getValuation}
+            </button>
+          )}
+        </div>
+      )}
+
+      {step === 5 && result && (
+        <div className="result">
+          <h2>£{animatedValue.toLocaleString()}</h2>
+          <p>
+            £{result.min_price} – £{result.max_price}
+          </p>
+
+          <PriceScatter data={result.scatter} lang={lang} />
+
+          <div className="ad">
+            <a href={ads[adIndex].url} target="_blank">
+              <img src={ads[adIndex].img} alt="ad" />
+            </a>
+          </div>
+
+          <button className="btn-primary" onClick={resetFlow}>
+            {text.restart}
+          </button>
+        </div>
+      )}
+    </div>
+  );
 }
