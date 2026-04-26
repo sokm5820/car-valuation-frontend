@@ -1,11 +1,6 @@
 import { useEffect, useState } from "react";
 import PriceScatter from "./components/PriceScatter";
 
-// ✅ FIX: production-safe API handling
-const API =
-  import.meta.env.VITE_API_URL ||
-  "https://car-valuation-backend.onrender.com";
-
 export default function App() {
   const [step, setStep] = useState(1);
 
@@ -23,17 +18,20 @@ export default function App() {
   const [animatedValue, setAnimatedValue] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  // ✅ FIX: safe localStorage access for deployment
-  const [lang, setLang] = useState(() => {
-    if (typeof window === "undefined") return "tr";
-    return localStorage.getItem("lang") || "tr";
-  });
+  const [lang, setLang] = useState(
+    typeof window !== "undefined"
+      ? localStorage.getItem("lang") || "tr"
+      : "tr"
+  );
+
+  // 🚀 PRODUCTION BACKEND (Render / hosted API)
+  const API =
+    process.env.REACT_APP_API_URL ||
+    "https://car-valuation-backend.onrender.com";
 
   const changeLang = (l) => {
     setLang(l);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("lang", l);
-    }
+    localStorage.setItem("lang", l);
   };
 
   const t = {
@@ -96,20 +94,32 @@ export default function App() {
 
   const progress = Math.min(100, Math.max(0, ((step - 1) / 3) * 100));
 
+  // =========================
+  // API CALLS (PRODUCTION)
+  // =========================
+
   useEffect(() => {
     fetch(`${API}/years`)
       .then((r) => r.json())
       .then((data) => {
         const normalized = Array.isArray(data) ? data : data.years || [];
         setYears([...normalized].sort((a, b) => b - a));
-      });
+      })
+      .catch((err) => console.error("Years fetch error:", err));
   }, []);
 
   const handleYear = async (v) => {
     setYear(v);
     setLoading(true);
-    const res = await fetch(`${API}/brands?year=${v}`);
-    setBrands(await res.json());
+
+    try {
+      const res = await fetch(`${API}/brands?year=${v}`);
+      const data = await res.json();
+      setBrands(data);
+    } catch (err) {
+      console.error(err);
+    }
+
     setLoading(false);
     setStep(2);
   };
@@ -117,8 +127,15 @@ export default function App() {
   const handleBrand = async (v) => {
     setBrand(v);
     setLoading(true);
-    const res = await fetch(`${API}/models?year=${year}&brand=${v}`);
-    setModels(await res.json());
+
+    try {
+      const res = await fetch(`${API}/models?year=${year}&brand=${v}`);
+      const data = await res.json();
+      setModels(data);
+    } catch (err) {
+      console.error(err);
+    }
+
     setLoading(false);
     setStep(3);
   };
@@ -127,13 +144,21 @@ export default function App() {
     setModel(v);
     setLoading(true);
 
-    const res = await fetch(
-      `${API}/categories?year=${year}&brand=${brand}&model=${v}`
-    );
+    try {
+      const res = await fetch(
+        `${API}/categories?year=${year}&brand=${brand}&model=${v}`
+      );
 
-    const data = await res.json();
+      const data = await res.json();
 
-    setCategories(Array.isArray(data) ? data : data.categories || []);
+      const normalized = Array.isArray(data)
+        ? data
+        : data.categories || [];
+
+      setCategories(normalized);
+    } catch (err) {
+      console.error(err);
+    }
 
     setLoading(false);
     setStep(4);
@@ -142,13 +167,19 @@ export default function App() {
   const getValuation = async () => {
     setLoading(true);
 
-    const res = await fetch(`${API}/get_valuation`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ year, brand, model, category }),
-    });
+    try {
+      const res = await fetch(`${API}/get_valuation`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ year, brand, model, category }),
+      });
 
-    setResult(await res.json());
+      const data = await res.json();
+      setResult(data);
+    } catch (err) {
+      console.error(err);
+    }
+
     setLoading(false);
     setStep(5);
   };
@@ -164,9 +195,16 @@ export default function App() {
   };
 
   const goBack = () => {
-    if (step === 4) setStep(3), setCategory("");
-    else if (step === 3) setStep(2), setModel("");
-    else if (step === 2) setStep(1), setBrand("");
+    if (step === 4) {
+      setStep(3);
+      setCategory("");
+    } else if (step === 3) {
+      setStep(2);
+      setModel("");
+    } else if (step === 2) {
+      setStep(1);
+      setBrand("");
+    }
   };
 
   useEffect(() => {
@@ -181,6 +219,7 @@ export default function App() {
       const p = Math.min((t - startTime) / duration, 1);
       const eased = 1 - Math.pow(1 - p, 3);
       setAnimatedValue(Math.floor(start + (end - start) * eased));
+
       if (p < 1) requestAnimationFrame(animate);
     };
 
@@ -188,29 +227,73 @@ export default function App() {
   }, [result]);
 
   return (
-    <div className="app-container">
-      {/* unchanged UI below */}
-      <div className="header-top">
+    <div
+      className="app-container"
+      style={{
+        position: "relative",
+        fontFamily: "Poppins, sans-serif",
+      }}
+    >
+      {/* LOGO */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+          marginTop: 6,
+          marginBottom: 6,
+        }}
+      >
         <img
           src="https://res.cloudinary.com/dtaihpiwt/image/upload/v1777154527/SHOPTECH_LOGO_9_hnwij5.png"
-          style={{ height: 24 }}
+          style={{ height: 24, width: "auto" }}
         />
-        <div className="username">@analist.kibris</div>
+        <div style={{ fontSize: 12, color: "#0f172a" }}>
+          @analist.kibris
+        </div>
       </div>
 
-      <div className="header">
+      {/* HEADER */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "flex-start",
+          marginBottom: 4,
+        }}
+      >
         <div>
-          <h1>{text.title}</h1>
-          <p>{text.subtitle}</p>
+          <div
+            style={{
+              fontSize: 28,
+              fontWeight: 800,
+              textTransform: "uppercase",
+            }}
+          >
+            {text.title}
+          </div>
+
+          <div style={{ fontSize: 13, color: "#2563eb" }}>
+            {text.subtitle}
+          </div>
         </div>
 
-        <div className="lang-box">
-          <div className="lang-row">
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <div style={{ display: "flex", gap: 6 }}>
             {["tr", "en", "ru", "ar"].map((l) => (
               <button
                 key={l}
                 onClick={() => changeLang(l)}
-                className={lang === l ? "lang-active" : "lang-btn"}
+                style={{
+                  padding: "6px 10px",
+                  borderRadius: 999,
+                  border: "none",
+                  fontSize: 12,
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  background: lang === l ? "#2563eb" : "#f1f5f9",
+                  color: lang === l ? "white" : "#475569",
+                }}
               >
                 {l.toUpperCase()}
               </button>
@@ -218,21 +301,34 @@ export default function App() {
           </div>
 
           {step > 1 && step < 5 && (
-            <button className="back-btn" onClick={goBack}>
-              ← {text.back}
-            </button>
+            <button onClick={goBack}>← {text.back}</button>
           )}
         </div>
       </div>
 
+      {/* PROGRESS */}
       {step < 5 && (
-        <div className="progress-bar">
-          <div style={{ width: `${progress}%` }} />
+        <div
+          style={{
+            height: 6,
+            background: "#e2e8f0",
+            borderRadius: 999,
+            marginBottom: 10,
+          }}
+        >
+          <div
+            style={{
+              width: `${progress}%`,
+              height: "100%",
+              background: "#2563eb",
+            }}
+          />
         </div>
       )}
 
       {loading && <p>{text.loading}</p>}
 
+      {/* STEPS */}
       {step === 1 && (
         <div className="step-column">
           {years.map((y) => (
@@ -243,15 +339,53 @@ export default function App() {
         </div>
       )}
 
+      {step === 2 && (
+        <div className="step-column">
+          {brands.map((b) => (
+            <button key={b} onClick={() => handleBrand(b)} className="btn">
+              {b}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {step === 3 && (
+        <div className="step-column">
+          {models.map((m) => (
+            <button key={m} onClick={() => handleModel(m)} className="btn">
+              {m}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {step === 4 && (
+        <div className="step-column">
+          {categories.map((c) => (
+            <button key={c} onClick={() => setCategory(c)} className="btn">
+              {c}
+            </button>
+          ))}
+
+          {category && (
+            <button className="btn-primary" onClick={getValuation}>
+              {text.getValuation}
+            </button>
+          )}
+        </div>
+      )}
+
       {step === 5 && result && (
         <div className="result">
           <h2>£{animatedValue.toLocaleString()}</h2>
-          <p>£{result.min_price} – £{result.max_price}</p>
+          <p>
+            £{result.min_price} – £{result.max_price}
+          </p>
 
           <PriceScatter data={result.scatter} lang={lang} />
 
           <div className="ad">
-            <a href={ads[adIndex].url} target="_blank" rel="noreferrer">
+            <a href={ads[adIndex].url} target="_blank">
               <img src={ads[adIndex].img} />
             </a>
           </div>
