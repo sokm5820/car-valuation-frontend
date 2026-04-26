@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import PriceScatter from "./components/PriceScatter";
-
-// ✅ IMPORTANT: replace this with your deployed backend URL
-const API_BASE = "https://car-valuation-backend.onrender.com";
+import "./App.css";
 
 export default function App() {
   const [step, setStep] = useState(1);
@@ -20,6 +18,11 @@ export default function App() {
   const [result, setResult] = useState(null);
   const [animatedValue, setAnimatedValue] = useState(0);
   const [loading, setLoading] = useState(false);
+
+  // ✅ DEPLOYMENT SAFE API SWITCH
+  const API =
+    process.env.REACT_APP_API_URL ||
+    "https://car-valuation-backend.onrender.com";
 
   const [lang, setLang] = useState(
     typeof window !== "undefined"
@@ -75,7 +78,7 @@ export default function App() {
       url: "https://wa.me/+905338760100",
     },
     {
-      img: "https://res.cloudinary.com/dtaihpiwt/image/upload/v1777182806/ChatGPT_Image_Apr_26_2026_08_52_24_AM_bsvbwd.png",
+      img: "https://res.cloudinary.com/dtaihpiwt/image/upload/v1777148950/ChatGPT_Image_Apr_25_2026_11_26_50_PM_qq8lfa.png",
       url: "https://wa.me/+905338760100",
     },
   ];
@@ -86,14 +89,14 @@ export default function App() {
     const interval = setInterval(() => {
       setAdIndex((prev) => (prev + 1) % ads.length);
     }, 3500);
+
     return () => clearInterval(interval);
   }, []);
 
   const progress = Math.min(100, Math.max(0, ((step - 1) / 3) * 100));
 
-  // 🔁 DEPLOY FIXED API CALLS
   useEffect(() => {
-    fetch(`${API_BASE}/years`)
+    fetch(`${API}/years`)
       .then((r) => r.json())
       .then((data) => {
         const normalized = Array.isArray(data) ? data : data.years || [];
@@ -104,10 +107,8 @@ export default function App() {
   const handleYear = async (v) => {
     setYear(v);
     setLoading(true);
-
-    const res = await fetch(`${API_BASE}/brands?year=${v}`);
+    const res = await fetch(`${API}/brands?year=${v}`);
     setBrands(await res.json());
-
     setLoading(false);
     setStep(2);
   };
@@ -115,10 +116,8 @@ export default function App() {
   const handleBrand = async (v) => {
     setBrand(v);
     setLoading(true);
-
-    const res = await fetch(`${API_BASE}/models?year=${year}&brand=${v}`);
+    const res = await fetch(`${API}/models?year=${year}&brand=${v}`);
     setModels(await res.json());
-
     setLoading(false);
     setStep(3);
   };
@@ -128,14 +127,13 @@ export default function App() {
     setLoading(true);
 
     const res = await fetch(
-      `${API_BASE}/categories?year=${year}&brand=${brand}&model=${v}`
+      `${API}/categories?year=${year}&brand=${brand}&model=${v}`
     );
 
     const data = await res.json();
     const normalized = Array.isArray(data) ? data : data.categories || [];
 
     setCategories(normalized);
-
     setLoading(false);
     setStep(4);
   };
@@ -143,7 +141,7 @@ export default function App() {
   const getValuation = async () => {
     setLoading(true);
 
-    const res = await fetch(`${API_BASE}/get_valuation`, {
+    const res = await fetch(`${API}/get_valuation`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ year, brand, model, category }),
@@ -189,72 +187,51 @@ export default function App() {
   }, [result]);
 
   return (
-    <div
-      className="app-container"
-      style={{
-        position: "relative",
-        fontFamily: "Poppins, sans-serif",
-        maxWidth: 900,
-        margin: "0 auto",
-      }}
-    >
-      {/* LOGO */}
-      <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 6 }}>
-        <img
-          src="https://res.cloudinary.com/dtaihpiwt/image/upload/v1777154527/SHOPTECH_LOGO_9_hnwij5.png"
-          style={{ height: 24 }}
-        />
-        <div style={{ fontSize: 12, color: "#0f172a" }}>
-          @analist.kibris
-        </div>
-      </div>
+    <div className="app-container">
 
       {/* HEADER */}
-      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+      <div className="header-top">
+        <img
+          src="https://res.cloudinary.com/dtaihpiwt/image/upload/v1777154527/SHOPTECH_LOGO_9_hnwij5.png"
+          className="logo"
+        />
+        <div className="username">@analist.kibris</div>
+      </div>
+
+      <div className="header">
         <div>
-          <div style={{ fontSize: 28, fontWeight: 800 }}>{text.title}</div>
-          <div style={{ fontSize: 13, color: "#2563eb" }}>{text.subtitle}</div>
+          <h1>{text.title}</h1>
+          <p>{text.subtitle}</p>
         </div>
 
-        {/* LANG */}
-        <div style={{ display: "flex", gap: 6 }}>
+        <div className="lang-box">
           {["tr", "en", "ru", "ar"].map((l) => (
             <button
               key={l}
               onClick={() => changeLang(l)}
-              style={{
-                padding: "6px 10px",
-                borderRadius: 999,
-                border: "none",
-                fontSize: 12,
-                background: lang === l ? "#2563eb" : "#f1f5f9",
-                color: lang === l ? "white" : "#475569",
-                cursor: "pointer",
-              }}
+              className={lang === l ? "lang-active" : "lang-btn"}
             >
               {l.toUpperCase()}
             </button>
           ))}
+
+          {step > 1 && step < 5 && (
+            <button className="back-btn" onClick={goBack}>
+              ← {text.back}
+            </button>
+          )}
         </div>
       </div>
 
       {/* PROGRESS */}
       {step < 5 && (
-        <div style={{ height: 6, background: "#e2e8f0", borderRadius: 999 }}>
-          <div
-            style={{
-              width: `${progress}%`,
-              height: "100%",
-              background: "#2563eb",
-              transition: "width 0.3s",
-            }}
-          />
+        <div className="progress-bar">
+          <div style={{ width: `${progress}%` }} />
         </div>
       )}
 
-      {loading && <p>{text.loading}</p>}
+      {loading && <p className="loading">{text.loading}</p>}
 
-      {/* STEPS */}
       {step === 1 && (
         <div className="step-column">
           {years.map((y) => (
@@ -301,22 +278,18 @@ export default function App() {
         </div>
       )}
 
-      {/* RESULT */}
       {step === 5 && result && (
-        <div style={{ textAlign: "center" }}>
-          <h1>£{animatedValue.toLocaleString()}</h1>
+        <div className="result">
+          <h2>£{animatedValue.toLocaleString()}</h2>
           <p>
             £{result.min_price} – £{result.max_price}
           </p>
 
           <PriceScatter data={result.scatter} lang={lang} />
 
-          <div style={{ marginTop: 12 }}>
-            <a href={ads[adIndex].url}>
-              <img
-                src={ads[adIndex].img}
-                style={{ width: "100%", borderRadius: 12 }}
-              />
+          <div className="ad">
+            <a href={ads[adIndex].url} target="_blank">
+              <img src={ads[adIndex].img} />
             </a>
           </div>
 

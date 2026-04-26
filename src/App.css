@@ -1,72 +1,53 @@
-/* ===== BASE LAYOUT ===== */
 .app-container {
-  position: relative;
-  font-family: Poppins, sans-serif;
-
-  /* FIX: stable premium container width */
   max-width: 900px;
   margin: 0 auto;
   padding: 22px;
-
-  /* ensures consistent alignment across steps */
+  font-family: Poppins, sans-serif;
   box-sizing: border-box;
+  color: #0f172a;
 }
 
-/* ===== HEADER TOP ===== */
+/* HEADER */
 .header-top {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-top: 6px;
-  margin-bottom: 6px;
+  margin: 6px 0;
 }
 
-.logo {
-  height: 24px;
-  width: auto;
-}
+.logo { height: 24px; }
 
 .username {
   font-size: 12px;
-  color: #0f172a;
+  color: #64748b;
 }
 
-/* ===== HEADER ===== */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
-/* FIX: ensure left alignment always */
 .header h1 {
   font-size: 28px;
   font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: -0.5px;
   margin: 0;
-  text-align: left;
+  letter-spacing: -0.5px;
 }
 
 .header p {
   font-size: 13px;
-  margin-top: 4px;
   color: #2563eb;
-  text-align: left;
+  margin-top: 4px;
 }
 
-/* ===== LANGUAGE BUTTONS (FIXED HORIZONTAL + STABLE) ===== */
+/* LANG */
 .lang-box {
   display: flex;
-  flex-direction: row;   /* FIX: horizontal again */
   gap: 6px;
-  align-items: center;
-  flex-wrap: wrap;
-  justify-content: flex-end;
 }
 
-/* FIX: equal button sizing prevents layout shift */
 .lang-btn,
 .lang-active {
   min-width: 44px;
@@ -76,37 +57,23 @@
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
 }
 
-.lang-btn {
-  background: transparent;
-  color: #475569;
-}
+.lang-btn { background: #f8fafc; color: #475569; }
+.lang-active { background: #2563eb; color: white; }
 
-.lang-btn:hover {
-  background: #f1f5f9;
-}
-
-.lang-active {
-  background: #2563eb;
-  color: white;
-}
-
-/* ===== BACK BUTTON ===== */
+/* BACK */
 .back-btn {
   padding: 5px 10px;
   border-radius: 8px;
   border: 1px solid #e2e8f0;
   background: transparent;
-  color: #64748b;
   font-size: 12px;
-  cursor: pointer;
+  color: #64748b;
 }
 
-/* ===== PROGRESS BAR (FIXED ALIGNMENT) ===== */
+/* PROGRESS */
 .progress-bar {
-  width: 100%;           /* FIX: matches container width */
   height: 6px;
   background: #e2e8f0;
   border-radius: 999px;
@@ -117,71 +84,53 @@
 .progress-bar > div {
   height: 100%;
   background: #2563eb;
-  transition: width 0.3s ease;
+  transition: width 0.35s ease;
 }
 
-/* ===== STEPS (FIXED ALIGNMENT SYSTEM) ===== */
+/* STEPS */
 .step-column {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-top: 10px;
-
-  /* FIX: consistent left alignment */
-  align-items: stretch;
 }
 
-/* ===== BUTTONS (PREMIUM FIXED WIDTH SYSTEM) ===== */
+/* BUTTONS */
 .btn {
-  width: 100%;              /* FIX: consistent width (no jumping) */
-  text-align: left;        /* FIX: left aligned text as requested */
-  padding: 11px 14px;
-
-  border-radius: 10px;
+  width: 100%;
+  text-align: left;
+  padding: 12px 14px;
+  border-radius: 12px;
   border: 1px solid #e2e8f0;
   background: white;
-
   cursor: pointer;
-  font-weight: 500;
-
-  transition: all 0.2s ease;
+  transition: all 0.18s ease;
 }
 
 .btn:hover {
-  background: #f8fafc;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.08);
 }
 
-/* PRIMARY BUTTON */
 .btn-primary {
   width: 100%;
-  padding: 11px 14px;
-  border-radius: 10px;
+  padding: 12px 14px;
+  border-radius: 12px;
   border: none;
   background: #2563eb;
   color: white;
   font-weight: 600;
-  cursor: pointer;
-
-  transition: all 0.2s ease;
 }
 
-.btn-primary:hover {
-  background: #1d4ed8;
-  transform: translateY(-1px);
-}
-
-/* ===== RESULT ===== */
+/* RESULT */
 .result {
   text-align: center;
-  margin-top: 10px;
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
 .result h2 {
+  font-size: 34px;
   font-weight: 800;
   margin: 0;
 }
@@ -191,13 +140,13 @@
   margin: 0;
 }
 
-/* ===== ADS (FIXED FULL WIDTH FEEL) ===== */
+/* AD */
 .ad {
   margin-top: 14px;
+  height: 170px;
   border-radius: 14px;
   overflow: hidden;
-  height: 170px;
-  width: 100%;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
 }
 
 .ad img {
@@ -206,7 +155,7 @@
   object-fit: cover;
 }
 
-/* ===== LOADING ===== */
+/* LOADING */
 .loading {
   font-size: 14px;
   color: #64748b;
