@@ -19,7 +19,16 @@ export default function App() {
   const [animatedValue, setAnimatedValue] = useState(0);
   const [loading, setLoading] = useState(false);
 
+  const [lang, setLang] = useState(
+    localStorage.getItem("lang") || "tr"
+  );
+
   const API = "https://car-valuation-backend.onrender.com";
+
+  const changeLang = (l) => {
+    setLang(l);
+    localStorage.setItem("lang", l);
+  };
 
   const t = {
     en: {
@@ -30,9 +39,55 @@ export default function App() {
       back: "Back",
       loading: "Loading...",
     },
+    tr: {
+      title: "ARAÇ DEĞERLEME",
+      subtitle: "Adım adım piyasa fiyatlandırması",
+      getValuation: "Değeri getir",
+      restart: "Yeni araç ara",
+      back: "Geri",
+      loading: "Yükleniyor...",
+    },
+    ru: {
+      title: "ОЦЕНКА АВТОМОБИЛЯ",
+      subtitle: "Пошаговая рыночная оценка",
+      getValuation: "Получить оценку",
+      restart: "Новый поиск",
+      back: "Назад",
+      loading: "Загрузка...",
+    },
+    ar: {
+      title: "تقييم المركبة",
+      subtitle: "تسعير السوق خطوة بخطوة",
+      getValuation: "احصل على التقييم",
+      restart: "بحث جديد",
+      back: "رجوع",
+      loading: "جار التحميل...",
+    },
   };
 
-  const text = t.en;
+  const text = t[lang] || t.en;
+
+  const ads = [
+    {
+      img: "https://res.cloudinary.com/dtaihpiwt/image/upload/v1777148944/ChatGPT_Image_Apr_25_2026_11_26_08_PM_r8afuy.png",
+      url: "https://wa.me/+905338760100",
+    },
+    {
+      img: "https://res.cloudinary.com/dtaihpiwt/image/upload/v1777182806/ChatGPT_Image_Apr_26_2026_08_52_24_AM_bsvbwd.png",
+      url: "https://wa.me/+905338760100",
+    },
+  ];
+
+  const [adIndex, setAdIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setAdIndex((prev) => (prev + 1) % ads.length);
+    }, 3500);
+    return () => clearInterval(interval);
+  }, []);
+
+  const progress = Math.min(100, Math.max(0, ((step - 1) / 3) * 100));
 
   useEffect(() => {
     fetch(`${API}/years`)
@@ -85,13 +140,20 @@ export default function App() {
     setStep(5);
   };
 
-  const reset = () => {
+  const resetFlow = () => {
     setStep(1);
     setYear("");
     setBrand("");
     setModel("");
     setCategory("");
     setResult(null);
+    setAnimatedValue(0);
+  };
+
+  const goBack = () => {
+    if (step === 4) setStep(3), setCategory("");
+    else if (step === 3) setStep(2), setModel("");
+    else if (step === 2) setStep(1), setBrand("");
   };
 
   useEffect(() => {
@@ -114,17 +176,46 @@ export default function App() {
 
   return (
     <div style={{ fontFamily: "Poppins, sans-serif", padding: 20 }}>
-      <h1>{text.title}</h1>
-      <p>{text.subtitle}</p>
+
+      {/* HEADER */}
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <div>
+          <h1 style={{ margin: 0 }}>{text.title}</h1>
+          <p style={{ marginTop: 4, color: "#2563eb" }}>{text.subtitle}</p>
+        </div>
+
+        <div style={{ display: "flex", gap: 6 }}>
+          {["tr", "en", "ru", "ar"].map((l) => (
+            <button
+              key={l}
+              onClick={() => changeLang(l)}
+              style={{
+                padding: "6px 10px",
+                borderRadius: 8,
+                border: "1px solid #ddd",
+                background: lang === l ? "#2563eb" : "transparent",
+                color: lang === l ? "#fff" : "#000",
+              }}
+            >
+              {l.toUpperCase()}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* PROGRESS */}
+      {step < 5 && (
+        <div style={{ height: 6, background: "#eee", margin: "10px 0" }}>
+          <div style={{ width: `${progress}%`, height: "100%", background: "#2563eb" }} />
+        </div>
+      )}
 
       {loading && <p>{text.loading}</p>}
 
       {step === 1 && (
         <div>
           {years.map((y) => (
-            <button key={y} onClick={() => handleYear(y)}>
-              {y}
-            </button>
+            <button key={y} onClick={() => handleYear(y)}>{y}</button>
           ))}
         </div>
       )}
@@ -132,9 +223,7 @@ export default function App() {
       {step === 2 && (
         <div>
           {brands.map((b) => (
-            <button key={b} onClick={() => handleBrand(b)}>
-              {b}
-            </button>
+            <button key={b} onClick={() => handleBrand(b)}>{b}</button>
           ))}
         </div>
       )}
@@ -142,9 +231,7 @@ export default function App() {
       {step === 3 && (
         <div>
           {models.map((m) => (
-            <button key={m} onClick={() => handleModel(m)}>
-              {m}
-            </button>
+            <button key={m} onClick={() => handleModel(m)}>{m}</button>
           ))}
         </div>
       )}
@@ -152,9 +239,7 @@ export default function App() {
       {step === 4 && (
         <div>
           {categories.map((c) => (
-            <button key={c} onClick={() => setCategory(c)}>
-              {c}
-            </button>
+            <button key={c} onClick={() => setCategory(c)}>{c}</button>
           ))}
 
           {category && (
@@ -164,16 +249,28 @@ export default function App() {
       )}
 
       {step === 5 && result && (
-        <div>
+        <div style={{ textAlign: "center" }}>
           <h2>£{animatedValue.toLocaleString()}</h2>
 
           <p>
             £{result.min_price} - £{result.max_price}
           </p>
 
-          <PriceScatter data={result.scatter} />
+          <PriceScatter data={result.scatter} lang={lang} />
 
-          <button onClick={reset}>{text.restart}</button>
+          {/* AD */}
+          <div style={{ marginTop: 20 }}>
+            <a href={ads[adIndex].url} target="_blank" rel="noreferrer">
+              <img
+                src={ads[adIndex].img}
+                style={{ width: "100%", borderRadius: 12 }}
+              />
+            </a>
+          </div>
+
+          <button onClick={resetFlow} style={{ marginTop: 20 }}>
+            {text.restart}
+          </button>
         </div>
       )}
     </div>
