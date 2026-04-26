@@ -1,29 +1,30 @@
 /* =========================
-   BASE SYSTEM (SaaS STYLE)
+   DESIGN TOKENS (STRIPE STYLE)
 ========================= */
 
 :root {
-  --bg: #f8fafc;
+  --bg: #f6f8fb;
   --card: #ffffff;
   --text: #0f172a;
   --muted: #64748b;
   --primary: #2563eb;
-  --border: #e2e8f0;
-  --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
-  --shadow-hover: 0 18px 40px rgba(15, 23, 42, 0.12);
+  --primary-dark: #1d4ed8;
+  --border: #e6eaf0;
+  --soft: rgba(15, 23, 42, 0.06);
+  --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 10px 30px rgba(15, 23, 42, 0.10);
   --radius: 14px;
 }
 
+/* =========================
+   BASE
+========================= */
+
 body {
-  margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: Poppins, sans-serif;
+  font-family: Poppins, system-ui, -apple-system, sans-serif;
 }
-
-/* =========================
-   MAIN CONTAINER
-========================= */
 
 .app-container {
   max-width: 920px;
@@ -33,18 +34,19 @@ body {
 }
 
 /* =========================
-   HEADER
+   HEADER (STRIPE STYLE)
 ========================= */
 
 .header-top {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin: 8px 0 18px;
+  margin-bottom: 10px;
 }
 
 .logo {
   height: 26px;
+  filter: drop-shadow(0 1px 1px rgba(0,0,0,0.05));
 }
 
 .username {
@@ -62,103 +64,107 @@ body {
 .header h1 {
   font-size: 30px;
   font-weight: 800;
+  letter-spacing: -0.8px;
   margin: 0;
-  letter-spacing: -0.6px;
 }
 
 .header p {
   font-size: 13px;
-  margin-top: 6px;
   color: var(--primary);
+  margin-top: 6px;
 }
 
 /* =========================
-   LANGUAGE + BACK UI
+   LANGUAGE SWITCHER
 ========================= */
 
 .lang-box {
   display: flex;
   gap: 6px;
-  align-items: center;
-  flex-wrap: wrap;
-  justify-content: flex-end;
+  padding: 4px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  box-shadow: var(--shadow-sm);
 }
 
 .lang-btn,
 .lang-active {
-  min-width: 44px;
-  padding: 7px 11px;
+  min-width: 42px;
+  padding: 6px 10px;
   border-radius: 999px;
-  border: 1px solid var(--border);
   font-size: 12px;
   font-weight: 600;
+  border: none;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .lang-btn {
-  background: white;
+  background: transparent;
   color: var(--muted);
 }
 
 .lang-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow);
+  background: var(--bg);
+  color: var(--text);
 }
 
 .lang-active {
   background: var(--primary);
   color: white;
-  border-color: var(--primary);
-}
-
-.back-btn {
-  padding: 6px 10px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  background: white;
-  font-size: 12px;
-  color: var(--muted);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.back-btn:hover {
-  box-shadow: var(--shadow);
-  transform: translateY(-1px);
 }
 
 /* =========================
-   PROGRESS BAR
+   BACK BUTTON
+========================= */
+
+.back-btn {
+  margin-top: 8px;
+  padding: 6px 10px;
+  font-size: 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: white;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.back-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* =========================
+   PROGRESS BAR (STRIPE STYLE)
 ========================= */
 
 .progress-bar {
-  height: 7px;
-  background: #e2e8f0;
+  height: 6px;
+  background: #e8edf5;
   border-radius: 999px;
   overflow: hidden;
-  margin: 14px 0 18px;
+  margin-bottom: 18px;
 }
 
 .progress-bar > div {
   height: 100%;
-  background: linear-gradient(90deg, #2563eb, #60a5fa);
+  background: linear-gradient(90deg, var(--primary), #60a5fa);
   transition: width 0.35s ease;
 }
 
 /* =========================
-   STEP CONTAINER
+   STEP LIST
 ========================= */
 
 .step-column {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-top: 10px;
 }
 
 /* =========================
-   PREMIUM BUTTON SYSTEM
+   BUTTON SYSTEM (STRIPE-LIKE)
 ========================= */
 
 .btn {
@@ -167,54 +173,63 @@ body {
   padding: 13px 14px;
   border-radius: var(--radius);
   border: 1px solid var(--border);
-  background: white;
-  cursor: pointer;
+  background: var(--card);
+  font-size: 14px;
   font-weight: 500;
+  cursor: pointer;
   transition: all 0.18s ease;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.02);
 }
 
 .btn:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-hover);
-  border-color: #cbd5f5;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+  border-color: #d6deea;
 }
 
 .btn:active {
   transform: translateY(0px);
 }
 
+/* PRIMARY CTA */
 .btn-primary {
   width: 100%;
   padding: 13px 14px;
   border-radius: var(--radius);
   border: none;
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  background: linear-gradient(180deg, var(--primary), var(--primary-dark));
   color: white;
   font-weight: 600;
+  font-size: 14px;
   cursor: pointer;
+  box-shadow: var(--shadow-md);
   transition: all 0.2s ease;
 }
 
 .btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 14px 35px rgba(37, 99, 235, 0.25);
 }
 
 /* =========================
-   RESULT PANEL (KEY UPGRADE)
+   RESULT CARD (IMPORTANT)
 ========================= */
 
 .result {
   text-align: center;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-top: 10px;
+  gap: 10px;
+  background: white;
+  padding: 18px;
+  border-radius: 18px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border);
 }
 
 .result h2 {
   font-size: 38px;
-  font-weight: 900;
+  font-weight: 800;
   margin: 0;
   letter-spacing: -1px;
 }
@@ -222,25 +237,25 @@ body {
 .result p {
   color: var(--muted);
   margin: 0;
-  font-size: 14px;
 }
 
 /* =========================
-   AD CARD (PREMIUM FEEL)
+   AD CARD (STRIPE STYLE)
 ========================= */
 
 .ad {
   margin-top: 16px;
   height: 180px;
-  border-radius: var(--radius);
+  border-radius: 16px;
   overflow: hidden;
-  box-shadow: var(--shadow);
-  transition: all 0.25s ease;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border);
+  background: white;
+  transition: transform 0.2s ease;
 }
 
 .ad:hover {
-  transform: scale(1.01);
-  box-shadow: var(--shadow-hover);
+  transform: translateY(-2px);
 }
 
 .ad img {
@@ -250,16 +265,17 @@ body {
 }
 
 /* =========================
-   LOADING
+   LOADING TEXT
 ========================= */
 
 .loading {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--muted);
+  margin: 8px 0;
 }
 
 /* =========================
-   SMALL POLISH FIXES
+   MICRO POLISH (IMPORTANT)
 ========================= */
 
 button {
