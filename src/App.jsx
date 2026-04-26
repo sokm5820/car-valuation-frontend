@@ -25,7 +25,10 @@ export default function App() {
       : "tr"
   );
 
-  const API = "https://car-valuation-backend.onrender.com";
+  // IMPORTANT: single API source (works local + prod)
+  const API =
+    import.meta.env.VITE_API_URL ||
+    "https://car-valuation-backend.onrender.com";
 
   const changeLang = (l) => {
     setLang(l);
@@ -159,16 +162,9 @@ export default function App() {
   };
 
   const goBack = () => {
-    if (step === 4) {
-      setStep(3);
-      setCategory("");
-    } else if (step === 3) {
-      setStep(2);
-      setModel("");
-    } else if (step === 2) {
-      setStep(1);
-      setBrand("");
-    }
+    if (step === 4) setStep(3), setCategory("");
+    else if (step === 3) setStep(2), setModel("");
+    else if (step === 2) setStep(1), setBrand("");
   };
 
   useEffect(() => {
@@ -192,7 +188,6 @@ export default function App() {
   return (
     <div className="app-container">
 
-      {/* HEADER TOP */}
       <div className="header-top">
         <img
           src="https://res.cloudinary.com/dtaihpiwt/image/upload/v1777154527/SHOPTECH_LOGO_9_hnwij5.png"
@@ -201,7 +196,6 @@ export default function App() {
         <div className="username">@analist.kibris</div>
       </div>
 
-      {/* HEADER */}
       <div className="header">
         <div>
           <h1>{text.title}</h1>
@@ -209,15 +203,17 @@ export default function App() {
         </div>
 
         <div className="lang-box">
-          {["tr", "en", "ru", "ar"].map((l) => (
-            <button
-              key={l}
-              onClick={() => changeLang(l)}
-              className={lang === l ? "lang-active" : "lang-btn"}
-            >
-              {l.toUpperCase()}
-            </button>
-          ))}
+          <div className="lang-row">
+            {["tr", "en", "ru", "ar"].map((l) => (
+              <button
+                key={l}
+                onClick={() => changeLang(l)}
+                className={lang === l ? "lang-active" : "lang-btn"}
+              >
+                {l.toUpperCase()}
+              </button>
+            ))}
+          </div>
 
           {step > 1 && step < 5 && (
             <button className="back-btn" onClick={goBack}>
@@ -227,10 +223,11 @@ export default function App() {
         </div>
       </div>
 
-      {/* PROGRESS */}
       {step < 5 && (
-        <div className="progress-bar">
-          <div style={{ width: `${progress}%` }} />
+        <div className="progress-wrap">
+          <div className="progress-bar">
+            <div style={{ width: `${progress}%` }} />
+          </div>
         </div>
       )}
 
@@ -290,12 +287,6 @@ export default function App() {
           </p>
 
           <PriceScatter data={result.scatter} lang={lang} />
-
-          <div className="ad">
-            <a href={ads[adIndex].url} target="_blank">
-              <img src={ads[adIndex].img} />
-            </a>
-          </div>
 
           <button className="btn-primary" onClick={resetFlow}>
             {text.restart}
