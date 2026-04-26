@@ -1,7 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import PriceScatter from "./components/PriceScatter";
+import "./App.css";
 
 export default function App() {
+  const API =
+    process.env.REACT_APP_API_URL ||
+    "https://car-valuation-backend.onrender.com";
+
+  // ===== STATE MACHINE =====
   const [step, setStep] = useState(1);
 
   const [year, setYear] = useState("");
@@ -24,102 +30,45 @@ export default function App() {
       : "tr"
   );
 
-  // 🚀 PRODUCTION BACKEND (Render / hosted API)
-  const API =
-    process.env.REACT_APP_API_URL ||
-    "https://car-valuation-backend.onrender.com";
+  const text = useMemo(
+    () => ({
+      en: {
+        title: "Vehicle Valuation",
+        subtitle: "Professional market pricing engine",
+        getValuation: "Get valuation",
+        back: "Back",
+        restart: "New search",
+        loading: "Loading...",
+      },
+      tr: {
+        title: "Araç Değerleme",
+        subtitle: "Profesyonel piyasa fiyatlama sistemi",
+        getValuation: "Değeri getir",
+        back: "Geri",
+        restart: "Yeni arama",
+        loading: "Yükleniyor...",
+      },
+    })[lang],
+    [lang]
+  );
 
-  const changeLang = (l) => {
-    setLang(l);
-    localStorage.setItem("lang", l);
-  };
+  // ===== PROGRESS =====
+  const progress = (step - 1) * 25;
 
-  const t = {
-    en: {
-      title: "VEHICLE VALUATION",
-      subtitle: "Step-by-step market pricing",
-      getValuation: "Get valuation",
-      restart: "Search another car",
-      back: "Back",
-      loading: "Loading...",
-    },
-    tr: {
-      title: "ARAÇ DEĞERLEME",
-      subtitle: "Adım adım piyasa fiyatlandırması",
-      getValuation: "Değeri getir",
-      restart: "Yeni araç ara",
-      back: "Geri",
-      loading: "Yükleniyor...",
-    },
-    ru: {
-      title: "ОЦЕНКА АВТОМОБИЛЯ",
-      subtitle: "Пошаговая рыночная оценка",
-      getValuation: "Получить оценку",
-      restart: "Новый поиск",
-      back: "Назад",
-      loading: "Загрузка...",
-    },
-    ar: {
-      title: "تقييم المركبة",
-      subtitle: "تسعير السوق خطوة بخطوة",
-      getValuation: "احصل على التقييم",
-      restart: "بحث جديد",
-      back: "رجوع",
-      loading: "جار التحميل...",
-    },
-  };
-
-  const text = t[lang] || t.en;
-
-  const ads = [
-    {
-      img: "https://res.cloudinary.com/dtaihpiwt/image/upload/v1777148944/ChatGPT_Image_Apr_25_2026_11_26_08_PM_r8afuy.png",
-      url: "https://wa.me/+905338760100",
-    },
-    {
-      img: "https://res.cloudinary.com/dtaihpiwt/image/upload/v1777148950/ChatGPT_Image_Apr_25_2026_11_26_50_PM_qq8lfa.png",
-      url: "https://wa.me/+905338760100",
-    },
-  ];
-
-  const [adIndex, setAdIndex] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setAdIndex((prev) => (prev + 1) % ads.length);
-    }, 3500);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const progress = Math.min(100, Math.max(0, ((step - 1) / 3) * 100));
-
-  // =========================
-  // API CALLS (PRODUCTION)
-  // =========================
-
+  // ===== INIT =====
   useEffect(() => {
     fetch(`${API}/years`)
       .then((r) => r.json())
-      .then((data) => {
-        const normalized = Array.isArray(data) ? data : data.years || [];
-        setYears([...normalized].sort((a, b) => b - a));
-      })
-      .catch((err) => console.error("Years fetch error:", err));
+      .then((d) => setYears(d.years || d))
+      .catch(console.error);
   }, []);
 
+  // ===== FLOW =====
   const handleYear = async (v) => {
     setYear(v);
     setLoading(true);
-
-    try {
-      const res = await fetch(`${API}/brands?year=${v}`);
-      const data = await res.json();
-      setBrands(data);
-    } catch (err) {
-      console.error(err);
-    }
-
+    const res = await fetch(`${API}/brands?year=${v}`);
+    setBrands(await res.json());
     setLoading(false);
     setStep(2);
   };
@@ -127,15 +76,8 @@ export default function App() {
   const handleBrand = async (v) => {
     setBrand(v);
     setLoading(true);
-
-    try {
-      const res = await fetch(`${API}/models?year=${year}&brand=${v}`);
-      const data = await res.json();
-      setModels(data);
-    } catch (err) {
-      console.error(err);
-    }
-
+    const res = await fetch(`${API}/models?year=${year}&brand=${v}`);
+    setModels(await res.json());
     setLoading(false);
     setStep(3);
   };
@@ -143,48 +85,28 @@ export default function App() {
   const handleModel = async (v) => {
     setModel(v);
     setLoading(true);
-
-    try {
-      const res = await fetch(
-        `${API}/categories?year=${year}&brand=${brand}&model=${v}`
-      );
-
-      const data = await res.json();
-
-      const normalized = Array.isArray(data)
-        ? data
-        : data.categories || [];
-
-      setCategories(normalized);
-    } catch (err) {
-      console.error(err);
-    }
-
+    const res = await fetch(
+      `${API}/categories?year=${year}&brand=${brand}&model=${v}`
+    );
+    const data = await res.json();
+    setCategories(Array.isArray(data) ? data : data.categories || []);
     setLoading(false);
     setStep(4);
   };
 
   const getValuation = async () => {
     setLoading(true);
-
-    try {
-      const res = await fetch(`${API}/get_valuation`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ year, brand, model, category }),
-      });
-
-      const data = await res.json();
-      setResult(data);
-    } catch (err) {
-      console.error(err);
-    }
-
+    const res = await fetch(`${API}/get_valuation`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ year, brand, model, category }),
+    });
+    setResult(await res.json());
     setLoading(false);
     setStep(5);
   };
 
-  const resetFlow = () => {
+  const reset = () => {
     setStep(1);
     setYear("");
     setBrand("");
@@ -194,19 +116,7 @@ export default function App() {
     setAnimatedValue(0);
   };
 
-  const goBack = () => {
-    if (step === 4) {
-      setStep(3);
-      setCategory("");
-    } else if (step === 3) {
-      setStep(2);
-      setModel("");
-    } else if (step === 2) {
-      setStep(1);
-      setBrand("");
-    }
-  };
-
+  // ===== ANIMATION =====
   useEffect(() => {
     if (!result?.median_price) return;
 
@@ -217,184 +127,116 @@ export default function App() {
 
     const animate = (t) => {
       const p = Math.min((t - startTime) / duration, 1);
-      const eased = 1 - Math.pow(1 - p, 3);
-      setAnimatedValue(Math.floor(start + (end - start) * eased));
-
+      setAnimatedValue(Math.floor(start + (end - start) * (1 - (1 - p) ** 3)));
       if (p < 1) requestAnimationFrame(animate);
     };
 
     requestAnimationFrame(animate);
   }, [result]);
 
+  // ===== UI =====
   return (
-    <div
-      className="app-container"
-      style={{
-        position: "relative",
-        fontFamily: "Poppins, sans-serif",
-      }}
-    >
-      {/* LOGO */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 8,
-          marginTop: 6,
-          marginBottom: 6,
-        }}
-      >
-        <img
-          src="https://res.cloudinary.com/dtaihpiwt/image/upload/v1777154527/SHOPTECH_LOGO_9_hnwij5.png"
-          style={{ height: 24, width: "auto" }}
-        />
-        <div style={{ fontSize: 12, color: "#0f172a" }}>
-          @analist.kibris
-        </div>
-      </div>
+    <div className="app">
+      <div className="container">
 
-      {/* HEADER */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "flex-start",
-          marginBottom: 4,
-        }}
-      >
-        <div>
-          <div
-            style={{
-              fontSize: 28,
-              fontWeight: 800,
-              textTransform: "uppercase",
-            }}
-          >
-            {text.title}
+        {/* HEADER */}
+        <div className="header">
+          <div>
+            <h1>{text.title}</h1>
+            <p>{text.subtitle}</p>
           </div>
 
-          <div style={{ fontSize: 13, color: "#2563eb" }}>
-            {text.subtitle}
-          </div>
-        </div>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          <div style={{ display: "flex", gap: 6 }}>
-            {["tr", "en", "ru", "ar"].map((l) => (
+          <div className="lang">
+            {["tr", "en"].map((l) => (
               <button
                 key={l}
-                onClick={() => changeLang(l)}
-                style={{
-                  padding: "6px 10px",
-                  borderRadius: 999,
-                  border: "none",
-                  fontSize: 12,
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  background: lang === l ? "#2563eb" : "#f1f5f9",
-                  color: lang === l ? "white" : "#475569",
-                }}
+                className={lang === l ? "active" : ""}
+                onClick={() => setLang(l)}
               >
                 {l.toUpperCase()}
               </button>
             ))}
           </div>
-
-          {step > 1 && step < 5 && (
-            <button onClick={goBack}>← {text.back}</button>
-          )}
         </div>
-      </div>
 
-      {/* PROGRESS */}
-      {step < 5 && (
-        <div
-          style={{
-            height: 6,
-            background: "#e2e8f0",
-            borderRadius: 999,
-            marginBottom: 10,
-          }}
-        >
-          <div
-            style={{
-              width: `${progress}%`,
-              height: "100%",
-              background: "#2563eb",
-            }}
-          />
+        {/* PROGRESS */}
+        <div className="progress">
+          <div style={{ width: `${progress}%` }} />
         </div>
-      )}
 
-      {loading && <p>{text.loading}</p>}
+        {loading && <div className="loading">Loading...</div>}
 
-      {/* STEPS */}
-      {step === 1 && (
-        <div className="step-column">
-          {years.map((y) => (
-            <button key={y} onClick={() => handleYear(y)} className="btn">
-              {y}
-            </button>
-          ))}
-        </div>
-      )}
-
-      {step === 2 && (
-        <div className="step-column">
-          {brands.map((b) => (
-            <button key={b} onClick={() => handleBrand(b)} className="btn">
-              {b}
-            </button>
-          ))}
-        </div>
-      )}
-
-      {step === 3 && (
-        <div className="step-column">
-          {models.map((m) => (
-            <button key={m} onClick={() => handleModel(m)} className="btn">
-              {m}
-            </button>
-          ))}
-        </div>
-      )}
-
-      {step === 4 && (
-        <div className="step-column">
-          {categories.map((c) => (
-            <button key={c} onClick={() => setCategory(c)} className="btn">
-              {c}
-            </button>
-          ))}
-
-          {category && (
-            <button className="btn-primary" onClick={getValuation}>
-              {text.getValuation}
-            </button>
-          )}
-        </div>
-      )}
-
-      {step === 5 && result && (
-        <div className="result">
-          <h2>£{animatedValue.toLocaleString()}</h2>
-          <p>
-            £{result.min_price} – £{result.max_price}
-          </p>
-
-          <PriceScatter data={result.scatter} lang={lang} />
-
-          <div className="ad">
-            <a href={ads[adIndex].url} target="_blank">
-              <img src={ads[adIndex].img} />
-            </a>
+        {/* STEP SYSTEM */}
+        {step === 1 && (
+          <div className="stack">
+            {years.map((y) => (
+              <button key={y} className="btn" onClick={() => handleYear(y)}>
+                {y}
+              </button>
+            ))}
           </div>
+        )}
 
-          <button className="btn-primary" onClick={resetFlow}>
-            {text.restart}
-          </button>
-        </div>
-      )}
+        {step === 2 && (
+          <div className="stack">
+            {brands.map((b) => (
+              <button key={b} className="btn" onClick={() => handleBrand(b)}>
+                {b}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {step === 3 && (
+          <div className="stack">
+            {models.map((m) => (
+              <button key={m} className="btn" onClick={() => handleModel(m)}>
+                {m}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {step === 4 && (
+          <div className="stack">
+            {categories.map((c) => (
+              <button
+                key={c}
+                className="btn"
+                onClick={() => setCategory(c)}
+              >
+                {c}
+              </button>
+            ))}
+
+            {category && (
+              <button className="btn-primary" onClick={getValuation}>
+                {text.getValuation}
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* RESULT */}
+        {step === 5 && result && (
+          <div className="card">
+            <div className="price">
+              £{animatedValue.toLocaleString()}
+            </div>
+
+            <div className="range">
+              £{result.min_price} – £{result.max_price}
+            </div>
+
+            <PriceScatter data={result.scatter} lang={lang} />
+
+            <button className="btn-primary" onClick={reset}>
+              {text.restart}
+            </button>
+          </div>
+        )}
+
+      </div>
     </div>
   );
 }
