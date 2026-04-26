@@ -7,7 +7,6 @@ export default function App() {
     process.env.REACT_APP_API_URL ||
     "https://car-valuation-backend.onrender.com";
 
-  // ===== STATE MACHINE =====
   const [step, setStep] = useState(1);
 
   const [year, setYear] = useState("");
@@ -24,51 +23,31 @@ export default function App() {
   const [animatedValue, setAnimatedValue] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  const [lang, setLang] = useState(
-    typeof window !== "undefined"
-      ? localStorage.getItem("lang") || "tr"
-      : "tr"
-  );
+  const [lang, setLang] = useState("tr");
 
   const text = useMemo(
     () => ({
-      en: {
-        title: "Vehicle Valuation",
-        subtitle: "Professional market pricing engine",
-        getValuation: "Get valuation",
-        back: "Back",
-        restart: "New search",
-        loading: "Loading...",
-      },
-      tr: {
-        title: "Araç Değerleme",
-        subtitle: "Profesyonel piyasa fiyatlama sistemi",
-        getValuation: "Değeri getir",
-        back: "Geri",
-        restart: "Yeni arama",
-        loading: "Yükleniyor...",
-      },
-    })[lang],
-    [lang]
-  );
+      en: { title: "Vehicle Valuation", subtitle: "Market pricing engine", getValuation: "Get valuation", restart: "New search", back: "Back" },
+      tr: { title: "Araç Değerleme", subtitle: "Piyasa fiyatlama sistemi", getValuation: "Değeri getir", restart: "Yeni arama", back: "Geri" }
+    }),
+    []
+  )[lang];
 
-  // ===== PROGRESS =====
   const progress = (step - 1) * 25;
 
-  // ===== INIT =====
+  /* INIT */
   useEffect(() => {
     fetch(`${API}/years`)
-      .then((r) => r.json())
-      .then((d) => setYears(d.years || d))
+      .then(r => r.json())
+      .then(d => setYears(d.years || d))
       .catch(console.error);
   }, []);
 
-  // ===== FLOW =====
+  /* FLOW */
   const handleYear = async (v) => {
     setYear(v);
     setLoading(true);
-    const res = await fetch(`${API}/brands?year=${v}`);
-    setBrands(await res.json());
+    setBrands(await (await fetch(`${API}/brands?year=${v}`)).json());
     setLoading(false);
     setStep(2);
   };
@@ -76,8 +55,7 @@ export default function App() {
   const handleBrand = async (v) => {
     setBrand(v);
     setLoading(true);
-    const res = await fetch(`${API}/models?year=${year}&brand=${v}`);
-    setModels(await res.json());
+    setModels(await (await fetch(`${API}/models?year=${year}&brand=${v}`)).json());
     setLoading(false);
     setStep(3);
   };
@@ -85,22 +63,23 @@ export default function App() {
   const handleModel = async (v) => {
     setModel(v);
     setLoading(true);
-    const res = await fetch(
-      `${API}/categories?year=${year}&brand=${brand}&model=${v}`
-    );
-    const data = await res.json();
+
+    const data = await (await fetch(`${API}/categories?year=${year}&brand=${brand}&model=${v}`)).json();
     setCategories(Array.isArray(data) ? data : data.categories || []);
+
     setLoading(false);
     setStep(4);
   };
 
   const getValuation = async () => {
     setLoading(true);
+
     const res = await fetch(`${API}/get_valuation`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ year, brand, model, category }),
     });
+
     setResult(await res.json());
     setLoading(false);
     setStep(5);
@@ -108,25 +87,21 @@ export default function App() {
 
   const reset = () => {
     setStep(1);
-    setYear("");
-    setBrand("");
-    setModel("");
-    setCategory("");
+    setYear(""); setBrand(""); setModel(""); setCategory("");
     setResult(null);
     setAnimatedValue(0);
   };
 
-  // ===== ANIMATION =====
+  /* ANIMATION */
   useEffect(() => {
     if (!result?.median_price) return;
 
     const start = 0;
     const end = result.median_price;
-    const duration = 900;
     const startTime = performance.now();
 
     const animate = (t) => {
-      const p = Math.min((t - startTime) / duration, 1);
+      const p = Math.min((t - startTime) / 900, 1);
       setAnimatedValue(Math.floor(start + (end - start) * (1 - (1 - p) ** 3)));
       if (p < 1) requestAnimationFrame(animate);
     };
@@ -134,7 +109,6 @@ export default function App() {
     requestAnimationFrame(animate);
   }, [result]);
 
-  // ===== UI =====
   return (
     <div className="app">
       <div className="container">
@@ -147,7 +121,7 @@ export default function App() {
           </div>
 
           <div className="lang">
-            {["tr", "en"].map((l) => (
+            {["tr", "en"].map(l => (
               <button
                 key={l}
                 className={lang === l ? "active" : ""}
@@ -166,10 +140,10 @@ export default function App() {
 
         {loading && <div className="loading">Loading...</div>}
 
-        {/* STEP SYSTEM */}
+        {/* STEPS */}
         {step === 1 && (
           <div className="stack">
-            {years.map((y) => (
+            {years.map(y => (
               <button key={y} className="btn" onClick={() => handleYear(y)}>
                 {y}
               </button>
@@ -179,7 +153,7 @@ export default function App() {
 
         {step === 2 && (
           <div className="stack">
-            {brands.map((b) => (
+            {brands.map(b => (
               <button key={b} className="btn" onClick={() => handleBrand(b)}>
                 {b}
               </button>
@@ -189,7 +163,7 @@ export default function App() {
 
         {step === 3 && (
           <div className="stack">
-            {models.map((m) => (
+            {models.map(m => (
               <button key={m} className="btn" onClick={() => handleModel(m)}>
                 {m}
               </button>
@@ -199,12 +173,8 @@ export default function App() {
 
         {step === 4 && (
           <div className="stack">
-            {categories.map((c) => (
-              <button
-                key={c}
-                className="btn"
-                onClick={() => setCategory(c)}
-              >
+            {categories.map(c => (
+              <button key={c} className="btn" onClick={() => setCategory(c)}>
                 {c}
               </button>
             ))}
@@ -220,9 +190,7 @@ export default function App() {
         {/* RESULT */}
         {step === 5 && result && (
           <div className="card">
-            <div className="price">
-              £{animatedValue.toLocaleString()}
-            </div>
+            <div className="price">£{animatedValue.toLocaleString()}</div>
 
             <div className="range">
               £{result.min_price} – £{result.max_price}

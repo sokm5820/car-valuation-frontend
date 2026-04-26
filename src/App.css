@@ -1,39 +1,24 @@
 /* =========================================
-   DESIGN SYSTEM (Stripe-inspired SaaS)
+   DESIGN SYSTEM (Stripe-grade SaaS v2)
 ========================================= */
 
 :root {
-  /* spacing scale */
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-5: 20px;
-  --space-6: 24px;
-  --space-8: 32px;
-
-  /* colors */
   --bg: #f6f8fb;
   --card: #ffffff;
   --text: #0f172a;
   --muted: #64748b;
+
   --primary: #2563eb;
   --primary-hover: #1d4ed8;
+
   --border: #e2e8f0;
 
-  /* radius */
-  --radius-sm: 10px;
-  --radius-md: 14px;
+  --radius: 14px;
   --radius-lg: 18px;
-  --radius-full: 999px;
-
-  /* shadows */
-  --shadow-sm: 0 6px 18px rgba(15, 23, 42, 0.06);
-  --shadow-md: 0 10px 30px rgba(15, 23, 42, 0.08);
 }
 
 /* =========================================
-   GLOBAL RESET
+   GLOBAL
 ========================================= */
 
 * {
@@ -44,10 +29,9 @@
 }
 
 body {
-  font-family: Poppins, system-ui, -apple-system, sans-serif;
+  font-family: Poppins, system-ui, sans-serif;
   background: var(--bg);
   color: var(--text);
-  line-height: 1.4;
 }
 
 /* =========================================
@@ -55,26 +39,26 @@ body {
 ========================================= */
 
 .app {
-  min-height: 100vh;
   display: flex;
   justify-content: center;
+  min-height: 100vh;
 }
 
 .container {
   width: 100%;
   max-width: 920px;
-  padding: var(--space-6);
+  padding: 26px 20px;
 }
 
 /* =========================================
-   HEADER (Stripe-style alignment system)
+   HEADER
 ========================================= */
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: var(--space-4);
+  margin-bottom: 14px;
 }
 
 .header h1 {
@@ -84,9 +68,9 @@ body {
 }
 
 .header p {
-  margin-top: var(--space-1);
   font-size: 13px;
   color: var(--primary);
+  margin-top: 4px;
 }
 
 /* =========================================
@@ -95,27 +79,22 @@ body {
 
 .lang {
   display: flex;
-  gap: var(--space-2);
-  background: var(--card);
-  padding: var(--space-1);
+  gap: 6px;
+  padding: 4px;
+  background: white;
   border: 1px solid var(--border);
-  border-radius: var(--radius-full);
+  border-radius: 999px;
 }
 
 .lang button {
   border: none;
   padding: 6px 10px;
-  border-radius: var(--radius-full);
+  border-radius: 999px;
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
   background: transparent;
   color: var(--muted);
-  transition: all 0.15s ease;
-}
-
-.lang button:hover {
-  color: var(--text);
 }
 
 .lang button.active {
@@ -130,40 +109,50 @@ body {
 .progress {
   height: 6px;
   background: var(--border);
-  border-radius: var(--radius-full);
+  border-radius: 999px;
   overflow: hidden;
-  margin-bottom: var(--space-4);
+  margin-bottom: 16px;
 }
 
 .progress > div {
   height: 100%;
   background: linear-gradient(90deg, var(--primary), #60a5fa);
-  transition: width 0.3s ease;
+  transition: width 0.25s ease;
 }
 
 /* =========================================
-   LAYOUT PRIMITIVES (IMPORTANT)
+   LOADING
+========================================= */
+
+.loading {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+/* =========================================
+   STACK SYSTEM (CRITICAL FIX)
 ========================================= */
 
 .stack {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: 10px;
 }
 
 /* =========================================
-   BUTTON SYSTEM (Stripe-style)
+   BUTTON SYSTEM (FIXED CONSISTENCY)
 ========================================= */
 
 .btn {
   width: 100%;
-  text-align: left;
-
   padding: 13px 14px;
-  border-radius: var(--radius-md);
 
+  border-radius: var(--radius);
   border: 1px solid var(--border);
-  background: var(--card);
+
+  background: white;
+  text-align: left;
 
   font-size: 14px;
   font-weight: 500;
@@ -174,8 +163,8 @@ body {
 
 .btn:hover {
   transform: translateY(-1px);
-  box-shadow: var(--shadow-sm);
   border-color: #cbd5e1;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
 }
 
 /* PRIMARY BUTTON */
@@ -183,7 +172,7 @@ body {
   width: 100%;
   padding: 13px 14px;
 
-  border-radius: var(--radius-md);
+  border-radius: var(--radius);
   border: none;
 
   background: var(--primary);
@@ -193,26 +182,14 @@ body {
   font-weight: 600;
 
   cursor: pointer;
-  transition: all 0.15s ease;
 }
 
 .btn-primary:hover {
   background: var(--primary-hover);
-  transform: translateY(-1px);
 }
 
 /* =========================================
-   LOADING STATE
-========================================= */
-
-.loading {
-  font-size: 13px;
-  color: var(--muted);
-  margin: var(--space-2) 0;
-}
-
-/* =========================================
-   RESULT CARD (Stripe-style surface)
+   RESULT CARD (PRODUCT FEEL FIX)
 ========================================= */
 
 .card {
@@ -220,14 +197,14 @@ body {
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
 
-  padding: var(--space-5);
-  box-shadow: var(--shadow-md);
+  padding: 18px;
+  text-align: center;
 
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: 10px;
 
-  text-align: center;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
 }
 
 .price {
@@ -237,22 +214,20 @@ body {
 }
 
 .range {
-  color: var(--muted);
   font-size: 14px;
+  color: var(--muted);
 }
 
 /* =========================================
-   AD SYSTEM (clean SaaS embed style)
+   AD
 ========================================= */
 
 .ad {
-  margin-top: var(--space-4);
+  margin-top: 12px;
   height: 170px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius);
   overflow: hidden;
-
   border: 1px solid var(--border);
-  box-shadow: var(--shadow-sm);
 }
 
 .ad img {
@@ -262,13 +237,13 @@ body {
 }
 
 /* =========================================
-   MOBILE RESPONSIVE FIX
+   MOBILE FIX
 ========================================= */
 
 @media (max-width: 600px) {
   .header {
     flex-direction: column;
-    gap: var(--space-3);
+    gap: 10px;
   }
 
   .price {
