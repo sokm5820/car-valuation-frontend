@@ -30,7 +30,7 @@ export default function App() {
   const t = {
     en: {
       title: "VEHICLE VALUATION",
-      subtitle: "Step-by-step market pricing",
+      subtitle: "Your vehicle's value in just 4 clicks",
       restart: "Search another car",
       back: "Back",
       step1: "Select Year",
@@ -40,7 +40,7 @@ export default function App() {
     },
     tr: {
       title: "ARAÇ DEĞERLEME",
-      subtitle: "Adım adım piyasa fiyatlandırması",
+      subtitle: "Your vehicle's value in just 4 clicks",
       restart: "Yeni araç ara",
       back: "Geri",
       step1: "Yıl Seç",
@@ -50,7 +50,7 @@ export default function App() {
     },
     ru: {
       title: "ОЦЕНКА АВТОМОБИЛЯ",
-      subtitle: "Пошаговая рыночная оценка",
+      subtitle: "Your vehicle's value in just 4 clicks",
       restart: "Новый поиск",
       back: "Назад",
       step1: "Выберите год",
@@ -121,7 +121,6 @@ export default function App() {
     setStep(4);
   };
 
-  // AUTO VALUATION ON CATEGORY SELECT
   const handleCategory = async (c) => {
     setCategory(c);
 
@@ -223,20 +222,20 @@ export default function App() {
         </div>
       </div>
 
-      {/* PROGRESS + STEP LABEL */}
+      {/* PROGRESS + STEP LABEL (FIXED WRAP TO REMOVE GREY LINE BUG) */}
       {step < 5 && (
-        <>
+        <div style={{ display: "flex", flexDirection: "column" }}>
           <div className="progress">
             <div className="progress-inner" style={{ width: `${progress}%` }} />
           </div>
 
-          <div style={{ fontSize: 13, color: "#64748b", marginTop: 8 }}>
+          <div className="step-label">
             {step === 1 && text.step1}
             {step === 2 && text.step2}
             {step === 3 && text.step3}
             {step === 4 && text.step4}
           </div>
-        </>
+        </div>
       )}
 
       {/* STEPS */}
