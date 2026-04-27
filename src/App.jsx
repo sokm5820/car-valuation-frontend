@@ -22,6 +22,9 @@ export default function App() {
     localStorage.getItem("lang") || "tr"
   );
 
+  // 🔥 ONLY CHANGE: production backend
+  const API = "https://car-valuation-backend.onrender.com";
+
   const changeLang = (l) => {
     setLang(l);
     localStorage.setItem("lang", l);
@@ -88,7 +91,7 @@ export default function App() {
   const progress = Math.min(100, Math.max(0, ((step - 1) / 3) * 100));
 
   useEffect(() => {
-    fetch("http://127.0.0.1:5000/years")
+    fetch(`${API}/years`)
       .then((r) => r.json())
       .then((data) => {
         const normalized = Array.isArray(data) ? data : data.years || [];
@@ -99,7 +102,7 @@ export default function App() {
   const handleYear = async (v) => {
     setYear(v);
     setLoading(true);
-    const res = await fetch(`http://127.0.0.1:5000/brands?year=${v}`);
+    const res = await fetch(`${API}/brands?year=${v}`);
     setBrands(await res.json());
     setLoading(false);
     setStep(2);
@@ -108,7 +111,7 @@ export default function App() {
   const handleBrand = async (v) => {
     setBrand(v);
     setLoading(true);
-    const res = await fetch(`http://127.0.0.1:5000/models?year=${year}&brand=${v}`);
+    const res = await fetch(`${API}/models?year=${year}&brand=${v}`);
     setModels(await res.json());
     setLoading(false);
     setStep(3);
@@ -119,7 +122,7 @@ export default function App() {
     setLoading(true);
 
     const res = await fetch(
-      `http://127.0.0.1:5000/categories?year=${year}&brand=${brand}&model=${v}`
+      `${API}/categories?year=${year}&brand=${brand}&model=${v}`
     );
 
     const data = await res.json();
@@ -137,7 +140,7 @@ export default function App() {
   const getValuation = async () => {
     setLoading(true);
 
-    const res = await fetch("http://127.0.0.1:5000/get_valuation", {
+    const res = await fetch(`${API}/get_valuation`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ year, brand, model, category }),
@@ -215,7 +218,7 @@ export default function App() {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "flex-start",
-          marginBottom: 4, // 🔥 reduced spacing (was 10)
+          marginBottom: 4,
         }}
       >
         <div style={{ textAlign: "left" }}>
@@ -374,7 +377,7 @@ export default function App() {
         <div
           style={{
             textAlign: "center",
-            marginTop: 2, // 🔥 tighter spacing to header area
+            marginTop: 2,
             display: "flex",
             flexDirection: "column",
             gap: 6,
