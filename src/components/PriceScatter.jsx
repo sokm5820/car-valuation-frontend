@@ -55,7 +55,7 @@ export default function PriceScatter({ data, lang = "en" }) {
       return {
         price: Number.isFinite(price) ? Math.round(price) : null,
         mileage: Number.isFinite(mileage) ? Math.round(mileage) : null,
-        status: d.status || "active", // 🔥 important fallback
+        status: d.status || "active",
       };
     })
     .filter((d) => d.price > 0 && d.mileage > 0)
@@ -70,6 +70,7 @@ export default function PriceScatter({ data, lang = "en" }) {
           alignItems: "center",
           justifyContent: "center",
           color: "#94a3b8",
+          outline: "none",
         }}
       >
         {text.noData}
@@ -77,7 +78,6 @@ export default function PriceScatter({ data, lang = "en" }) {
     );
   }
 
-  // 🔥 SPLIT DATA PROPERLY
   const activeData = normalized.filter((d) => d.status !== "removed");
   const removedData = normalized.filter((d) => d.status === "removed");
 
@@ -102,14 +102,22 @@ export default function PriceScatter({ data, lang = "en" }) {
   const chartHeight = isMobile ? 240 : 350;
 
   return (
-    <div style={{ width: "100%", height: chartHeight + 40 }}>
+    <div
+      style={{
+        width: "100%",
+        height: chartHeight + 40,
+        outline: "none",
+      }}
+    >
       <ResponsiveContainer width="100%" height={chartHeight}>
         <ScatterChart
+          tabIndex={-1}
+          style={{ outline: "none" }}
           margin={{
             top: 10,
             right: isMobile ? 10 : 20,
             left: isMobile ? 10 : 40,
-            bottom: isMobile ? 20 : 50,
+            bottom: isMobile ? 30 : 60, // ⬅ increased spacing
           }}
         >
           <CartesianGrid stroke="#e2e8f0" strokeDasharray="4 4" />
@@ -181,7 +189,6 @@ export default function PriceScatter({ data, lang = "en" }) {
             }}
           />
 
-          {/* 🔥 FIXED LEGEND */}
           <Legend
             verticalAlign={isMobile ? "bottom" : "top"}
             align={isMobile ? "center" : "right"}
@@ -189,7 +196,7 @@ export default function PriceScatter({ data, lang = "en" }) {
             wrapperStyle={{
               fontSize: 12,
               color: "#64748b",
-              paddingTop: isMobile ? 10 : 0,
+              paddingTop: isMobile ? 18 : 26, // ⬅ more spacing from axis
               paddingRight: isMobile ? 0 : 10,
             }}
             iconSize={10}
@@ -200,7 +207,6 @@ export default function PriceScatter({ data, lang = "en" }) {
             }}
           />
 
-          {/* ONLY RENDER IF EXISTS */}
           {activeData.length > 0 && (
             <Scatter name="active" data={activeData} fill="#4f46e5" />
           )}
