@@ -17,7 +17,7 @@ body {
 }
 
 /* ================================
-   GLOBAL CONTAINER (TIGHTER)
+   APP CONTAINER
 ================================ */
 
 .app-container {
@@ -28,32 +28,29 @@ body {
 
   display: flex;
   flex-direction: column;
-  gap: 14px; /* tighter overall layout */
+  gap: 14px;
 }
 
 /* ================================
-   HEADER (FIXED SINGLE LINE)
+   HEADER (REFINED + SOFTER SCALE)
 ================================ */
 
 .header-row {
   display: flex;
   justify-content: space-between;
-  align-items: center; /* important fix */
-
-  margin-bottom: 2px;
+  align-items: center;
 }
 
 .title {
-  font-size: 22px; /* 🔥 reduced so it stays one line */
-  font-weight: 800;
-  letter-spacing: -0.3px;
+  font-size: 18px; /* softer, more premium */
+  font-weight: 700;
+  letter-spacing: -0.2px;
   white-space: nowrap;
 }
 
 .subtitle {
   font-size: 12px;
-  color: #2563eb;
-  margin-top: 0px;
+  color: #64748b;
 }
 
 /* ================================
@@ -81,7 +78,7 @@ body {
 }
 
 .lang-btn.active {
-  background: #2563eb;
+  background: #334155; /* 🔥 softer professional tone */
   color: white;
 }
 
@@ -91,7 +88,7 @@ body {
 
 .back-btn {
   font-size: 11px;
-  color: #2563eb;
+  color: #334155;
   background: transparent;
   border: none;
   cursor: pointer;
@@ -99,7 +96,7 @@ body {
 }
 
 /* ================================
-   PROGRESS BAR
+   PROGRESS BAR (SOFT PREMIUM BLUE)
 ================================ */
 
 .progress {
@@ -112,103 +109,107 @@ body {
 
 .progress-inner {
   height: 100%;
-  background: linear-gradient(90deg, #2563eb, #60a5fa);
+  background: linear-gradient(90deg, #334155, #64748b);
 }
 
 /* ================================
-   BUTTONS (ALL BLUE NOW)
+   BUTTON SYSTEM (CONSISTENT HEIGHT)
 ================================ */
 
 .btn {
   width: 100%;
-  padding: 12px;
-  border-radius: 14px;
+  height: 42px; /* 🔥 FIXED HEIGHT */
+  border-radius: 12px;
 
-  border: none;
-  background: #2563eb; /* 🔥 ALL BUTTONS BLUE */
-  color: white;
+  border: 1px solid #e2e8f0;
+  background: white;
+  color: #0f172a;
 
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
 
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .btn:hover {
-  background: #1d4ed8;
+  border-color: #cbd5e1;
   transform: translateY(-1px);
 }
 
+/* PRIMARY ACTION BUTTON */
 .btn-primary {
-  background: #2563eb;
+  background: #334155; /* 🔥 toned-down premium dark slate */
   color: white;
+  border: none;
+}
+
+.btn-primary:hover {
+  background: #1f2937;
 }
 
 /* ================================
-   STEP GRID (YEAR FIX 🔥)
+   YEAR GRID (4 PER ROW FIXED)
 ================================ */
 
 .step-column {
   display: grid;
-  grid-template-columns: repeat(4, 1fr); /* 🔥 4 per row */
+  grid-template-columns: repeat(4, 1fr);
   gap: 8px;
 }
 
-/* make year buttons compact */
+/* year pills */
 .step-column .btn {
-  padding: 10px 8px;
+  height: 38px; /* slightly tighter than normal buttons */
+  border-radius: 999px;
   font-size: 12px;
-  border-radius: 999px; /* pill style */
+  padding: 0;
 }
 
 /* ================================
-   RESULT (VALUATION SCREEN FIX)
+   RESULT SCREEN (TIGHTER PREMIUM LAYOUT)
 ================================ */
 
 .result {
   text-align: center;
   display: flex;
   flex-direction: column;
-  gap: 4px; /* 🔥 tighter */
-  padding: 0;
+  gap: 3px;
 }
 
-/* BIG VALUE but less vertical waste */
 .result h1 {
-  font-size: 34px;
+  font-size: 32px;
   font-weight: 800;
   margin-bottom: 2px;
 }
 
 .result p {
-  color: #64748b;
   font-size: 13px;
-  margin-top: 0;
+  color: #64748b;
 }
 
 /* ================================
-   LOADING (SUBTLE FIX)
+   LOADING (SUBTLE)
 ================================ */
 
 .loading {
-  font-size: 12px; /* 🔥 smaller + subtle */
+  font-size: 12px;
   color: #94a3b8;
-  font-weight: 400;
 }
 
 /* ================================
-   AD (FIXED LAYOUT FLOW)
+   AD
 ================================ */
 
 .ad {
   margin-top: 10px;
-  height: 160px;
+  height: 150px;
   border-radius: 14px;
   overflow: hidden;
-
-  flex-shrink: 0; /* 🔥 prevents cutoff issues */
 }
 
 .ad img {
@@ -225,61 +226,32 @@ body {
 
   .app-container {
     padding: 16px 14px;
-    gap: 12px;
   }
 
   .title {
-    font-size: 18px; /* keeps single line */
+    font-size: 16px;
   }
 
-  .subtitle {
-    font-size: 11px;
+  .btn {
+    height: 40px;
+    font-size: 12px;
   }
 
   .step-column {
-    grid-template-columns: repeat(4, 1fr); /* still 4 per row */
+    grid-template-columns: repeat(4, 1fr);
     gap: 6px;
   }
 
   .step-column .btn {
+    height: 36px;
     font-size: 11px;
-    padding: 8px 6px;
   }
 
   .result h1 {
     font-size: 26px;
   }
 
-  .loading {
-    font-size: 11px;
-  }
-
   .ad {
     height: 130px;
-  }
-}
-
-/* ================================
-   VERY SMALL PHONES
-================================ */
-
-@media (max-width: 420px) {
-
-  .title {
-    font-size: 16px;
-  }
-
-  .step-column {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 5px;
-  }
-
-  .step-column .btn {
-    font-size: 10px;
-    padding: 7px 5px;
-  }
-
-  .result h1 {
-    font-size: 22px;
   }
 }
