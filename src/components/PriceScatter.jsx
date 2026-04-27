@@ -11,6 +11,9 @@ import {
 } from "recharts";
 
 export default function PriceScatter({ data, lang = "en" }) {
+  const isMobile =
+    typeof window !== "undefined" && window.innerWidth < 768;
+
   const t = {
     en: {
       mileage: "Mileage (km)",
@@ -44,6 +47,9 @@ export default function PriceScatter({ data, lang = "en" }) {
 
   const text = t[lang] || t.en;
 
+  // -----------------------------
+  // DATA NORMALISATION (SAFE)
+  // -----------------------------
   const safeData = (data || [])
     .map((d) => {
       const price = Number(d.price ?? d.Price);
@@ -61,7 +67,7 @@ export default function PriceScatter({ data, lang = "en" }) {
     return (
       <div
         style={{
-          height: 220,
+          height: isMobile ? 220 : 300,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -73,169 +79,139 @@ export default function PriceScatter({ data, lang = "en" }) {
     );
   }
 
-  const STEP = 25000;
-
+  // -----------------------------
+  // AXIS SCALING (NO EDGE CLIPPING)
+  // -----------------------------
+  const STEP = 20000;
   const maxPrice = Math.max(...safeData.map((d) => d.price));
-  const minMileage = Math.min(...safeData.map((d) => d.mileage));
-  const maxMileage = Math.max(...safeData.map((d) => d.mileage));
-
-  const yMax = Math.ceil(maxPrice / STEP) * STEP + STEP;
-
-  const xMin = Math.max(0, Math.floor(minMileage / 10000) * 10000);
-  const xMax = Math.ceil(maxMileage / 10000) * 10000 + 10000;
+  const yMax = (Math.floor(maxPrice / STEP) + 2) * STEP;
 
   const yTicks = Array.from(
     { length: yMax / STEP + 1 },
     (_, i) => i * STEP
   );
 
+  // Add extra mileage padding (your requested "next step logic")
+  const maxMileage = Math.max(...safeData.map((d) => d.mileage));
+  const xMax = Math.ceil(maxMileage / 250) * 250 + 250;
+
+  const xTicks = Array.from(
+    { length: xMax / 250 + 1 },
+    (_, i) => i * 250
+  );
+
+  // -----------------------------
+  // LAYOUT CONTROL
+  // -----------------------------
+  const chartHeight = isMobile ? 240 : 350;
+
   return (
-    <div style={{ width: "100%" }}>
+    <div style={{ width: "100%", height: chartHeight + 40 }}>
+      <ResponsiveContainer width="100%" height={chartHeight}>
+        <ScatterChart
+          margin={{
+            top: 10,
+            right: isMobile ? 10 : 20,
+            left: isMobile ? 10 : 40,
+            bottom: isMobile ? 20 : 50,
+          }}
+        >
+          <CartesianGrid stroke="#e2e8f0" strokeDasharray="4 4" />
 
-      {/* ================= CHART ================= */}
-      <div className="scatter-chart-wrapper">
-        <ResponsiveContainer width="100%" height={280}>
-          <ScatterChart
-            margin={{
-              top: 10,
-              right: 20,
-              bottom: 35,
-              left: 45,
-            }}
+          {/* ---------------- X AXIS ---------------- */}
+          <XAxis
+            type="number"
+            dataKey="mileage"
+            domain={[0, xMax]}
+            ticks={xTicks}
+            stroke="#cbd5e1"
+            tick={{ fontSize: 11, fill: "#94a3b8" }}
+            tickLine={{ stroke: "#cbd5e1" }}
+            tickMargin={8}
           >
-            <CartesianGrid stroke="#e2e8f0" strokeDasharray="4 4" />
-
-            <XAxis
-              type="number"
-              dataKey="mileage"
-              domain={[xMin, xMax]}
-              stroke="#cbd5e1"
-              tick={{ fontSize: 11, fill: "#94a3b8" }}
-              tickLine={{ stroke: "#cbd5e1" }}
-            >
-              <Label
-                value={text.mileage}
-                position="bottom"
-                offset={2}
-                style={{ fill: "#64748b", fontSize: 11 }}
-              />
-            </XAxis>
-
-            <YAxis
-              type="number"
-              dataKey="price"
-              domain={[0, yMax]}
-              ticks={yTicks}
-              stroke="#cbd5e1"
-              tick={{ fontSize: 11, fill: "#94a3b8" }}
-              tickLine={{ stroke: "#cbd5e1" }}
-            >
-              <Label
-                value={text.price}
-                angle={-90}
-                position="left"
-                offset={10}
-                style={{ fill: "#64748b", fontSize: 11 }}
-              />
-            </YAxis>
-
-            <Tooltip
-              cursor={{ stroke: "#4f46e5", strokeWidth: 1 }}
-              content={({ active, payload }) => {
-                if (!active || !payload?.length) return null;
-
-                const p = payload[0].payload;
-
-                return (
-                  <div
-                    style={{
-                      background: "white",
-                      border: "1px solid #e5e7eb",
-                      borderRadius: 10,
-                      padding: 10,
-                      fontSize: 12,
-                      boxShadow: "0 8px 20px rgba(0,0,0,0.06)",
-                    }}
-                  >
-                    <div style={{ fontWeight: 700 }}>
-                      £{p.price.toLocaleString()}
-                    </div>
-                    <div style={{ fontSize: 11, color: "#64748b" }}>
-                      {p.mileage.toLocaleString()} km
-                    </div>
-                  </div>
-                );
-              }}
+            <Label
+              value={text.mileage}
+              position="bottom"
+              offset={0}
+              style={{ fill: "#64748b", fontSize: 12 }}
             />
+          </XAxis>
 
-            {/* ❌ REMOVE RECHARTS LEGEND (we handle it ourselves) */}
-            <Scatter name="active" data={safeData} fill="#4f46e5" />
-            <Scatter name="removed" data={[]} fill="#9ca3af" />
-          </ScatterChart>
-        </ResponsiveContainer>
-      </div>
+          {/* ---------------- Y AXIS (TIGHTER) ---------------- */}
+          <YAxis
+            type="number"
+            dataKey="price"
+            domain={[0, yMax]}
+            ticks={yTicks}
+            stroke="#cbd5e1"
+            tick={{ fontSize: 11, fill: "#94a3b8" }}
+            tickLine={{ stroke: "#cbd5e1" }}
+            width={isMobile ? 45 : 70}
+            tickMargin={6}
+          >
+            <Label
+              value={text.price}
+              angle={-90}
+              position="insideLeft"
+              offset={10}
+              style={{ fill: "#64748b", fontSize: 12 }}
+            />
+          </YAxis>
 
-      {/* ================= MOBILE LEGEND ================= */}
-      <div className="scatter-legend">
-        <div className="legend-item">
-          <span className="dot active" />
-          {text.active}
-        </div>
+          {/* ---------------- TOOLTIP (IMPROVED ORDER) ---------------- */}
+          <Tooltip
+            cursor={{ stroke: "#4f46e5", strokeWidth: 1 }}
+            content={({ active, payload }) => {
+              if (!active || !payload?.length) return null;
 
-        <div className="legend-item">
-          <span className="dot removed" />
-          {text.removed}
-        </div>
-      </div>
+              const p = payload[0].payload;
 
-      {/* ================= RESPONSIVE STYLE ================= */}
-      <style>{`
-        .scatter-chart-wrapper {
-          height: 280px;
-        }
+              return (
+                <div
+                  style={{
+                    background: "white",
+                    border: "1px solid #e5e7eb",
+                    borderRadius: 10,
+                    padding: 10,
+                    fontSize: 12,
+                    boxShadow: "0 10px 25px rgba(0,0,0,0.06)",
+                  }}
+                >
+                  <div style={{ fontWeight: 700, fontSize: 13 }}>
+                    £{p.price.toLocaleString()}
+                  </div>
+                  <div style={{ color: "#64748b", fontSize: 11 }}>
+                    {p.mileage.toLocaleString()} km
+                  </div>
+                </div>
+              );
+            }}
+          />
 
-        .scatter-legend {
-          display: flex;
-          gap: 16px;
-          justify-content: center;
-          margin-top: 6px;
-          font-size: 12px;
-          color: #64748b;
-        }
+          {/* ---------------- LEGEND ---------------- */}
+          <Legend
+            verticalAlign={isMobile ? "bottom" : "top"}
+            align={isMobile ? "center" : "right"}
+            layout={isMobile ? "horizontal" : "vertical"}
+            wrapperStyle={{
+              fontSize: 12,
+              color: "#64748b",
+              paddingTop: isMobile ? 10 : 0,
+              paddingRight: isMobile ? 0 : 10,
+            }}
+            iconSize={10}
+            formatter={(value) => {
+              if (value === "active") return text.active;
+              if (value === "removed") return text.removed;
+              return value;
+            }}
+          />
 
-        .legend-item {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-        }
-
-        .dot {
-          width: 8px;
-          height: 8px;
-          border-radius: 999px;
-          display: inline-block;
-        }
-
-        .dot.active {
-          background: #4f46e5;
-        }
-
-        .dot.removed {
-          background: #9ca3af;
-        }
-
-        /* 🔥 MOBILE COMPRESSION */
-        @media (max-width: 768px) {
-          .scatter-chart-wrapper {
-            height: 220px;
-          }
-
-          .scatter-legend {
-            margin-top: 4px;
-            font-size: 11px;
-          }
-        }
-      `}</style>
+          {/* ---------------- DATA ---------------- */}
+          <Scatter name="active" data={safeData} fill="#4f46e5" />
+          <Scatter name="removed" data={[]} fill="#9ca3af" />
+        </ScatterChart>
+      </ResponsiveContainer>
     </div>
   );
 }
