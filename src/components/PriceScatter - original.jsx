@@ -15,23 +15,30 @@ export default function PriceScatter({ data, lang = "en" }) {
     en: {
       mileage: "Mileage (km)",
       price: "Price (£)",
-      active: "Market listings",
-      removed: "Outliers",
-      noData: "No data available",
+      active: "Active listings",
+      removed: "Recently removed listings",
+      noData: "No data",
     },
     tr: {
       mileage: "KM",
       price: "Fiyat (£)",
-      active: "Piyasa ilanları",
-      removed: "Aykırı veriler",
+      active: "Aktif ilanlar",
+      removed: "Kaldırılan ilanlar",
       noData: "Veri yok",
     },
     ru: {
       mileage: "Пробег (км)",
       price: "Цена (£)",
-      active: "Рыночные объявления",
-      removed: "Выбросы",
+      active: "Активные объявления",
+      removed: "Удалённые объявления",
       noData: "Нет данных",
+    },
+    ar: {
+      mileage: "المسافة (كم)",
+      price: "السعر (£)",
+      active: "الإعلانات النشطة",
+      removed: "إعلانات محذوفة",
+      noData: "لا توجد بيانات",
     },
   };
 
@@ -59,7 +66,6 @@ export default function PriceScatter({ data, lang = "en" }) {
           alignItems: "center",
           justifyContent: "center",
           color: "#94a3b8",
-          fontSize: 13,
         }}
       >
         {text.noData}
@@ -74,44 +80,30 @@ export default function PriceScatter({ data, lang = "en" }) {
   const yTicks = Array.from({ length: yMax / STEP + 1 }, (_, i) => i * STEP);
 
   return (
-    <div
-      style={{
-        width: "100%",
-        height: 320,
-        marginTop: 6,
-        marginBottom: 0,
-        borderRadius: 14,
-      }}
-    >
+    <div style={{ width: "100%", height: 350 }}>
       <ResponsiveContainer width="100%" height="100%">
         <ScatterChart
           margin={{
             top: 10,
-            right: 10,
-            bottom: 10,   // 🔥 FIX: removes big empty space
-            left: 10,
+            right: 20,
+            bottom: 65,
+            left: 50,
           }}
         >
-          {/* softer grid = more premium */}
-          <CartesianGrid
-            stroke="#eef2f7"
-            strokeDasharray="3 3"
-            vertical={false}
-          />
+          <CartesianGrid stroke="#e2e8f0" strokeDasharray="4 4" />
 
           <XAxis
             type="number"
             dataKey="mileage"
             stroke="#cbd5e1"
-            tick={{ fontSize: 11, fill: "#94a3b8" }}
-            tickLine={false}
-            axisLine={false}
+            tick={{ fontSize: 12, fill: "#94a3b8" }}
+            tickLine={{ stroke: "#cbd5e1" }}
           >
             <Label
               value={text.mileage}
-              position="insideBottom"
-              offset={-5}
-              style={{ fill: "#64748b", fontSize: 11 }}
+              position="bottom"
+              offset={2}
+              style={{ fill: "#64748b", fontSize: 12 }}
             />
           </XAxis>
 
@@ -121,22 +113,20 @@ export default function PriceScatter({ data, lang = "en" }) {
             domain={[0, yMax]}
             ticks={yTicks}
             stroke="#cbd5e1"
-            tick={{ fontSize: 11, fill: "#94a3b8" }}
-            tickLine={false}
-            axisLine={false}
+            tick={{ fontSize: 12, fill: "#94a3b8" }}
+            tickLine={{ stroke: "#cbd5e1" }}
           >
             <Label
               value={text.price}
               angle={-90}
-              position="insideLeft"
-              offset={10}
-              style={{ fill: "#64748b", fontSize: 11 }}
+              position="left"
+              offset={12}
+              style={{ fill: "#64748b", fontSize: 12 }}
             />
           </YAxis>
 
-          {/* premium tooltip (less "Recharts default" feel) */}
           <Tooltip
-            cursor={{ stroke: "#2563eb", strokeWidth: 1, opacity: 0.2 }}
+            cursor={{ stroke: "#4f46e5", strokeWidth: 1 }}
             content={({ active, payload }) => {
               if (!active || !payload?.length) return null;
 
@@ -146,17 +136,16 @@ export default function PriceScatter({ data, lang = "en" }) {
                 <div
                   style={{
                     background: "white",
-                    border: "1px solid #e2e8f0",
-                    borderRadius: 12,
-                    padding: "8px 10px",
+                    border: "1px solid #e5e7eb",
+                    borderRadius: 10,
+                    padding: 8,
                     fontSize: 12,
-                    boxShadow: "0 10px 24px rgba(15, 23, 42, 0.08)",
                   }}
                 >
-                  <div style={{ fontWeight: 700, color: "#0f172a" }}>
+                  <div style={{ fontWeight: 600 }}>
                     £{p.price.toLocaleString()}
                   </div>
-                  <div style={{ color: "#64748b", marginTop: 2 }}>
+                  <div style={{ color: "#64748b" }}>
                     {p.mileage.toLocaleString()} km
                   </div>
                 </div>
@@ -164,17 +153,17 @@ export default function PriceScatter({ data, lang = "en" }) {
             }}
           />
 
-          {/* 🔥 FIX: legend no longer creates dead space */}
           <Legend
-            verticalAlign="top"
-            align="right"
-            iconType="circle"
+            verticalAlign="bottom"
+            align="left"
             wrapperStyle={{
-              fontSize: 11,
+              paddingTop: 22,
+              fontSize: 12,
               color: "#64748b",
-              paddingBottom: 0,
-              marginBottom: 0,
+              display: "flex",
+              alignItems: "center",
             }}
+            iconSize={8}
             formatter={(value) => {
               if (value === "active") return text.active;
               if (value === "removed") return text.removed;
@@ -182,16 +171,8 @@ export default function PriceScatter({ data, lang = "en" }) {
             }}
           />
 
-          {/* main dataset (slightly larger, softer blue) */}
-          <Scatter
-            name="active"
-            data={safeData}
-            fill="#2563eb"
-            fillOpacity={0.75}
-          />
-
-          {/* optional outliers layer (hidden but kept for structure) */}
-          <Scatter name="removed" data={[]} fill="#94a3b8" />
+          <Scatter name="active" data={safeData} fill="#4f46e5" />
+          <Scatter name="removed" data={[]} fill="#9ca3af" />
         </ScatterChart>
       </ResponsiveContainer>
     </div>

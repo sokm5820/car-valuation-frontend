@@ -166,10 +166,9 @@ export default function App() {
   return (
     <div className="app-container">
 
-      {/* ✅ ORIGINAL HEADER RESTORED */}
+      {/* LOGO + USERNAME (RESTORED EXACTLY) */}
       <div style={{ position: "relative", fontFamily: "Poppins, sans-serif" }}>
 
-        {/* LOGO + USERNAME (EXACT ORIGINAL STYLE) */}
         <div
           style={{
             display: "flex",
@@ -188,12 +187,16 @@ export default function App() {
           </div>
         </div>
 
-        {/* TITLE + LANG */}
+        {/* HEADER */}
         <div className="header-row">
 
           <div style={{ textAlign: "left" }}>
             <div className="title">{text.title}</div>
-            <div className="subtitle">{text.subtitle}</div>
+
+            {/* FIX: ensured blue stays consistent via CSS class or inline fallback */}
+            <div style={{ fontSize: 12, color: "#2563eb" }}>
+              {text.subtitle}
+            </div>
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6 }}>
@@ -220,13 +223,14 @@ export default function App() {
         </div>
       </div>
 
-      {/* REST UNCHANGED */}
+      {/* PROGRESS */}
       {step < 5 && (
         <div className="progress">
           <div className="progress-inner" style={{ width: `${progress}%` }} />
         </div>
       )}
 
+      {/* STEPS (UNCHANGED) */}
       {step === 1 && (
         <div className="step-column">
           {years.map((y) => (
@@ -273,9 +277,12 @@ export default function App() {
         </div>
       )}
 
+      {/* VALUATION (FULL RESTORED LAYOUT) */}
       {step === 5 && result && (
         <div className="result">
+
           <h1>£{animatedValue.toLocaleString()}</h1>
+
           <p>
             £{result.min_price.toLocaleString()} – £{result.max_price.toLocaleString()}
           </p>
@@ -291,6 +298,7 @@ export default function App() {
           <button onClick={resetFlow} className="btn-primary">
             {text.restart}
           </button>
+
         </div>
       )}
 

@@ -1,0 +1,352 @@
+/* ================================
+   RESET (SOFT APP FOUNDATION)
+================================ */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Poppins, system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background: #f6f8fb;
+  color: #0f172a;
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+/* ================================
+   APP CONTAINER (APP-LIKE WIDTH CONTROL)
+================================ */
+
+.app-container {
+  width: 100%;
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 26px 24px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  position: relative;
+
+  transition: all 0.25s ease;
+}
+
+/* ================================
+   HEADER (FIX: LEFT ALIGN CONSISTENCY)
+================================ */
+
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+  white-space: nowrap;
+  margin-left: 0;
+}
+
+.subtitle {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+/* ================================
+   LOGO ROW (RESTORED BEHAVIOR)
+================================ */
+
+.logo-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.username {
+  font-size: 12px;
+  color: #64748b;
+}
+
+/* ================================
+   LANGUAGE SWITCH
+================================ */
+
+.lang-box {
+  display: flex;
+  gap: 6px;
+  background: #f1f5f9;
+  padding: 3px;
+  border-radius: 999px;
+  border: 1px solid #e2e8f0;
+}
+
+.lang-btn {
+  padding: 5px 9px;
+  border-radius: 999px;
+  border: none;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  background: transparent;
+  color: #475569;
+  transition: all 0.2s ease;
+}
+
+.lang-btn.active {
+  background: #2563eb;
+  color: white;
+}
+
+/* ================================
+   BACK BUTTON
+================================ */
+
+.back-btn {
+  font-size: 11px;
+  color: #475569;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  opacity: 0.9;
+  margin-top: 6px;
+}
+
+.back-btn:hover {
+  opacity: 0.6;
+}
+
+/* ================================
+   PROGRESS BAR
+================================ */
+
+.progress {
+  width: 100%;
+  height: 5px;
+  background: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-inner {
+  height: 100%;
+  background: #2563eb;
+  border-radius: 999px;
+  transition: width 0.35s ease;
+}
+
+/* ================================
+   BUTTON SYSTEM
+================================ */
+
+.btn {
+  width: auto;
+  min-width: 80px;
+  max-width: 100%;
+
+  height: 42px;
+  border-radius: 14px;
+
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: white;
+  color: #0f172a;
+
+  font-size: 13px;
+  font-weight: 500;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 14px;
+
+  cursor: pointer;
+
+  transition: all 0.18s ease;
+  white-space: nowrap;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  border-color: rgba(15, 23, 42, 0.15);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+}
+
+/* ================================
+   PRIMARY CTA
+================================ */
+
+.btn-primary {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: white;
+  border: none;
+
+  height: 48px;
+  border-radius: 999px;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 18px;
+
+  cursor: pointer;
+
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.25);
+
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 32px rgba(37, 99, 235, 0.32);
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+}
+
+/* ================================
+   STEP GRID
+================================ */
+
+.step-column {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+/* ================================
+   RESULT SCREEN (🔥 FIX APPLIED HERE)
+================================ */
+
+.result {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+/* 🔥 MAIN FIX: valuation must be strong, not muted */
+.result h1 {
+  font-size: 34px;
+  font-weight: 900;
+  margin: 0;
+
+  color: #0b0f19; /* deeper than #0f172a for stronger contrast */
+
+  letter-spacing: -0.8px;
+}
+
+/* secondary range stays subtle but readable */
+.result p {
+  font-size: 13px;
+  color: #334155;
+  margin: 0;
+}
+
+/* ================================
+   LOADING
+================================ */
+
+.loading {
+  font-size: 11px;
+  color: #94a3b8;
+  opacity: 0.8;
+}
+
+/* ================================
+   AD
+================================ */
+
+.ad {
+  margin-top: 10px;
+  height: 150px;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+}
+
+.ad img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ================================
+   STICKY CTA
+================================ */
+
+.sticky-cta {
+  position: fixed;
+  bottom: 14px;
+  left: 14px;
+  right: 14px;
+  z-index: 999;
+
+  display: flex;
+  justify-content: center;
+
+  pointer-events: none;
+}
+
+.sticky-cta .btn-primary {
+  pointer-events: auto;
+  width: auto;
+  min-width: 200px;
+  height: 52px;
+  font-size: 15px;
+
+  box-shadow: 0 18px 40px rgba(37, 99, 235, 0.28);
+}
+
+/* ================================
+   MOBILE
+================================ */
+
+@media (max-width: 768px) {
+
+  .app-container {
+    padding: 16px 14px;
+  }
+
+  .title {
+    font-size: 16px;
+  }
+
+  .btn {
+    height: 40px;
+    font-size: 12px;
+  }
+
+  .result h1 {
+    font-size: 26px;
+    color: #0b0f19; /* keep strong on mobile too */
+  }
+
+  .ad {
+    height: 130px;
+  }
+
+  .sticky-cta .btn-primary {
+    width: 100%;
+    height: 54px;
+  }
+}
