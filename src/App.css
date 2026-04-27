@@ -128,7 +128,7 @@ body {
 }
 
 /* ================================
-   PROGRESS BAR
+   PROGRESS BAR (TIGHTENED)
 ================================ */
 
 .progress {
@@ -137,6 +137,7 @@ body {
   background: #e2e8f0;
   border-radius: 999px;
   overflow: hidden;
+  margin-bottom: 6px; /* ✅ reduced spacing */
 }
 
 .progress-inner {
@@ -144,6 +145,18 @@ body {
   background: #2563eb;
   border-radius: 999px;
   transition: width 0.35s ease;
+}
+
+/* ================================
+   STEP LABEL (NEW - CLEAN SPACING)
+================================ */
+
+.step-label {
+  font-size: 13px;
+  color: #64748b;
+  margin-top: 4px;
+  margin-bottom: 6px;
+  font-weight: 500;
 }
 
 /* ================================
@@ -233,29 +246,25 @@ body {
 }
 
 /* ================================
-   RESULT SCREEN (🔥 FIX APPLIED HERE)
+   RESULT SCREEN
 ================================ */
 
 .result {
   text-align: center;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 10px; /* already tight */
   margin-top: 8px;
 }
 
-/* 🔥 MAIN FIX: valuation must be strong, not muted */
 .result h1 {
   font-size: 34px;
   font-weight: 900;
   margin: 0;
-
-  color: #0b0f19; /* deeper than #0f172a for stronger contrast */
-
+  color: #0b0f19;
   letter-spacing: -0.8px;
 }
 
-/* secondary range stays subtle but readable */
 .result p {
   font-size: 13px;
   color: #334155;
@@ -273,11 +282,11 @@ body {
 }
 
 /* ================================
-   AD
+   AD (TIGHTENED)
 ================================ */
 
 .ad {
-  margin-top: 10px;
+  margin-top: 10px; /* already reduced */
   height: 150px;
   border-radius: 14px;
   overflow: hidden;
@@ -338,7 +347,7 @@ body {
 
   .result h1 {
     font-size: 26px;
-    color: #0b0f19; /* keep strong on mobile too */
+    color: #0b0f19;
   }
 
   .ad {

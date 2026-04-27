@@ -33,7 +33,6 @@ export default function App() {
       subtitle: "Step-by-step market pricing",
       restart: "Search another car",
       back: "Back",
-      loading: "Loading...",
       step1: "Select Year",
       step2: "Select Brand",
       step3: "Select Model",
@@ -44,7 +43,6 @@ export default function App() {
       subtitle: "Adım adım piyasa fiyatlandırması",
       restart: "Yeni araç ara",
       back: "Geri",
-      loading: "Yükleniyor...",
       step1: "Yıl Seç",
       step2: "Marka Seç",
       step3: "Model Seç",
@@ -55,7 +53,6 @@ export default function App() {
       subtitle: "Пошаговая рыночная оценка",
       restart: "Новый поиск",
       back: "Назад",
-      loading: "Загрузка...",
       step1: "Выберите год",
       step2: "Выберите марку",
       step3: "Выберите модель",
@@ -118,16 +115,13 @@ export default function App() {
     );
 
     const data = await res.json();
-    const normalized = Array.isArray(data)
-      ? data
-      : data.categories || [];
+    const normalized = Array.isArray(data) ? data : data.categories || [];
 
     setCategories(normalized);
-
     setStep(4);
   };
 
-  // ✅ AUTO VALUATION AFTER CATEGORY SELECT
+  // AUTO VALUATION ON CATEGORY SELECT
   const handleCategory = async (c) => {
     setCategory(c);
 
@@ -152,7 +146,8 @@ export default function App() {
   };
 
   const goBack = () => {
-    if (step === 4) setStep(3);
+    if (step === 5) setStep(4);
+    else if (step === 4) setStep(3);
     else if (step === 3) setStep(2);
     else if (step === 2) setStep(1);
   };
@@ -178,7 +173,7 @@ export default function App() {
   return (
     <div className="app-container">
 
-      {/* LOGO + USERNAME */}
+      {/* HEADER */}
       <div style={{ position: "relative", fontFamily: "Poppins, sans-serif" }}>
         <div
           style={{
@@ -198,7 +193,6 @@ export default function App() {
           </div>
         </div>
 
-        {/* HEADER */}
         <div className="header-row">
           <div style={{ textAlign: "left" }}>
             <div className="title">{text.title}</div>
@@ -220,7 +214,7 @@ export default function App() {
               ))}
             </div>
 
-            {step > 1 && step < 5 && (
+            {step > 1 && (
               <button onClick={goBack} className="back-btn">
                 ← {text.back}
               </button>
@@ -229,23 +223,14 @@ export default function App() {
         </div>
       </div>
 
-      {/* PROGRESS */}
+      {/* PROGRESS + STEP LABEL */}
       {step < 5 && (
         <>
           <div className="progress">
             <div className="progress-inner" style={{ width: `${progress}%` }} />
           </div>
 
-          {/* ✅ STEP LABEL */}
-          <div
-            style={{
-              fontSize: 13,
-              color: "#64748b",
-              marginTop: 8,
-              marginBottom: 4,
-              fontWeight: 500,
-            }}
-          >
+          <div style={{ fontSize: 13, color: "#64748b", marginTop: 8 }}>
             {step === 1 && text.step1}
             {step === 2 && text.step2}
             {step === 3 && text.step3}
@@ -298,6 +283,7 @@ export default function App() {
       {/* RESULT */}
       {step === 5 && result && (
         <div className="result">
+
           <h1>£{animatedValue.toLocaleString()}</h1>
 
           <p>
