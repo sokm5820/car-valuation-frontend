@@ -17,7 +17,6 @@ export default function App() {
 
   const [result, setResult] = useState(null);
   const [animatedValue, setAnimatedValue] = useState(0);
-  const [loading, setLoading] = useState(false);
 
   const [lang, setLang] = useState(
     localStorage.getItem("lang") || "tr"
@@ -37,7 +36,6 @@ export default function App() {
       getValuation: "Get valuation",
       restart: "Search another car",
       back: "Back",
-      loading: "Loading...",
     },
     tr: {
       title: "ARAÇ DEĞERLEME",
@@ -45,7 +43,6 @@ export default function App() {
       getValuation: "Değeri getir",
       restart: "Yeni araç ara",
       back: "Geri",
-      loading: "Yükleniyor...",
     },
     ru: {
       title: "ОЦЕНКА АВТОМОБИЛЯ",
@@ -53,7 +50,6 @@ export default function App() {
       getValuation: "Получить оценку",
       restart: "Новый поиск",
       back: "Назад",
-      loading: "Загрузка...",
     },
   };
 
@@ -92,25 +88,20 @@ export default function App() {
 
   const handleYear = async (v) => {
     setYear(v);
-    setLoading(true);
     const res = await fetch(`${API}/brands?year=${v}`);
     setBrands(await res.json());
-    setLoading(false);
     setStep(2);
   };
 
   const handleBrand = async (v) => {
     setBrand(v);
-    setLoading(true);
     const res = await fetch(`${API}/models?year=${year}&brand=${v}`);
     setModels(await res.json());
-    setLoading(false);
     setStep(3);
   };
 
   const handleModel = async (v) => {
     setModel(v);
-    setLoading(true);
 
     const res = await fetch(
       `${API}/categories?year=${year}&brand=${brand}&model=${v}`
@@ -120,13 +111,10 @@ export default function App() {
     const normalized = Array.isArray(data) ? data : data.categories || [];
 
     setCategories(normalized);
-    setLoading(false);
     setStep(4);
   };
 
   const getValuation = async () => {
-    setLoading(true);
-
     const res = await fetch(`${API}/get_valuation`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -134,18 +122,7 @@ export default function App() {
     });
 
     setResult(await res.json());
-    setLoading(false);
     setStep(5);
-  };
-
-  const resetFlow = () => {
-    setStep(1);
-    setYear("");
-    setBrand("");
-    setModel("");
-    setCategory("");
-    setResult(null);
-    setAnimatedValue(0);
   };
 
   const goBack = () => {
@@ -175,40 +152,28 @@ export default function App() {
   return (
     <div className="app-container">
 
-      {/* ================= HEADER ROW ================= */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      {/* HEADER FIXED ALIGNMENT */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
 
-        {/* LEFT: LOGO + TITLE */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <img
-              src="https://res.cloudinary.com/dtaihpiwt/image/upload/v1777154527/SHOPTECH_LOGO_9_hnwij5.png"
-              style={{ height: 24 }}
-            />
-            <div style={{ fontSize: 12, color: "#0f172a" }}>
-              @analist.kibris
-            </div>
-          </div>
-
+        <div style={{ textAlign: "left", marginLeft: 0, paddingLeft: 0 }}>
           <div style={{ fontSize: 18, fontWeight: 800 }}>
             {text.title}
           </div>
-
           <div style={{ fontSize: 12, color: "#2563eb" }}>
             {text.subtitle}
           </div>
         </div>
 
-        {/* RIGHT: LANGUAGE */}
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8 }}>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6 }}>
 
+          {/* LANGUAGE FIXED COLOR */}
           <div style={{ display: "flex", gap: 6 }}>
             {["tr", "en", "ru"].map((l) => (
               <button
                 key={l}
                 onClick={() => changeLang(l)}
                 style={{
-                  background: lang === l ? "#334155" : "#f1f5f9",
+                  background: lang === l ? "#2563eb" : "#f1f5f9",
                   color: lang === l ? "white" : "#475569",
                   borderRadius: 999,
                   border: "none",
@@ -222,7 +187,6 @@ export default function App() {
             ))}
           </div>
 
-          {/* BACK BUTTON (FIXED POSITION) */}
           {step > 1 && (
             <button onClick={goBack} className="back-btn">
               ← {text.back}
@@ -232,21 +196,14 @@ export default function App() {
         </div>
       </div>
 
-      {/* ================= PROGRESS ================= */}
+      {/* PROGRESS */}
       {step < 5 && (
         <div className="progress">
           <div className="progress-inner" style={{ width: `${progress}%` }} />
         </div>
       )}
 
-      {loading && (
-        <p style={{ fontSize: 11, color: "#94a3b8" }}>
-          {text.loading}
-        </p>
-      )}
-
-      {/* ================= STEP FLOW ================= */}
-
+      {/* STEPS */}
       {step === 1 && (
         <div className="step-column">
           {years.map((y) => (
@@ -286,7 +243,6 @@ export default function App() {
             </button>
           ))}
 
-          {/* CTA is IN FLOW (NOT OVERLAYING ANYTHING) */}
           {category && (
             <button onClick={getValuation} className="btn-primary">
               {text.getValuation}
@@ -296,12 +252,16 @@ export default function App() {
         </div>
       )}
 
-      {/* ================= RESULT ================= */}
-
+      {/* VALUATION FIXED COLOR + TIGHT LAYOUT */}
       {step === 5 && result && (
-        <div style={{ textAlign: "center", display: "flex", flexDirection: "column", gap: 6 }}>
+        <div style={{ textAlign: "center", display: "flex", flexDirection: "column", gap: 4 }}>
 
-          <h1 style={{ fontSize: 34, fontWeight: 900, margin: 0 }}>
+          <h1 style={{
+            fontSize: 34,
+            fontWeight: 900,
+            margin: 0,
+            color: "#0f172a"   // 🔥 FIX: strong black always
+          }}>
             £{animatedValue.toLocaleString()}
           </h1>
 
@@ -317,7 +277,7 @@ export default function App() {
             </a>
           </div>
 
-          <button onClick={resetFlow} className="btn-primary">
+          <button onClick={goBack} className="btn-primary">
             {text.restart}
           </button>
 
