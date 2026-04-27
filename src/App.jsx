@@ -64,11 +64,11 @@ export default function App() {
 
   const ads = [
     {
-      img: "https://res.cloudinary.com/dtaihpiwt/image/upload/v1777148944/ChatGPT_Image_Apr_25_2026_11_26_08_PM_r8afuy.png",
+      img: "https://res.cloudinary.com/dtaihpiwt/image/upload/v1777294450/ChatGPT_Image_Apr_27_2026_09_06_32_AM_cryytk.png",
       url: "https://wa.me/+905338760100",
     },
     {
-      img: "https://res.cloudinary.com/dtaihpiwt/image/upload/v1777148950/ChatGPT_Image_Apr_25_2026_11_26_50_PM_qq8lfa.png",
+      img: "https://res.cloudinary.com/dtaihpiwt/image/upload/v1777182806/ChatGPT_Image_Apr_26_2026_08_52_24_AM_bsvbwd.png",
       url: "https://wa.me/+905338760100",
     },
   ];
