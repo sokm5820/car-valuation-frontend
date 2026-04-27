@@ -112,7 +112,7 @@ body {
 }
 
 /* ================================
-   PROGRESS BAR (TIGHT)
+   PROGRESS BAR (TIGHT + CLEAN)
 ================================ */
 
 .progress {
@@ -121,7 +121,12 @@ body {
   background: #e2e8f0;
   border-radius: 999px;
   overflow: hidden;
-  margin-bottom: 2px; /* 🔥 reduced further */
+  margin-bottom: 2px;
+
+  /* 🔥 prevents mobile “fake line” artifact */
+  border: none;
+  outline: none;
+  box-shadow: none;
 }
 
 .progress-inner {
@@ -132,8 +137,7 @@ body {
 }
 
 /* ================================
-   STEP LABEL (FIXED GAP ISSUE)
-   🔥 THIS REMOVES GREY LINE EFFECT
+   STEP LABEL (FIXED MOBILE ARTIFACT)
 ================================ */
 
 .step-label {
@@ -141,12 +145,11 @@ body {
   color: #64748b;
   margin-top: 2px;
   margin-bottom: 4px;
-
   font-weight: 500;
 
-  /* 🔥 prevents weird divider illusion on some browsers */
   border: none;
   outline: none;
+  box-shadow: none;
 }
 
 /* ================================
@@ -215,11 +218,6 @@ body {
   white-space: nowrap;
 }
 
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 14px 32px rgba(37, 99, 235, 0.32);
-}
-
 /* ================================
    STEP GRID
 ================================ */
@@ -232,7 +230,7 @@ body {
 }
 
 /* ================================
-   RESULT SCREEN (🔥 MAIN FIX AREA)
+   RESULT SCREEN
 ================================ */
 
 .result {
@@ -240,7 +238,7 @@ body {
   display: flex;
   flex-direction: column;
 
-  gap: 8px; /* 🔥 reduced */
+  gap: 8px;
   margin-top: 6px;
 }
 
@@ -259,57 +257,33 @@ body {
 }
 
 /* ================================
-   LOADING
-================================ */
-
-.loading {
-  font-size: 11px;
-  color: #94a3b8;
-  opacity: 0.8;
-}
-
-/* ================================
-   AD (🔥 MASSIVE GAP FIX)
+   AD (FIXED — NO CROPPING EVER)
 ================================ */
 
 .ad {
-  margin-top: 6px; /* was 10px */
-  height: 150px;
+  margin-top: 6px;
+
+  /* 🔥 key fix: no forced height */
+  height: auto;
+
   border-radius: 14px;
   overflow: hidden;
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
 
-  /* 🔥 removes extra whitespace inside some browsers */
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* 🔥 kills inline-image gap under charts */
 .ad img {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto; /* 🔥 prevents cropping */
   display: block;
+  object-fit: contain;
 }
 
 /* ================================
-   STICKY CTA
-================================ */
-
-.sticky-cta {
-  position: fixed;
-  bottom: 14px;
-  left: 14px;
-  right: 14px;
-  z-index: 999;
-
-  display: flex;
-  justify-content: center;
-
-  pointer-events: none;
-}
-
-/* ================================
-   MOBILE
+   MOBILE FIXES
 ================================ */
 
 @media (max-width: 768px) {
@@ -333,7 +307,11 @@ body {
   }
 
   .ad {
-    height: 130px;
-    margin-top: 4px; /* 🔥 tighter on mobile */
+    margin-top: 4px;
+  }
+
+  .ad img {
+    width: 100%;
+    height: auto;
   }
 }

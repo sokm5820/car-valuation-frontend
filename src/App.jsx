@@ -40,7 +40,7 @@ export default function App() {
     },
     tr: {
       title: "ARAÇ DEĞERLEME",
-      subtitle: "Your vehicle's value in just 4 clicks",
+      subtitle: "Aracınızın değeri sadece 4 adımda",
       restart: "Yeni araç ara",
       back: "Geri",
       step1: "Yıl Seç",
@@ -50,7 +50,7 @@ export default function App() {
     },
     ru: {
       title: "ОЦЕНКА АВТОМОБИЛЯ",
-      subtitle: "Your vehicle's value in just 4 clicks",
+      subtitle: "Оценка за 4 шага",
       restart: "Новый поиск",
       back: "Назад",
       step1: "Выберите год",
@@ -214,9 +214,9 @@ export default function App() {
         </div>
       </div>
 
-      {/* PROGRESS + LABEL (FIXED WRAPPER - REMOVES MOBILE LINE ARTIFACT) */}
+      {/* PROGRESS + LABEL */}
       {step < 5 && (
-        <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+        <div className="step-block">
           <div className="progress">
             <div className="progress-inner" style={{ width: `${progress}%` }} />
           </div>
@@ -283,7 +283,6 @@ export default function App() {
 
           <PriceScatter data={result.scatter} lang={lang} />
 
-          {/* FIXED AD (NO CROPPING EVER) */}
           <div className="ad">
             <a href={ads[adIndex].url} target="_blank" rel="noopener noreferrer">
               <img src={ads[adIndex].img} />
