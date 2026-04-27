@@ -7,7 +7,6 @@ import {
   Tooltip,
   CartesianGrid,
   Label,
-  Legend,
 } from "recharts";
 
 export default function PriceScatter({ data, lang = "en" }) {
@@ -45,18 +44,20 @@ export default function PriceScatter({ data, lang = "en" }) {
   const text = t[lang] || t.en;
 
   // =========================
-  // SAFE DATA NORMALISATION
+  // SAFE DATA (RESTORED LOGIC)
   // =========================
   const safeData = (data || [])
     .map((d) => {
       const price = Number(d.price ?? d.Price);
       const mileage = Number(d.mileage ?? d.KM ?? d.km);
-      const date = d.DATE || d.date || d.Date;
+
+      // IMPORTANT: backend uses DATE (uppercase)
+      const dateRaw = d.DATE ?? d.date ?? d.Date;
 
       return {
         price: Number.isFinite(price) ? Math.round(price) : null,
         mileage: Number.isFinite(mileage) ? Math.round(mileage) : null,
-        date: date ? new Date(date) : null,
+        date: dateRaw ? new Date(dateRaw) : null,
       };
     })
     .filter((d) => d.price > 0 && d.mileage > 0);
@@ -65,7 +66,7 @@ export default function PriceScatter({ data, lang = "en" }) {
     return (
       <div
         style={{
-          height: 320,
+          height: 300,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -79,32 +80,40 @@ export default function PriceScatter({ data, lang = "en" }) {
   }
 
   // =========================
-  // ACTIVE / REMOVED SPLIT
+  // ACTIVE / REMOVED SPLIT (SAFE)
   // =========================
-  const maxDate = Math.max(...safeData.map((d) => d.date?.getTime() || 0));
+  const validDates = safeData
+    .map((d) => d.date?.getTime())
+    .filter(Boolean);
 
-  const active = safeData.filter(
-    (d) => d.date && d.date.getTime() === maxDate
-  );
+  const maxDate = validDates.length ? Math.max(...validDates) : null;
 
-  const removed = safeData.filter(
-    (d) => d.date && d.date.getTime() !== maxDate
-  );
+  const active = maxDate
+    ? safeData.filter((d) => d.date?.getTime() === maxDate)
+    : safeData;
+
+  const removed = maxDate
+    ? safeData.filter((d) => d.date?.getTime() !== maxDate)
+    : [];
 
   // =========================
-  // AXIS SCALE
+  // AXIS SCALE (UNCHANGED)
   // =========================
   const STEP = 20000;
   const maxPrice = Math.max(...safeData.map((d) => d.price));
   const yMax = (Math.floor(maxPrice / STEP) + 1) * STEP;
-  const yTicks = Array.from({ length: yMax / STEP + 1 }, (_, i) => i * STEP);
+
+  const yTicks = Array.from(
+    { length: yMax / STEP + 1 },
+    (_, i) => i * STEP
+  );
 
   return (
     <div
       style={{
         display: "flex",
         width: "100%",
-        height: 340,
+        height: 350,
         gap: 12,
       }}
     >
@@ -117,8 +126,8 @@ export default function PriceScatter({ data, lang = "en" }) {
             margin={{
               top: 10,
               right: 10,
-              left: 60,
               bottom: 20,
+              left: 55, // keeps axis labels visible
             }}
           >
             <CartesianGrid stroke="#e2e8f0" strokeDasharray="4 4" />
@@ -153,7 +162,7 @@ export default function PriceScatter({ data, lang = "en" }) {
                 value={text.price}
                 angle={-90}
                 position="left"
-                offset={12}
+                offset={10}
                 style={{ fill: "#64748b", fontSize: 12 }}
               />
             </YAxis>
@@ -170,16 +179,16 @@ export default function PriceScatter({ data, lang = "en" }) {
                     style={{
                       background: "white",
                       border: "1px solid #e5e7eb",
-                      borderRadius: 12,
-                      padding: "10px 12px",
+                      borderRadius: 10,
+                      padding: 8,
                       fontSize: 12,
-                      boxShadow: "0 10px 24px rgba(15,23,42,0.08)",
+                      boxShadow: "0 10px 24px rgba(0,0,0,0.08)",
                     }}
                   >
-                    <div style={{ fontWeight: 700, fontSize: 13 }}>
+                    <div style={{ fontWeight: 600 }}>
                       £{p.price.toLocaleString()}
                     </div>
-                    <div style={{ color: "#64748b", fontSize: 11, marginTop: 2 }}>
+                    <div style={{ color: "#64748b", fontSize: 11 }}>
                       {p.mileage.toLocaleString()} km
                     </div>
                   </div>
@@ -194,16 +203,16 @@ export default function PriceScatter({ data, lang = "en" }) {
       </div>
 
       {/* =========================
-          LEGEND (RIGHT SIDE STACKED)
+          LEGEND (RIGHT SIDE, VERTICAL)
       ========================= */}
       <div
         style={{
-          width: 140,
+          width: 160,
           display: "flex",
           flexDirection: "column",
           justifyContent: "flex-start",
           paddingTop: 10,
-          gap: 10,
+          gap: 12,
           fontSize: 12,
           color: "#64748b",
         }}
