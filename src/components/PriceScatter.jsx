@@ -7,7 +7,9 @@ import {
   Tooltip,
   CartesianGrid,
   Label,
+  Legend,
 } from "recharts";
+import { useMemo } from "react";
 
 export default function PriceScatter({ data, lang = "en" }) {
   const t = {
@@ -15,7 +17,7 @@ export default function PriceScatter({ data, lang = "en" }) {
       mileage: "Mileage (km)",
       price: "Price (£)",
       active: "Active listings",
-      removed: "Recently removed listings",
+      removed: "Recently removed",
       noData: "No data available",
     },
     tr: {
@@ -28,33 +30,48 @@ export default function PriceScatter({ data, lang = "en" }) {
     ru: {
       mileage: "Пробег (км)",
       price: "Цена (£)",
-      active: "Активные объявления",
-      removed: "Недавние удалённые",
+      active: "Активные",
+      removed: "Удалённые",
       noData: "Нет данных",
     },
   };
 
   const text = t[lang] || t.en;
 
-  // -------------------------------
-  // NORMALISE DATA
-  // -------------------------------
-  const safeData = (data || [])
-    .map((d) => {
-      const price = Number(d.price ?? d.Price);
-      const mileage = Number(d.mileage ?? d.KM ?? d.km);
-      const date = d.date ? new Date(d.date).getTime() : null;
+  const { active, removed } = useMemo(() => {
+    if (!Array.isArray(data)) return { active: [], removed: [] };
 
-      return {
-        price: Number.isFinite(price) ? Math.round(price) : null,
-        mileage: Number.isFinite(mileage) ? Math.round(mileage) : null,
-        date: Number.isFinite(date) ? date : null,
-      };
-    })
-    .filter((d) => d.price > 0 && d.mileage > 0 && d.date)
-    .sort((a, b) => a.mileage - b.mileage);
+    const normalized = data
+      .map((d) => {
+        const price = Number(d.price ?? d.Price);
+        const mileage = Number(d.mileage ?? d.KM ?? d.km);
+        const date = new Date(d.DATE || d.date || d.Date);
 
-  if (!safeData.length) {
+        if (!Number.isFinite(price) || !Number.isFinite(mileage) || isNaN(date)) {
+          return null;
+        }
+
+        return {
+          price: Math.round(price),
+          mileage: Math.round(mileage),
+          date,
+        };
+      })
+      .filter(Boolean);
+
+    if (!normalized.length) return { active: [], removed: [] };
+
+    const maxDate = new Date(
+      Math.max(...normalized.map((d) => d.date.getTime()))
+    ).getTime();
+
+    const active = normalized.filter((d) => d.date.getTime() === maxDate);
+    const removed = normalized.filter((d) => d.date.getTime() !== maxDate);
+
+    return { active, removed };
+  }, [data]);
+
+  if (!active.length && !removed.length) {
     return (
       <div
         style={{
@@ -71,62 +88,41 @@ export default function PriceScatter({ data, lang = "en" }) {
     );
   }
 
-  // -------------------------------
-  // SPLIT BY MAX DATE (KEY LOGIC FIX)
-  // -------------------------------
-  const maxDate = Math.max(...safeData.map((d) => d.date));
-
-  const activeListings = safeData.filter((d) => d.date === maxDate);
-  const removedListings = safeData.filter((d) => d.date < maxDate);
-
-  // -------------------------------
-  // Y AXIS SCALING
-  // -------------------------------
+  const allPrices = [...active, ...removed].map((d) => d.price);
+  const maxPrice = Math.max(...allPrices);
   const STEP = 20000;
-  const maxPrice = Math.max(...safeData.map((d) => d.price));
   const yMax = (Math.floor(maxPrice / STEP) + 1) * STEP;
-
   const yTicks = Array.from({ length: yMax / STEP + 1 }, (_, i) => i * STEP);
 
   return (
     <div
       style={{
         width: "100%",
-        height: 320,
+        height: 340,
         display: "flex",
-        gap: 14,
-        marginTop: 6,
-        marginBottom: 0,
+        gap: 12,
+        alignItems: "stretch",
       }}
     >
-      {/* ================= CHART ================= */}
-      <div style={{ flex: 1, minWidth: 0 }}>
+      {/* CHART */}
+      <div style={{ flex: 1 }}>
         <ResponsiveContainer width="100%" height="100%">
           <ScatterChart
-            margin={{
-              top: 10,
-              right: 5,
-              bottom: 10,
-              left: 5,
-            }}
+            margin={{ top: 10, right: 10, bottom: 20, left: 10 }}
           >
-            <CartesianGrid
-              stroke="#eef2f7"
-              strokeDasharray="3 3"
-              vertical={false}
-            />
+            <CartesianGrid stroke="#e2e8f0" strokeDasharray="3 3" />
 
             <XAxis
               type="number"
               dataKey="mileage"
-              tick={false}
-              axisLine={false}
+              tick={{ fontSize: 11, fill: "#94a3b8" }}
+              axisLine={{ stroke: "#e2e8f0" }}
               tickLine={false}
             >
               <Label
                 value={text.mileage}
-                position="insideBottom"
                 offset={-5}
+                position="insideBottom"
                 style={{ fill: "#64748b", fontSize: 11 }}
               />
             </XAxis>
@@ -137,23 +133,21 @@ export default function PriceScatter({ data, lang = "en" }) {
               domain={[0, yMax]}
               ticks={yTicks}
               tick={{ fontSize: 11, fill: "#94a3b8" }}
-              axisLine={false}
+              axisLine={{ stroke: "#e2e8f0" }}
               tickLine={false}
             >
               <Label
                 value={text.price}
                 angle={-90}
                 position="insideLeft"
-                offset={10}
                 style={{ fill: "#64748b", fontSize: 11 }}
               />
             </YAxis>
 
             <Tooltip
-              cursor={{ stroke: "#2563eb", strokeWidth: 1, opacity: 0.2 }}
+              cursor={{ stroke: "#2563eb", strokeWidth: 1 }}
               content={({ active, payload }) => {
                 if (!active || !payload?.length) return null;
-
                 const p = payload[0].payload;
 
                 return (
@@ -161,16 +155,16 @@ export default function PriceScatter({ data, lang = "en" }) {
                     style={{
                       background: "white",
                       border: "1px solid #e2e8f0",
-                      borderRadius: 12,
-                      padding: "8px 10px",
+                      borderRadius: 10,
+                      padding: 8,
                       fontSize: 12,
-                      boxShadow: "0 10px 24px rgba(15, 23, 42, 0.08)",
+                      boxShadow: "0 10px 25px rgba(0,0,0,0.06)",
                     }}
                   >
                     <div style={{ fontWeight: 700 }}>
                       £{p.price.toLocaleString()}
                     </div>
-                    <div style={{ color: "#64748b", marginTop: 2 }}>
+                    <div style={{ color: "#64748b" }}>
                       {p.mileage.toLocaleString()} km
                     </div>
                   </div>
@@ -178,61 +172,110 @@ export default function PriceScatter({ data, lang = "en" }) {
               }}
             />
 
-            {/* ACTIVE LISTINGS */}
+            {/* ACTIVE */}
             <Scatter
               name="active"
-              data={activeListings}
+              data={active}
               fill="#2563eb"
-              fillOpacity={0.8}
+              shape={(props) => {
+                const { cx, cy } = props;
+                return (
+                  <circle
+                    cx={cx}
+                    cy={cy}
+                    r={4}
+                    fill="#2563eb"
+                    style={{
+                      opacity: 0,
+                      transform: "scale(0.6)",
+                      animation: "fadeInPoint 500ms ease forwards",
+                    }}
+                  />
+                );
+              }}
             />
 
-            {/* REMOVED LISTINGS */}
+            {/* REMOVED */}
             <Scatter
               name="removed"
-              data={removedListings}
+              data={removed}
               fill="#94a3b8"
-              fillOpacity={0.6}
+              shape={(props) => {
+                const { cx, cy } = props;
+                return (
+                  <circle
+                    cx={cx}
+                    cy={cy}
+                    r={3}
+                    fill="#94a3b8"
+                    style={{
+                      opacity: 0,
+                      transform: "scale(0.6)",
+                      animation: "fadeInPoint 650ms ease forwards",
+                    }}
+                  />
+                );
+              }}
             />
           </ScatterChart>
         </ResponsiveContainer>
       </div>
 
-      {/* ================= LEGEND (RIGHT SIDE) ================= */}
+      {/* LEGEND (RIGHT SIDE PREMIUM PANEL) */}
       <div
         style={{
-          width: 150,
+          width: 140,
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
-          gap: 12,
-          fontSize: 12,
-          color: "#64748b",
+          gap: 10,
+          paddingLeft: 6,
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span
+        <div style={{ fontSize: 11, color: "#64748b", fontWeight: 600 }}>
+          LEGEND
+        </div>
+
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <div
             style={{
-              width: 10,
-              height: 10,
-              borderRadius: 999,
+              width: 8,
+              height: 8,
+              borderRadius: 99,
               background: "#2563eb",
             }}
           />
-          {text.active}
+          <div style={{ fontSize: 12 }}>{text.active}</div>
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <div
             style={{
-              width: 10,
-              height: 10,
-              borderRadius: 999,
+              width: 8,
+              height: 8,
+              borderRadius: 99,
               background: "#94a3b8",
             }}
           />
-          {text.removed}
+          <div style={{ fontSize: 12 }}>{text.removed}</div>
         </div>
       </div>
+
+      {/* ANIMATION */}
+      <style>
+        {`
+          @keyframes fadeInPoint {
+            from {
+              opacity: 0;
+              transform: scale(0.6);
+            }
+            to {
+              opacity: 1;
+              transform: scale(1);
+            }
+          }
+        `}
+      </style>
     </div>
   );
 }
