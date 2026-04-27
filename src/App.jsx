@@ -22,7 +22,6 @@ export default function App() {
     localStorage.getItem("lang") || "tr"
   );
 
-  // 🔥 ONLY CHANGE: production backend
   const API = "https://car-valuation-backend.onrender.com";
 
   const changeLang = (l) => {
@@ -54,14 +53,6 @@ export default function App() {
       restart: "Новый поиск",
       back: "Назад",
       loading: "Загрузка...",
-    },
-    ar: {
-      title: "تقييم المركبة",
-      subtitle: "تسعير السوق خطوة بخطوة",
-      getValuation: "احصل على التقييم",
-      restart: "بحث جديد",
-      back: "رجوع",
-      loading: "جار التحميل...",
     },
   };
 
@@ -212,7 +203,7 @@ export default function App() {
         </div>
       </div>
 
-      {/* HEADER + LANGUAGE ROW */}
+      {/* HEADER + LANGUAGE */}
       <div
         style={{
           display: "flex",
@@ -252,6 +243,7 @@ export default function App() {
             alignItems: "flex-end",
           }}
         >
+          {/* ✅ REMOVED ARABIC */}
           <div
             style={{
               display: "flex",
@@ -262,7 +254,7 @@ export default function App() {
               border: "1px solid #e2e8f0",
             }}
           >
-            {["tr", "en", "ru", "ar"].map((l) => (
+            {["tr", "en", "ru"].map((l) => (
               <button
                 key={l}
                 onClick={() => changeLang(l)}
@@ -302,7 +294,7 @@ export default function App() {
         </div>
       </div>
 
-      {/* PROGRESS BAR */}
+      {/* PROGRESS */}
       {step < 5 && (
         <div
           style={{
@@ -327,10 +319,16 @@ export default function App() {
 
       {loading && <p>{text.loading}</p>}
 
+      {/* ✅ BUTTONS NOW CENTER TEXT */}
       {step === 1 && (
         <div className="step-column">
           {years.map((y) => (
-            <button key={y} onClick={() => handleYear(y)} className="btn">
+            <button
+              key={y}
+              onClick={() => handleYear(y)}
+              className="btn"
+              style={{ textAlign: "center" }}
+            >
               {y}
             </button>
           ))}
@@ -340,7 +338,12 @@ export default function App() {
       {step === 2 && (
         <div className="step-column">
           {brands.map((b) => (
-            <button key={b} onClick={() => handleBrand(b)} className="btn">
+            <button
+              key={b}
+              onClick={() => handleBrand(b)}
+              className="btn"
+              style={{ textAlign: "center" }}
+            >
               {b}
             </button>
           ))}
@@ -350,7 +353,12 @@ export default function App() {
       {step === 3 && (
         <div className="step-column">
           {models.map((m) => (
-            <button key={m} onClick={() => handleModel(m)} className="btn">
+            <button
+              key={m}
+              onClick={() => handleModel(m)}
+              className="btn"
+              style={{ textAlign: "center" }}
+            >
               {m}
             </button>
           ))}
@@ -360,7 +368,12 @@ export default function App() {
       {step === 4 && (
         <div className="step-column">
           {categories.map((c) => (
-            <button key={c} onClick={() => setCategory(c)} className="btn">
+            <button
+              key={c}
+              onClick={() => setCategory(c)}
+              className="btn"
+              style={{ textAlign: "center" }}
+            >
               {c}
             </button>
           ))}
