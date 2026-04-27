@@ -159,16 +159,30 @@ export default function App() {
   return (
     <div className="app-container">
 
-      {/* HEADER FIXED ALIGNMENT */}
+      {/* HEADER */}
       <div className="header-row">
 
-        {/* LEFT: TITLE */}
+        {/* LEFT SIDE */}
         <div style={{ textAlign: "left" }}>
+
+          {/* LOGO + USERNAME (RESTORED) */}
+          <div className="logo-row">
+            <div style={{
+              width: 18,
+              height: 18,
+              borderRadius: 6,
+              background: "#2563eb"
+            }} />
+            <div className="username">test.user</div>
+          </div>
+
+          {/* TITLE */}
           <div className="title">{text.title}</div>
           <div className="subtitle">{text.subtitle}</div>
+
         </div>
 
-        {/* RIGHT: LANG + BACK STACKED */}
+        {/* RIGHT SIDE */}
         <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6 }}>
 
           <div style={{ display: "flex", gap: 6 }}>
@@ -248,7 +262,7 @@ export default function App() {
         </div>
       )}
 
-      {/* VALUATION */}
+      {/* RESULT */}
       {step === 5 && result && (
         <div className="result">
 
