@@ -18,9 +18,7 @@ export default function App() {
   const [result, setResult] = useState(null);
   const [animatedValue, setAnimatedValue] = useState(0);
 
-  const [lang, setLang] = useState(
-    localStorage.getItem("lang") || "tr"
-  );
+  const [lang, setLang] = useState(localStorage.getItem("lang") || "tr");
 
   const API = "https://car-valuation-backend.onrender.com";
 
@@ -125,14 +123,7 @@ export default function App() {
     setStep(5);
   };
 
-  const goBack = () => {
-    if (step === 4) setStep(3), setCategory("");
-    else if (step === 3) setStep(2), setModel("");
-    else if (step === 2) setStep(1), setBrand("");
-  };
-
-  // 🔥 FIX: true restart (not back navigation)
-  const restartFlow = () => {
+  const resetFlow = () => {
     setStep(1);
     setYear("");
     setBrand("");
@@ -140,6 +131,12 @@ export default function App() {
     setCategory("");
     setResult(null);
     setAnimatedValue(0);
+  };
+
+  const goBack = () => {
+    if (step === 4) setStep(3);
+    else if (step === 3) setStep(2);
+    else if (step === 2) setStep(1);
   };
 
   useEffect(() => {
@@ -162,57 +159,38 @@ export default function App() {
   return (
     <div className="app-container">
 
-      {/* 🔥 RESTORED HEADER (LOGO + USERNAME) */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      {/* HEADER FIXED ALIGNMENT */}
+      <div className="header-row">
 
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <img
-            src="https://res.cloudinary.com/dtaihpiwt/image/upload/v1777154527/SHOPTECH_LOGO_9_hnwij5.png"
-            style={{ height: 22 }}
-          />
-          <div style={{ fontSize: 12, color: "#64748b" }}>
-            @analist.kibris
+        {/* LEFT: TITLE */}
+        <div style={{ textAlign: "left" }}>
+          <div className="title">{text.title}</div>
+          <div className="subtitle">{text.subtitle}</div>
+        </div>
+
+        {/* RIGHT: LANG + BACK STACKED */}
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6 }}>
+
+          <div style={{ display: "flex", gap: 6 }}>
+            {["tr", "en", "ru"].map((l) => (
+              <button
+                key={l}
+                onClick={() => changeLang(l)}
+                className={`lang-btn ${lang === l ? "active" : ""}`}
+              >
+                {l.toUpperCase()}
+              </button>
+            ))}
           </div>
-        </div>
 
-        <div style={{ display: "flex", gap: 6 }}>
-          {["tr", "en", "ru"].map((l) => (
-            <button
-              key={l}
-              onClick={() => changeLang(l)}
-              style={{
-                background: lang === l ? "#2563eb" : "#f1f5f9",
-                color: lang === l ? "white" : "#475569",
-                borderRadius: 999,
-                border: "none",
-                padding: "6px 10px",
-                fontSize: 11,
-                fontWeight: 600,
-              }}
-            >
-              {l.toUpperCase()}
+          {step > 1 && step < 5 && (
+            <button onClick={goBack} className="back-btn">
+              ← {text.back}
             </button>
-          ))}
-        </div>
+          )}
 
-      </div>
-
-      {/* HEADER TEXT */}
-      <div>
-        <div style={{ fontSize: 18, fontWeight: 800 }}>
-          {text.title}
-        </div>
-        <div style={{ fontSize: 12, color: "#2563eb", marginTop: 2 }}>
-          {text.subtitle}
         </div>
       </div>
-
-      {/* BACK BUTTON */}
-      {step > 1 && step < 5 && (
-        <button onClick={goBack} className="back-btn">
-          ← {text.back}
-        </button>
-      )}
 
       {/* PROGRESS */}
       {step < 5 && (
@@ -262,14 +240,7 @@ export default function App() {
           ))}
 
           {category && (
-            <button
-              onClick={getValuation}
-              className="btn-primary"
-              style={{
-                marginTop: 10,
-                width: "100%",
-              }}
-            >
+            <button onClick={getValuation} className="btn-primary">
               {text.getValuation}
             </button>
           )}
@@ -281,9 +252,7 @@ export default function App() {
       {step === 5 && result && (
         <div className="result">
 
-          <h1>
-            £{animatedValue.toLocaleString()}
-          </h1>
+          <h1>£{animatedValue.toLocaleString()}</h1>
 
           <p>
             £{result.min_price.toLocaleString()} – £{result.max_price.toLocaleString()}
@@ -291,16 +260,13 @@ export default function App() {
 
           <PriceScatter data={result.scatter} lang={lang} />
 
-          <div style={{ marginTop: 10, height: 150, borderRadius: 14, overflow: "hidden" }}>
+          <div className="ad">
             <a href={ads[adIndex].url} target="_blank" rel="noopener noreferrer">
-              <img
-                src={ads[adIndex].img}
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              />
+              <img src={ads[adIndex].img} />
             </a>
           </div>
 
-          <button onClick={restartFlow} className="btn-primary">
+          <button onClick={resetFlow} className="btn-primary">
             {text.restart}
           </button>
 
