@@ -17,18 +17,18 @@ body {
 }
 
 /* ================================
-   GLOBAL PAGE WRAPPER (KEY FIX)
+   GLOBAL CONTAINER
 ================================ */
 
 .app-container {
   width: 100%;
-  max-width: 1040px; /* 🔥 expanded to match valuation feel */
+  max-width: 1040px;
   margin: 0 auto;
   padding: 32px 28px;
 
   display: flex;
   flex-direction: column;
-  gap: 22px; /* 🔥 consistent vertical spacing across ALL pages */
+  gap: 18px;
 }
 
 /* ================================
@@ -39,14 +39,6 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-
-  margin-bottom: 4px; /* tighter + more premium */
-}
-
-.header-left {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
 }
 
 .title {
@@ -61,27 +53,7 @@ body {
 }
 
 /* ================================
-   LOGO
-================================ */
-
-.logo-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 6px;
-}
-
-.logo-row img {
-  height: 24px;
-}
-
-.username {
-  font-size: 12px;
-  color: #64748b;
-}
-
-/* ================================
-   LANGUAGE
+   LANGUAGE SWITCH
 ================================ */
 
 .lang-box {
@@ -114,7 +86,6 @@ body {
 ================================ */
 
 .back-btn {
-  margin-top: 4px;
   font-size: 12px;
   color: #2563eb;
   background: transparent;
@@ -123,12 +94,8 @@ body {
   font-weight: 600;
 }
 
-.back-btn:hover {
-  opacity: 0.7;
-}
-
 /* ================================
-   PROGRESS BAR
+   PROGRESS
 ================================ */
 
 .progress {
@@ -137,23 +104,21 @@ body {
   background: #e2e8f0;
   border-radius: 999px;
   overflow: hidden;
-  margin: 6px 0 10px;
 }
 
 .progress-inner {
   height: 100%;
   background: linear-gradient(90deg, #2563eb, #60a5fa);
-  transition: width 0.3s ease;
 }
 
 /* ================================
-   STEP LAYOUT (IMPORTANT FIX)
+   STEP BUTTONS (BASE)
 ================================ */
 
 .step-column {
   display: flex;
   flex-direction: column;
-  gap: 12px; /* consistent spacing between buttons */
+  gap: 10px;
 }
 
 /* ================================
@@ -170,58 +135,37 @@ body {
 
   font-size: 14px;
   font-weight: 500;
-
   text-align: center;
 
   cursor: pointer;
-  transition: all 0.15s ease;
 }
-
-.btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
-  border-color: #cbd5e1;
-}
-
-/* PRIMARY BUTTON */
 
 .btn-primary {
-  width: 100%;
   padding: 14px;
   border-radius: 14px;
-
   border: none;
+
   background: #2563eb;
   color: white;
 
   font-size: 14px;
   font-weight: 600;
-
-  text-align: center;
-
-  cursor: pointer;
-}
-
-.btn-primary:hover {
-  background: #1d4ed8;
 }
 
 /* ================================
-   RESULT (VALUATION PAGE FEEL)
+   RESULT (VALUATION SCREEN)
 ================================ */
 
 .result {
   text-align: center;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 10px 0;
+  gap: 8px;
 }
 
 .result h1 {
-  font-size: 38px; /* slightly larger = more premium */
+  font-size: 38px;
   font-weight: 800;
-  letter-spacing: -0.5px;
 }
 
 .result p {
@@ -233,7 +177,6 @@ body {
 ================================ */
 
 .ad {
-  margin-top: 14px;
   height: 170px;
   border-radius: 14px;
   overflow: hidden;
@@ -246,10 +189,104 @@ body {
 }
 
 /* ================================
-   LOADING
+   ================================
+   📱 MOBILE OPTIMIZATION
+   ================================
 ================================ */
 
-.loading {
-  font-size: 10px;
-  color: #64748b;
+@media (max-width: 768px) {
+
+  .app-container {
+    padding: 18px 14px;
+    gap: 14px;
+  }
+
+  /* HEADER tighter */
+  .title {
+    font-size: 22px;
+  }
+
+  .subtitle {
+    font-size: 12px;
+  }
+
+  /* Language smaller */
+  .lang-btn {
+    font-size: 11px;
+    padding: 5px 8px;
+  }
+
+  /* Progress tighter */
+  .progress {
+    height: 5px;
+  }
+
+  /* Buttons slightly smaller */
+  .btn {
+    padding: 12px;
+    font-size: 13px;
+    border-radius: 12px;
+  }
+
+  .btn-primary {
+    padding: 12px;
+    font-size: 13px;
+  }
+
+  /* RESULT scales down (VERY IMPORTANT for one-screen fit) */
+  .result h1 {
+    font-size: 28px;
+  }
+
+  .result p {
+    font-size: 13px;
+  }
+
+  /* AD smaller */
+  .ad {
+    height: 140px;
+  }
+
+  /* ================================
+     YEAR / OPTION GRID FIX (KEY CHANGE)
+     ================================ */
+
+  .step-column {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  /* Make buttons feel like pills on mobile */
+  .step-column .btn {
+    border-radius: 999px;
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+
+}
+
+/* ================================
+   EXTRA SMALL PHONES
+================================ */
+
+@media (max-width: 420px) {
+
+  .title {
+    font-size: 20px;
+  }
+
+  .result h1 {
+    font-size: 24px;
+  }
+
+  .step-column {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .step-column .btn {
+    font-size: 11px;
+    padding: 9px 10px;
+  }
 }
