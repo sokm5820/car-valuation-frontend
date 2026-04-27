@@ -77,8 +77,12 @@ export default function PriceScatter({ data, lang = "en" }) {
   }
 
   const STEP = 20000;
+
   const maxPrice = Math.max(...safeData.map((d) => d.price));
-  const yMax = (Math.floor(maxPrice / STEP) + 2) * STEP;
+
+  // ✅ FIX 1: dynamic headroom instead of +2 STEP padding
+  const yMaxRaw = maxPrice * 1.1; // 10% padding above max
+  const yMax = Math.ceil(yMaxRaw / STEP) * STEP;
 
   const yTicks = Array.from(
     { length: yMax / STEP + 1 },
@@ -127,7 +131,7 @@ export default function PriceScatter({ data, lang = "en" }) {
             />
           </XAxis>
 
-          {/* Y AXIS (ONLY CHANGE IS HERE) */}
+          {/* Y AXIS (FIXED SCALING) */}
           <YAxis
             type="number"
             dataKey="price"
