@@ -174,15 +174,7 @@ export default function App() {
 
       {/* HEADER */}
       <div style={{ position: "relative", fontFamily: "Poppins, sans-serif" }}>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-            marginTop: 6,
-            marginBottom: 6,
-          }}
-        >
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 6, marginBottom: 6 }}>
           <img
             src="https://res.cloudinary.com/dtaihpiwt/image/upload/v1777154527/SHOPTECH_LOGO_9_hnwij5.png"
             style={{ height: 24 }}
@@ -222,9 +214,9 @@ export default function App() {
         </div>
       </div>
 
-      {/* PROGRESS + STEP LABEL (FIXED WRAP TO REMOVE GREY LINE BUG) */}
+      {/* PROGRESS + LABEL (FIXED WRAPPER - REMOVES MOBILE LINE ARTIFACT) */}
       {step < 5 && (
-        <div style={{ display: "flex", flexDirection: "column" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
           <div className="progress">
             <div className="progress-inner" style={{ width: `${progress}%` }} />
           </div>
@@ -291,6 +283,7 @@ export default function App() {
 
           <PriceScatter data={result.scatter} lang={lang} />
 
+          {/* FIXED AD (NO CROPPING EVER) */}
           <div className="ad">
             <a href={ads[adIndex].url} target="_blank" rel="noopener noreferrer">
               <img src={ads[adIndex].img} />
