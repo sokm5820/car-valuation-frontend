@@ -34,6 +34,7 @@ export default function App() {
       getValuation: "Get valuation",
       restart: "Search another car",
       back: "Back",
+      loading: "Loading...",
     },
     tr: {
       title: "ARAÇ DEĞERLEME",
@@ -41,6 +42,7 @@ export default function App() {
       getValuation: "Değeri getir",
       restart: "Yeni araç ara",
       back: "Geri",
+      loading: "Yükleniyor...",
     },
     ru: {
       title: "ОЦЕНКА АВТОМОБИЛЯ",
@@ -48,6 +50,7 @@ export default function App() {
       getValuation: "Получить оценку",
       restart: "Новый поиск",
       back: "Назад",
+      loading: "Загрузка...",
     },
   };
 
@@ -106,9 +109,12 @@ export default function App() {
     );
 
     const data = await res.json();
-    const normalized = Array.isArray(data) ? data : data.categories || [];
+    const normalized = Array.isArray(data)
+      ? data
+      : data.categories || [];
 
     setCategories(normalized);
+
     setStep(4);
   };
 
@@ -142,14 +148,15 @@ export default function App() {
   useEffect(() => {
     if (!result?.median_price) return;
 
-    const startTime = performance.now();
-    const duration = 900;
+    const start = 0;
     const end = result.median_price;
+    const duration = 900;
+    const startTime = performance.now();
 
     const animate = (t) => {
       const p = Math.min((t - startTime) / duration, 1);
       const eased = 1 - Math.pow(1 - p, 3);
-      setAnimatedValue(Math.floor(end * eased));
+      setAnimatedValue(Math.floor(start + (end - start) * eased));
       if (p < 1) requestAnimationFrame(animate);
     };
 
@@ -159,61 +166,67 @@ export default function App() {
   return (
     <div className="app-container">
 
-      {/* HEADER */}
-      <div className="header-row">
+      {/* ✅ ORIGINAL HEADER RESTORED */}
+      <div style={{ position: "relative", fontFamily: "Poppins, sans-serif" }}>
 
-        {/* LEFT SIDE */}
-        <div style={{ textAlign: "left" }}>
-
-          {/* LOGO + USERNAME (RESTORED) */}
-          <div className="logo-row">
-            <div style={{
-              width: 18,
-              height: 18,
-              borderRadius: 6,
-              background: "#2563eb"
-            }} />
-            <div className="username">test.user</div>
+        {/* LOGO + USERNAME (EXACT ORIGINAL STYLE) */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            marginTop: 6,
+            marginBottom: 6,
+          }}
+        >
+          <img
+            src="https://res.cloudinary.com/dtaihpiwt/image/upload/v1777154527/SHOPTECH_LOGO_9_hnwij5.png"
+            style={{ height: 24, width: "auto" }}
+          />
+          <div style={{ fontSize: 12, color: "#0f172a" }}>
+            @analist.kibris
           </div>
-
-          {/* TITLE */}
-          <div className="title">{text.title}</div>
-          <div className="subtitle">{text.subtitle}</div>
-
         </div>
 
-        {/* RIGHT SIDE */}
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6 }}>
+        {/* TITLE + LANG */}
+        <div className="header-row">
 
-          <div style={{ display: "flex", gap: 6 }}>
-            {["tr", "en", "ru"].map((l) => (
-              <button
-                key={l}
-                onClick={() => changeLang(l)}
-                className={`lang-btn ${lang === l ? "active" : ""}`}
-              >
-                {l.toUpperCase()}
-              </button>
-            ))}
+          <div style={{ textAlign: "left" }}>
+            <div className="title">{text.title}</div>
+            <div className="subtitle">{text.subtitle}</div>
           </div>
 
-          {step > 1 && step < 5 && (
-            <button onClick={goBack} className="back-btn">
-              ← {text.back}
-            </button>
-          )}
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6 }}>
 
+            <div style={{ display: "flex", gap: 6 }}>
+              {["tr", "en", "ru"].map((l) => (
+                <button
+                  key={l}
+                  onClick={() => changeLang(l)}
+                  className={`lang-btn ${lang === l ? "active" : ""}`}
+                >
+                  {l.toUpperCase()}
+                </button>
+              ))}
+            </div>
+
+            {step > 1 && step < 5 && (
+              <button onClick={goBack} className="back-btn">
+                ← {text.back}
+              </button>
+            )}
+
+          </div>
         </div>
       </div>
 
-      {/* PROGRESS */}
+      {/* REST UNCHANGED */}
       {step < 5 && (
         <div className="progress">
           <div className="progress-inner" style={{ width: `${progress}%` }} />
         </div>
       )}
 
-      {/* STEPS */}
       {step === 1 && (
         <div className="step-column">
           {years.map((y) => (
@@ -246,7 +259,6 @@ export default function App() {
 
       {step === 4 && (
         <div className="step-column">
-
           {categories.map((c) => (
             <button key={c} onClick={() => setCategory(c)} className="btn">
               {c}
@@ -258,16 +270,12 @@ export default function App() {
               {text.getValuation}
             </button>
           )}
-
         </div>
       )}
 
-      {/* RESULT */}
       {step === 5 && result && (
         <div className="result">
-
           <h1>£{animatedValue.toLocaleString()}</h1>
-
           <p>
             £{result.min_price.toLocaleString()} – £{result.max_price.toLocaleString()}
           </p>
@@ -283,7 +291,6 @@ export default function App() {
           <button onClick={resetFlow} className="btn-primary">
             {text.restart}
           </button>
-
         </div>
       )}
 
