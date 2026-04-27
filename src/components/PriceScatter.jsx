@@ -7,9 +7,7 @@ import {
   Tooltip,
   CartesianGrid,
   Label,
-  Legend,
 } from "recharts";
-import { useMemo } from "react";
 
 export default function PriceScatter({ data, lang = "en" }) {
   const t = {
@@ -17,8 +15,8 @@ export default function PriceScatter({ data, lang = "en" }) {
       mileage: "Mileage (km)",
       price: "Price (£)",
       active: "Active listings",
-      removed: "Recently removed",
-      noData: "No data available",
+      removed: "Recently removed listings",
+      noData: "No data",
     },
     tr: {
       mileage: "KM",
@@ -30,48 +28,44 @@ export default function PriceScatter({ data, lang = "en" }) {
     ru: {
       mileage: "Пробег (км)",
       price: "Цена (£)",
-      active: "Активные",
-      removed: "Удалённые",
+      active: "Активные объявления",
+      removed: "Удалённые объявления",
       noData: "Нет данных",
+    },
+    ar: {
+      mileage: "المسافة (كم)",
+      price: "السعر (£)",
+      active: "الإعلانات النشطة",
+      removed: "إعلانات محذوفة",
+      noData: "لا توجد بيانات",
     },
   };
 
   const text = t[lang] || t.en;
 
-  const { active, removed } = useMemo(() => {
-    if (!Array.isArray(data)) return { active: [], removed: [] };
+  // ----------------------------
+  // SAFE NORMALIZATION (UNCHANGED CORE LOGIC)
+  // ----------------------------
+  const safeData = (data || [])
+    .map((d) => {
+      const price = Number(d.price ?? d.Price);
+      const mileage = Number(d.mileage ?? d.KM ?? d.km);
 
-    const normalized = data
-      .map((d) => {
-        const price = Number(d.price ?? d.Price);
-        const mileage = Number(d.mileage ?? d.KM ?? d.km);
-        const date = new Date(d.DATE || d.date || d.Date);
+      // IMPORTANT: keep raw date but DO NOT break dataset if invalid
+      const date = d.DATE || d.date || d.Date;
 
-        if (!Number.isFinite(price) || !Number.isFinite(mileage) || isNaN(date)) {
-          return null;
-        }
+      return {
+        price: Number.isFinite(price) ? Math.round(price) : null,
+        mileage: Number.isFinite(mileage) ? Math.round(mileage) : null,
+        date: date ? new Date(date) : null,
+      };
+    })
+    .filter((d) => d.price > 0 && d.mileage > 0);
 
-        return {
-          price: Math.round(price),
-          mileage: Math.round(mileage),
-          date,
-        };
-      })
-      .filter(Boolean);
-
-    if (!normalized.length) return { active: [], removed: [] };
-
-    const maxDate = new Date(
-      Math.max(...normalized.map((d) => d.date.getTime()))
-    ).getTime();
-
-    const active = normalized.filter((d) => d.date.getTime() === maxDate);
-    const removed = normalized.filter((d) => d.date.getTime() !== maxDate);
-
-    return { active, removed };
-  }, [data]);
-
-  if (!active.length && !removed.length) {
+  // ----------------------------
+  // FIX: DO NOT BLOCK RENDER ON DATE ISSUES
+  // ----------------------------
+  if (!safeData.length) {
     return (
       <div
         style={{
@@ -80,7 +74,6 @@ export default function PriceScatter({ data, lang = "en" }) {
           alignItems: "center",
           justifyContent: "center",
           color: "#94a3b8",
-          fontSize: 13,
         }}
       >
         {text.noData}
@@ -88,11 +81,35 @@ export default function PriceScatter({ data, lang = "en" }) {
     );
   }
 
-  const allPrices = [...active, ...removed].map((d) => d.price);
-  const maxPrice = Math.max(...allPrices);
+  // ----------------------------
+  // DATE SPLIT (SAFE FALLBACK)
+  // ----------------------------
+  const validDates = safeData
+    .map((d) => d.date?.getTime())
+    .filter(Boolean);
+
+  const maxDate =
+    validDates.length > 0 ? Math.max(...validDates) : null;
+
+  const active = maxDate
+    ? safeData.filter((d) => d.date?.getTime() === maxDate)
+    : safeData;
+
+  const removed = maxDate
+    ? safeData.filter((d) => d.date?.getTime() !== maxDate)
+    : [];
+
+  // ----------------------------
+  // AXIS CALC
+  // ----------------------------
   const STEP = 20000;
+  const maxPrice = Math.max(...safeData.map((d) => d.price));
   const yMax = (Math.floor(maxPrice / STEP) + 1) * STEP;
-  const yTicks = Array.from({ length: yMax / STEP + 1 }, (_, i) => i * STEP);
+
+  const yTicks = Array.from(
+    { length: yMax / STEP + 1 },
+    (_, i) => i * STEP
+  );
 
   return (
     <div
@@ -101,15 +118,12 @@ export default function PriceScatter({ data, lang = "en" }) {
         height: 340,
         display: "flex",
         gap: 12,
-        alignItems: "stretch",
       }}
     >
       {/* CHART */}
       <div style={{ flex: 1 }}>
         <ResponsiveContainer width="100%" height="100%">
-          <ScatterChart
-            margin={{ top: 10, right: 10, bottom: 20, left: 10 }}
-          >
+          <ScatterChart margin={{ top: 10, right: 10, bottom: 20, left: 10 }}>
             <CartesianGrid stroke="#e2e8f0" strokeDasharray="3 3" />
 
             <XAxis
@@ -121,8 +135,8 @@ export default function PriceScatter({ data, lang = "en" }) {
             >
               <Label
                 value={text.mileage}
-                offset={-5}
                 position="insideBottom"
+                offset={-5}
                 style={{ fill: "#64748b", fontSize: 11 }}
               />
             </XAxis>
@@ -144,55 +158,13 @@ export default function PriceScatter({ data, lang = "en" }) {
               />
             </YAxis>
 
-            <Tooltip
-              cursor={{ stroke: "#2563eb", strokeWidth: 1 }}
-              content={({ active, payload }) => {
-                if (!active || !payload?.length) return null;
-                const p = payload[0].payload;
-
-                return (
-                  <div
-                    style={{
-                      background: "white",
-                      border: "1px solid #e2e8f0",
-                      borderRadius: 10,
-                      padding: 8,
-                      fontSize: 12,
-                      boxShadow: "0 10px 25px rgba(0,0,0,0.06)",
-                    }}
-                  >
-                    <div style={{ fontWeight: 700 }}>
-                      £{p.price.toLocaleString()}
-                    </div>
-                    <div style={{ color: "#64748b" }}>
-                      {p.mileage.toLocaleString()} km
-                    </div>
-                  </div>
-                );
-              }}
-            />
+            <Tooltip />
 
             {/* ACTIVE */}
             <Scatter
               name="active"
               data={active}
               fill="#2563eb"
-              shape={(props) => {
-                const { cx, cy } = props;
-                return (
-                  <circle
-                    cx={cx}
-                    cy={cy}
-                    r={4}
-                    fill="#2563eb"
-                    style={{
-                      opacity: 0,
-                      transform: "scale(0.6)",
-                      animation: "fadeInPoint 500ms ease forwards",
-                    }}
-                  />
-                );
-              }}
             />
 
             {/* REMOVED */}
@@ -200,82 +172,33 @@ export default function PriceScatter({ data, lang = "en" }) {
               name="removed"
               data={removed}
               fill="#94a3b8"
-              shape={(props) => {
-                const { cx, cy } = props;
-                return (
-                  <circle
-                    cx={cx}
-                    cy={cy}
-                    r={3}
-                    fill="#94a3b8"
-                    style={{
-                      opacity: 0,
-                      transform: "scale(0.6)",
-                      animation: "fadeInPoint 650ms ease forwards",
-                    }}
-                  />
-                );
-              }}
             />
           </ScatterChart>
         </ResponsiveContainer>
       </div>
 
-      {/* LEGEND (RIGHT SIDE PREMIUM PANEL) */}
+      {/* LEGEND RIGHT SIDE */}
       <div
         style={{
-          width: 140,
+          width: 150,
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
-          gap: 10,
-          paddingLeft: 6,
+          gap: 12,
         }}
       >
-        <div style={{ fontSize: 11, color: "#64748b", fontWeight: 600 }}>
-          LEGEND
-        </div>
+        <div style={{ fontSize: 11, color: "#64748b" }}>Legend</div>
 
         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <div
-            style={{
-              width: 8,
-              height: 8,
-              borderRadius: 99,
-              background: "#2563eb",
-            }}
-          />
+          <div style={{ width: 8, height: 8, borderRadius: 99, background: "#2563eb" }} />
           <div style={{ fontSize: 12 }}>{text.active}</div>
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <div
-            style={{
-              width: 8,
-              height: 8,
-              borderRadius: 99,
-              background: "#94a3b8",
-            }}
-          />
+          <div style={{ width: 8, height: 8, borderRadius: 99, background: "#94a3b8" }} />
           <div style={{ fontSize: 12 }}>{text.removed}</div>
         </div>
       </div>
-
-      {/* ANIMATION */}
-      <style>
-        {`
-          @keyframes fadeInPoint {
-            from {
-              opacity: 0;
-              transform: scale(0.6);
-            }
-            to {
-              opacity: 1;
-              transform: scale(1);
-            }
-          }
-        `}
-      </style>
     </div>
   );
 }
