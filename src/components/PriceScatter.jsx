@@ -47,9 +47,6 @@ export default function PriceScatter({ data, lang = "en" }) {
 
   const text = t[lang] || t.en;
 
-  // -----------------------------
-  // DATA NORMALISATION (SAFE)
-  // -----------------------------
   const safeData = (data || [])
     .map((d) => {
       const price = Number(d.price ?? d.Price);
@@ -79,9 +76,6 @@ export default function PriceScatter({ data, lang = "en" }) {
     );
   }
 
-  // -----------------------------
-  // AXIS SCALING
-  // -----------------------------
   const STEP = 20000;
   const maxPrice = Math.max(...safeData.map((d) => d.price));
   const yMax = (Math.floor(maxPrice / STEP) + 2) * STEP;
@@ -99,9 +93,6 @@ export default function PriceScatter({ data, lang = "en" }) {
     (_, i) => i * 250
   );
 
-  // -----------------------------
-  // LAYOUT
-  // -----------------------------
   const chartHeight = isMobile ? 240 : 350;
 
   return (
@@ -136,25 +127,27 @@ export default function PriceScatter({ data, lang = "en" }) {
             />
           </XAxis>
 
-          {/* Y AXIS (FIXED OVERLAP) */}
+          {/* Y AXIS (ONLY CHANGE IS HERE) */}
           <YAxis
             type="number"
             dataKey="price"
             domain={[0, yMax]}
-            ticks={isMobile ? yTicks.filter((_, i) => i % 2 === 0) : yTicks}
+            ticks={yTicks}
             stroke="#cbd5e1"
             tick={{ fontSize: 11, fill: "#94a3b8" }}
             tickLine={{ stroke: "#cbd5e1" }}
-            width={isMobile ? 50 : 70}
-            tickMargin={8}
+            width={isMobile ? 45 : 70}
+            tickMargin={6}
           >
-            <Label
-              value={text.price}
-              angle={-90}
-              position="insideLeft"
-              offset={isMobile ? 18 : 12}
-              style={{ fill: "#64748b", fontSize: 12 }}
-            />
+            {!isMobile && (
+              <Label
+                value={text.price}
+                angle={-90}
+                position="insideLeft"
+                offset={10}
+                style={{ fill: "#64748b", fontSize: 12 }}
+              />
+            )}
           </YAxis>
 
           {/* TOOLTIP */}
