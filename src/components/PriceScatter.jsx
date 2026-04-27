@@ -80,7 +80,7 @@ export default function PriceScatter({ data, lang = "en" }) {
   }
 
   // -----------------------------
-  // AXIS SCALING (NO EDGE CLIPPING)
+  // AXIS SCALING
   // -----------------------------
   const STEP = 20000;
   const maxPrice = Math.max(...safeData.map((d) => d.price));
@@ -91,7 +91,6 @@ export default function PriceScatter({ data, lang = "en" }) {
     (_, i) => i * STEP
   );
 
-  // Add extra mileage padding (your requested "next step logic")
   const maxMileage = Math.max(...safeData.map((d) => d.mileage));
   const xMax = Math.ceil(maxMileage / 250) * 250 + 250;
 
@@ -101,7 +100,7 @@ export default function PriceScatter({ data, lang = "en" }) {
   );
 
   // -----------------------------
-  // LAYOUT CONTROL
+  // LAYOUT
   // -----------------------------
   const chartHeight = isMobile ? 240 : 350;
 
@@ -118,7 +117,7 @@ export default function PriceScatter({ data, lang = "en" }) {
         >
           <CartesianGrid stroke="#e2e8f0" strokeDasharray="4 4" />
 
-          {/* ---------------- X AXIS ---------------- */}
+          {/* X AXIS */}
           <XAxis
             type="number"
             dataKey="mileage"
@@ -137,28 +136,28 @@ export default function PriceScatter({ data, lang = "en" }) {
             />
           </XAxis>
 
-          {/* ---------------- Y AXIS (TIGHTER) ---------------- */}
+          {/* Y AXIS (FIXED OVERLAP) */}
           <YAxis
             type="number"
             dataKey="price"
             domain={[0, yMax]}
-            ticks={yTicks}
+            ticks={isMobile ? yTicks.filter((_, i) => i % 2 === 0) : yTicks}
             stroke="#cbd5e1"
             tick={{ fontSize: 11, fill: "#94a3b8" }}
             tickLine={{ stroke: "#cbd5e1" }}
-            width={isMobile ? 45 : 70}
-            tickMargin={6}
+            width={isMobile ? 50 : 70}
+            tickMargin={8}
           >
             <Label
               value={text.price}
               angle={-90}
               position="insideLeft"
-              offset={10}
+              offset={isMobile ? 18 : 12}
               style={{ fill: "#64748b", fontSize: 12 }}
             />
           </YAxis>
 
-          {/* ---------------- TOOLTIP (IMPROVED ORDER) ---------------- */}
+          {/* TOOLTIP */}
           <Tooltip
             cursor={{ stroke: "#4f46e5", strokeWidth: 1 }}
             content={({ active, payload }) => {
@@ -188,7 +187,7 @@ export default function PriceScatter({ data, lang = "en" }) {
             }}
           />
 
-          {/* ---------------- LEGEND ---------------- */}
+          {/* LEGEND */}
           <Legend
             verticalAlign={isMobile ? "bottom" : "top"}
             align={isMobile ? "center" : "right"}
@@ -207,7 +206,7 @@ export default function PriceScatter({ data, lang = "en" }) {
             }}
           />
 
-          {/* ---------------- DATA ---------------- */}
+          {/* DATA */}
           <Scatter name="active" data={safeData} fill="#4f46e5" />
           <Scatter name="removed" data={[]} fill="#9ca3af" />
         </ScatterChart>
