@@ -7,6 +7,7 @@ import {
   Tooltip,
   CartesianGrid,
   Label,
+  Legend,
 } from "recharts";
 
 export default function PriceScatter({ data, lang = "en" }) {
@@ -43,15 +44,14 @@ export default function PriceScatter({ data, lang = "en" }) {
 
   const text = t[lang] || t.en;
 
-  // ----------------------------
-  // SAFE NORMALIZATION (UNCHANGED CORE LOGIC)
-  // ----------------------------
+  // =========================
+  // DATA NORMALISATION (ROBUST)
+  // =========================
   const safeData = (data || [])
     .map((d) => {
       const price = Number(d.price ?? d.Price);
       const mileage = Number(d.mileage ?? d.KM ?? d.km);
 
-      // IMPORTANT: keep raw date but DO NOT break dataset if invalid
       const date = d.DATE || d.date || d.Date;
 
       return {
@@ -62,18 +62,16 @@ export default function PriceScatter({ data, lang = "en" }) {
     })
     .filter((d) => d.price > 0 && d.mileage > 0);
 
-  // ----------------------------
-  // FIX: DO NOT BLOCK RENDER ON DATE ISSUES
-  // ----------------------------
   if (!safeData.length) {
     return (
       <div
         style={{
-          height: 300,
+          height: 320,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           color: "#94a3b8",
+          fontSize: 13,
         }}
       >
         {text.noData}
@@ -81,124 +79,151 @@ export default function PriceScatter({ data, lang = "en" }) {
     );
   }
 
-  // ----------------------------
-  // DATE SPLIT (SAFE FALLBACK)
-  // ----------------------------
-  const validDates = safeData
-    .map((d) => d.date?.getTime())
-    .filter(Boolean);
+  // =========================
+  // ACTIVE vs REMOVED LOGIC
+  // =========================
+  const maxDate = Math.max(...safeData.map((d) => d.date?.getTime() || 0));
 
-  const maxDate =
-    validDates.length > 0 ? Math.max(...validDates) : null;
+  const active = safeData.filter(
+    (d) => d.date && d.date.getTime() === maxDate
+  );
 
-  const active = maxDate
-    ? safeData.filter((d) => d.date?.getTime() === maxDate)
-    : safeData;
+  const removed = safeData.filter(
+    (d) => d.date && d.date.getTime() !== maxDate
+  );
 
-  const removed = maxDate
-    ? safeData.filter((d) => d.date?.getTime() !== maxDate)
-    : [];
-
-  // ----------------------------
-  // AXIS CALC
-  // ----------------------------
+  // =========================
+  // Y AXIS SCALE
+  // =========================
   const STEP = 20000;
   const maxPrice = Math.max(...safeData.map((d) => d.price));
   const yMax = (Math.floor(maxPrice / STEP) + 1) * STEP;
-
-  const yTicks = Array.from(
-    { length: yMax / STEP + 1 },
-    (_, i) => i * STEP
-  );
+  const yTicks = Array.from({ length: yMax / STEP + 1 }, (_, i) => i * STEP);
 
   return (
-    <div
-      style={{
-        width: "100%",
-        height: 340,
-        display: "flex",
-        gap: 12,
-      }}
-    >
-      {/* CHART */}
-      <div style={{ flex: 1 }}>
-        <ResponsiveContainer width="100%" height="100%">
-          <ScatterChart margin={{ top: 10, right: 10, bottom: 20, left: 10 }}>
-            <CartesianGrid stroke="#e2e8f0" strokeDasharray="3 3" />
+    <div style={{ width: "100%", height: 340 }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <ScatterChart
+          margin={{
+            top: 10,
+            right: 30,
+            left: 60,   // 🔥 more breathing room for labels
+            bottom: 20, // reduced whitespace under chart
+          }}
+        >
+          <CartesianGrid stroke="#e2e8f0" strokeDasharray="4 4" />
 
-            <XAxis
-              type="number"
-              dataKey="mileage"
-              tick={{ fontSize: 11, fill: "#94a3b8" }}
-              axisLine={{ stroke: "#e2e8f0" }}
-              tickLine={false}
-            >
-              <Label
-                value={text.mileage}
-                position="insideBottom"
-                offset={-5}
-                style={{ fill: "#64748b", fontSize: 11 }}
-              />
-            </XAxis>
-
-            <YAxis
-              type="number"
-              dataKey="price"
-              domain={[0, yMax]}
-              ticks={yTicks}
-              tick={{ fontSize: 11, fill: "#94a3b8" }}
-              axisLine={{ stroke: "#e2e8f0" }}
-              tickLine={false}
-            >
-              <Label
-                value={text.price}
-                angle={-90}
-                position="insideLeft"
-                style={{ fill: "#64748b", fontSize: 11 }}
-              />
-            </YAxis>
-
-            <Tooltip />
-
-            {/* ACTIVE */}
-            <Scatter
-              name="active"
-              data={active}
-              fill="#2563eb"
+          {/* X AXIS */}
+          <XAxis
+            type="number"
+            dataKey="mileage"
+            stroke="#cbd5e1"
+            tick={{ fontSize: 12, fill: "#94a3b8" }}
+            tickLine={{ stroke: "#cbd5e1" }}
+            tickMargin={10}   // 🔥 spacing fix
+          >
+            <Label
+              value={text.mileage}
+              position="bottom"
+              offset={0}
+              style={{
+                fill: "#64748b",
+                fontSize: 12,
+                marginTop: 8,
+              }}
             />
+          </XAxis>
 
-            {/* REMOVED */}
-            <Scatter
-              name="removed"
-              data={removed}
-              fill="#94a3b8"
+          {/* Y AXIS */}
+          <YAxis
+            type="number"
+            dataKey="price"
+            domain={[0, yMax]}
+            ticks={yTicks}
+            stroke="#cbd5e1"
+            tick={{ fontSize: 12, fill: "#94a3b8" }}
+            tickLine={{ stroke: "#cbd5e1" }}
+            tickMargin={10}   // 🔥 spacing fix
+          >
+            <Label
+              value={text.price}
+              angle={-90}
+              position="left"
+              offset={10}
+              style={{
+                fill: "#64748b",
+                fontSize: 12,
+              }}
             />
-          </ScatterChart>
-        </ResponsiveContainer>
-      </div>
+          </YAxis>
 
-      {/* LEGEND RIGHT SIDE */}
-      <div
-        style={{
-          width: 150,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          gap: 12,
-        }}
-      >
-        <div style={{ fontSize: 11, color: "#64748b" }}>Legend</div>
+          {/* =========================
+              TOOLTIP (IMPROVED ORDER)
+          ========================= */}
+          <Tooltip
+            cursor={{ stroke: "#4f46e5", strokeWidth: 1 }}
+            content={({ active, payload }) => {
+              if (!active || !payload?.length) return null;
 
-        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <div style={{ width: 8, height: 8, borderRadius: 99, background: "#2563eb" }} />
-          <div style={{ fontSize: 12 }}>{text.active}</div>
-        </div>
+              const p = payload[0].payload;
 
-        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <div style={{ width: 8, height: 8, borderRadius: 99, background: "#94a3b8" }} />
-          <div style={{ fontSize: 12 }}>{text.removed}</div>
-        </div>
-      </div>
+              return (
+                <div
+                  style={{
+                    background: "white",
+                    border: "1px solid #e5e7eb",
+                    borderRadius: 12,
+                    padding: "10px 12px",
+                    fontSize: 12,
+                    boxShadow: "0 10px 24px rgba(15,23,42,0.08)",
+                  }}
+                >
+                  {/* PRICE FIRST */}
+                  <div style={{ fontWeight: 700, fontSize: 13 }}>
+                    £{p.price.toLocaleString()}
+                  </div>
+
+                  {/* MILEAGE SECOND (SMALLER) */}
+                  <div style={{ color: "#64748b", fontSize: 11, marginTop: 2 }}>
+                    {p.mileage.toLocaleString()} km
+                  </div>
+                </div>
+              );
+            }}
+          />
+
+          {/* =========================
+              LEGEND (LEFT + TOP ALIGNED)
+          ========================= */}
+          <Legend
+            verticalAlign="top"
+            align="left"
+            wrapperStyle={{
+              fontSize: 12,
+              color: "#64748b",
+              paddingBottom: 6,
+            }}
+            iconSize={8}
+            formatter={(value) => {
+              if (value === "active") return text.active;
+              if (value === "removed") return text.removed;
+              return value;
+            }}
+          />
+
+          {/* DATA SERIES */}
+          <Scatter
+            name="active"
+            data={active}
+            fill="#4f46e5"
+          />
+          <Scatter
+            name="removed"
+            data={removed}
+            fill="#9ca3af"
+          />
+        </ScatterChart>
+      </ResponsiveContainer>
     </div>
   );
 }
