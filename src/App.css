@@ -34,6 +34,9 @@ body {
   gap: 14px;
 
   position: relative;
+
+  /* FIX: smoother native feel */
+  transition: all 0.25s ease;
 }
 
 /* ================================
@@ -99,10 +102,12 @@ body {
   cursor: pointer;
   background: transparent;
   color: #475569;
+
+  transition: all 0.2s ease;
 }
 
 .lang-btn.active {
-  background: #2563eb; /* FIX: unified UI blue */
+  background: #2563eb;
   color: white;
 }
 
@@ -139,17 +144,17 @@ body {
 
 .progress-inner {
   height: 100%;
-  background: #2563eb; /* FIX */
+  background: #2563eb;
   border-radius: 999px;
   transition: width 0.35s ease;
 }
 
 /* ================================
-   BUTTON SYSTEM (FIX: AUTO WIDTH SAFE MODE)
+   BUTTON SYSTEM (MODERN APP STYLE)
 ================================ */
 
 .btn {
-  width: auto;               /* FIX: prevents squishing */
+  width: auto;
   min-width: 80px;
   max-width: 100%;
 
@@ -167,14 +172,14 @@ body {
   align-items: center;
   justify-content: center;
 
-  padding: 0 14px;           /* FIX: text fits naturally */
+  padding: 0 14px;
 
   cursor: pointer;
 
   transition: all 0.18s ease;
   will-change: transform;
 
-  white-space: nowrap;       /* FIX: single line always */
+  white-space: nowrap;
 }
 
 .btn:hover {
@@ -184,7 +189,7 @@ body {
 }
 
 /* ================================
-   PRIMARY CTA (FIX: MOBILE SQUISH ISSUE)
+   PRIMARY CTA (APPLE / REVOLUT STYLE)
 ================================ */
 
 .btn-primary {
@@ -246,17 +251,53 @@ body {
   flex-wrap: wrap;
   gap: 8px;
   justify-content: center;
+
+  /* ================================
+     🔥 CARD TRANSITION SYSTEM (REVOLUT / APPLE FEEL)
+  ================================= */
+  perspective: 1200px;
 }
 
 /* ================================
-   RESULT SCREEN (FIX: SPACING + READABILITY)
+   CARD TRANSITION BASE (NEW)
+   Apply via React wrapper class if needed
+================================ */
+
+.step-card {
+  width: 100%;
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
+              opacity 0.25s ease,
+              filter 0.25s ease;
+  will-change: transform, opacity;
+}
+
+.step-card-enter {
+  opacity: 0;
+  transform: translateY(20px) scale(0.98);
+  filter: blur(6px);
+}
+
+.step-card-active {
+  opacity: 1;
+  transform: translateY(0px) scale(1);
+  filter: blur(0px);
+}
+
+.step-card-exit {
+  opacity: 0;
+  transform: translateY(-20px) scale(1.02);
+  filter: blur(6px);
+}
+
+/* ================================
+   RESULT SCREEN (VALUATION FOCUS)
 ================================ */
 
 .result {
   text-align: center;
   display: flex;
   flex-direction: column;
-  gap: 10px; /* FIX: breathing room */
+  gap: 10px;
   margin-top: 8px;
 }
 
@@ -264,7 +305,7 @@ body {
   font-size: 34px;
   font-weight: 900;
   margin: 0;
-  color: #0f172a; /* FIX: strong black */
+  color: #0f172a;
   letter-spacing: -0.8px;
 }
 
@@ -275,17 +316,17 @@ body {
 }
 
 /* ================================
-   LOADING (FIX: SUBTLE ONLY)
+   LOADING (SUBTLE APP TEXT)
 ================================ */
 
 .loading {
   font-size: 11px;
   color: #94a3b8;
-  opacity: 0.8; /* FIX: less intrusive */
+  opacity: 0.8;
 }
 
 /* ================================
-   AD (FIX: CONTAINER SAFETY)
+   AD (FIXED FIT + PREMIUM LOOK)
 ================================ */
 
 .ad {
@@ -305,7 +346,7 @@ body {
 }
 
 /* ================================
-   STICKY CTA (FIX: NEVER OVERLAPS CONTENT)
+   STICKY CTA (MOBILE FIRST)
 ================================ */
 
 .sticky-cta {
@@ -318,7 +359,7 @@ body {
   display: flex;
   justify-content: center;
 
-  pointer-events: none; /* FIX: prevents blocking UI */
+  pointer-events: none;
 }
 
 .sticky-cta .btn-primary {
@@ -360,7 +401,6 @@ body {
     height: 130px;
   }
 
-  /* FIX: ensure CTA doesn't squash */
   .sticky-cta .btn-primary {
     width: 100%;
     height: 54px;

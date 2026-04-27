@@ -5,6 +5,10 @@ import PriceScatter from "./components/PriceScatter";
 export default function App() {
   const [step, setStep] = useState(1);
 
+  // 🔥 NEW: transition control
+  const [prevStep, setPrevStep] = useState(null);
+  const [direction, setDirection] = useState("forward");
+
   const [year, setYear] = useState("");
   const [brand, setBrand] = useState("");
   const [model, setModel] = useState("");
@@ -86,18 +90,31 @@ export default function App() {
       });
   }, []);
 
+  // =========================
+  // 🔥 STEP TRANSITION WRAPPER
+  // =========================
+  const changeStep = (nextStep) => {
+    setPrevStep(step);
+    setDirection(nextStep > step ? "forward" : "backward");
+
+    setTimeout(() => {
+      setStep(nextStep);
+      setPrevStep(null);
+    }, 180); // small native delay
+  };
+
   const handleYear = async (v) => {
     setYear(v);
     const res = await fetch(`${API}/brands?year=${v}`);
     setBrands(await res.json());
-    setStep(2);
+    changeStep(2);
   };
 
   const handleBrand = async (v) => {
     setBrand(v);
     const res = await fetch(`${API}/models?year=${year}&brand=${v}`);
     setModels(await res.json());
-    setStep(3);
+    changeStep(3);
   };
 
   const handleModel = async (v) => {
@@ -111,7 +128,7 @@ export default function App() {
     const normalized = Array.isArray(data) ? data : data.categories || [];
 
     setCategories(normalized);
-    setStep(4);
+    changeStep(4);
   };
 
   const getValuation = async () => {
@@ -122,14 +139,22 @@ export default function App() {
     });
 
     setResult(await res.json());
-    setStep(5);
+    changeStep(5);
   };
 
   const goBack = () => {
-    if (step === 4) setStep(3), setCategory("");
-    else if (step === 3) setStep(2), setModel("");
-    else if (step === 2) setStep(1), setBrand("");
-    else if (step === 5) setStep(4);
+    if (step === 4) {
+      setCategory("");
+      changeStep(3);
+    } else if (step === 3) {
+      setModel("");
+      changeStep(2);
+    } else if (step === 2) {
+      setBrand("");
+      changeStep(1);
+    } else if (step === 5) {
+      changeStep(4);
+    }
   };
 
   useEffect(() => {
@@ -149,13 +174,26 @@ export default function App() {
     requestAnimationFrame(animate);
   }, [result]);
 
+  // =========================
+  // 🔥 CARD RENDER WRAPPER
+  // =========================
+  const cardClass = (s) => {
+    if (s !== step && s !== prevStep) return "step-card-hidden";
+
+    if (s === step) return "step-card step-card-active";
+    if (s === prevStep && direction === "forward") return "step-card step-card-exit-up";
+    if (s === prevStep && direction === "backward") return "step-card step-card-exit-down";
+
+    return "step-card";
+  };
+
   return (
     <div className="app-container">
 
-      {/* HEADER FIXED ALIGNMENT */}
+      {/* HEADER */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
 
-        <div style={{ textAlign: "left", marginLeft: 0, paddingLeft: 0 }}>
+        <div style={{ textAlign: "left" }}>
           <div style={{ fontSize: 18, fontWeight: 800 }}>
             {text.title}
           </div>
@@ -166,7 +204,6 @@ export default function App() {
 
         <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6 }}>
 
-          {/* LANGUAGE FIXED COLOR */}
           <div style={{ display: "flex", gap: 6 }}>
             {["tr", "en", "ru"].map((l) => (
               <button
@@ -203,87 +240,100 @@ export default function App() {
         </div>
       )}
 
-      {/* STEPS */}
-      {step === 1 && (
-        <div className="step-column">
-          {years.map((y) => (
-            <button key={y} onClick={() => handleYear(y)} className="btn">
-              {y}
-            </button>
-          ))}
-        </div>
-      )}
+      {/* =========================
+          STEP SYSTEM (ANIMATED)
+      ========================= */}
 
-      {step === 2 && (
-        <div className="step-column">
-          {brands.map((b) => (
-            <button key={b} onClick={() => handleBrand(b)} className="btn">
-              {b}
-            </button>
-          ))}
-        </div>
-      )}
+      <div className="step-stack">
 
-      {step === 3 && (
-        <div className="step-column">
-          {models.map((m) => (
-            <button key={m} onClick={() => handleModel(m)} className="btn">
-              {m}
-            </button>
-          ))}
-        </div>
-      )}
-
-      {step === 4 && (
-        <div className="step-column">
-
-          {categories.map((c) => (
-            <button key={c} onClick={() => setCategory(c)} className="btn">
-              {c}
-            </button>
-          ))}
-
-          {category && (
-            <button onClick={getValuation} className="btn-primary">
-              {text.getValuation}
-            </button>
-          )}
-
-        </div>
-      )}
-
-      {/* VALUATION FIXED COLOR + TIGHT LAYOUT */}
-      {step === 5 && result && (
-        <div style={{ textAlign: "center", display: "flex", flexDirection: "column", gap: 4 }}>
-
-          <h1 style={{
-            fontSize: 34,
-            fontWeight: 900,
-            margin: 0,
-            color: "#0f172a"   // 🔥 FIX: strong black always
-          }}>
-            £{animatedValue.toLocaleString()}
-          </h1>
-
-          <p style={{ margin: 0, fontSize: 13, color: "#475569" }}>
-            £{result.min_price.toLocaleString()} – £{result.max_price.toLocaleString()}
-          </p>
-
-          <PriceScatter data={result.scatter} lang={lang} />
-
-          <div style={{ marginTop: 10, height: 150, borderRadius: 14, overflow: "hidden" }}>
-            <a href={ads[adIndex].url} target="_blank" rel="noopener noreferrer">
-              <img src={ads[adIndex].img} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-            </a>
+        {/* STEP 1 */}
+        {cardClass(1) && step === 1 && (
+          <div className={cardClass(1)}>
+            <div className="step-column">
+              {years.map((y) => (
+                <button key={y} onClick={() => handleYear(y)} className="btn">
+                  {y}
+                </button>
+              ))}
+            </div>
           </div>
+        )}
 
-          <button onClick={goBack} className="btn-primary">
-            {text.restart}
-          </button>
+        {/* STEP 2 */}
+        {cardClass(2) && step === 2 && (
+          <div className={cardClass(2)}>
+            <div className="step-column">
+              {brands.map((b) => (
+                <button key={b} onClick={() => handleBrand(b)} className="btn">
+                  {b}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
-        </div>
-      )}
+        {/* STEP 3 */}
+        {cardClass(3) && step === 3 && (
+          <div className={cardClass(3)}>
+            <div className="step-column">
+              {models.map((m) => (
+                <button key={m} onClick={() => handleModel(m)} className="btn">
+                  {m}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
+        {/* STEP 4 */}
+        {cardClass(4) && step === 4 && (
+          <div className={cardClass(4)}>
+            <div className="step-column">
+
+              {categories.map((c) => (
+                <button key={c} onClick={() => setCategory(c)} className="btn">
+                  {c}
+                </button>
+              ))}
+
+              {category && (
+                <button onClick={getValuation} className="btn-primary">
+                  {text.getValuation}
+                </button>
+              )}
+
+            </div>
+          </div>
+        )}
+
+        {/* STEP 5 */}
+        {cardClass(5) && step === 5 && result && (
+          <div className={cardClass(5)} style={{ textAlign: "center" }}>
+
+            <h1 style={{ fontSize: 34, fontWeight: 900, margin: 0 }}>
+              £{animatedValue.toLocaleString()}
+            </h1>
+
+            <p style={{ margin: 0, fontSize: 13, color: "#475569" }}>
+              £{result.min_price.toLocaleString()} – £{result.max_price.toLocaleString()}
+            </p>
+
+            <PriceScatter data={result.scatter} lang={lang} />
+
+            <div style={{ marginTop: 10, height: 150, borderRadius: 14, overflow: "hidden" }}>
+              <a href={ads[adIndex].url} target="_blank" rel="noopener noreferrer">
+                <img src={ads[adIndex].img} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              </a>
+            </div>
+
+            <button onClick={goBack} className="btn-primary">
+              {text.restart}
+            </button>
+
+          </div>
+        )}
+
+      </div>
     </div>
   );
 }
