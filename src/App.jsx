@@ -172,81 +172,70 @@ export default function App() {
     requestAnimationFrame(animate);
   }, [result]);
 
-  /* ================================
-     APPLE / REVOLUT CARD MOTION
-  ================================= */
-
-  const getScreenStyle = (screen) => {
-    const distance = screen - step;
-
-    return {
-      transform: `
-        translateY(${distance * 18}px)
-        scale(${distance === 0 ? 1 : 0.96})
-      `,
-      opacity: distance === 0 ? 1 : 0,
-      pointerEvents: distance === 0 ? "auto" : "none",
-      zIndex: 10 - Math.abs(distance),
-      filter: distance === 0 ? "blur(0px)" : "blur(2px)",
-      transition: "all 520ms cubic-bezier(0.16, 1, 0.3, 1)",
-      position: "absolute",
-      width: "100%",
-      top: 0,
-      left: 0,
-    };
-  };
-
   return (
     <div className="app-container">
 
-      {/* HEADER */}
-      <div style={{ textAlign: "left" }}>
-        <div style={{ fontSize: 18, fontWeight: 800 }}>
-          {text.title}
-        </div>
-        <div style={{ fontSize: 12, color: "#2563eb" }}>
-          {text.subtitle}
-        </div>
-      </div>
+      {/* ================= HEADER ROW ================= */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
 
-      {/* LANGUAGE + BACK */}
-      <div className="header-row">
+        {/* LEFT: LOGO + TITLE */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <img
+              src="https://res.cloudinary.com/dtaihpiwt/image/upload/v1777154527/SHOPTECH_LOGO_9_hnwij5.png"
+              style={{ height: 24 }}
+            />
+            <div style={{ fontSize: 12, color: "#0f172a" }}>
+              @analist.kibris
+            </div>
+          </div>
 
-        <div style={{ display: "flex", gap: 8 }}>
-          {["tr", "en", "ru"].map((l) => (
-            <button
-              key={l}
-              onClick={() => changeLang(l)}
-              style={{
-                background: lang === l ? "#334155" : "#f1f5f9",
-                color: lang === l ? "white" : "#475569",
-                borderRadius: 999,
-                border: "none",
-                padding: "6px 10px",
-                fontSize: 11,
-                fontWeight: 600,
-              }}
-            >
-              {l.toUpperCase()}
+          <div style={{ fontSize: 18, fontWeight: 800 }}>
+            {text.title}
+          </div>
+
+          <div style={{ fontSize: 12, color: "#2563eb" }}>
+            {text.subtitle}
+          </div>
+        </div>
+
+        {/* RIGHT: LANGUAGE */}
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8 }}>
+
+          <div style={{ display: "flex", gap: 6 }}>
+            {["tr", "en", "ru"].map((l) => (
+              <button
+                key={l}
+                onClick={() => changeLang(l)}
+                style={{
+                  background: lang === l ? "#334155" : "#f1f5f9",
+                  color: lang === l ? "white" : "#475569",
+                  borderRadius: 999,
+                  border: "none",
+                  padding: "6px 10px",
+                  fontSize: 11,
+                  fontWeight: 600,
+                }}
+              >
+                {l.toUpperCase()}
+              </button>
+            ))}
+          </div>
+
+          {/* BACK BUTTON (FIXED POSITION) */}
+          {step > 1 && (
+            <button onClick={goBack} className="back-btn">
+              ← {text.back}
             </button>
-          ))}
+          )}
+
         </div>
-
-        {step > 1 && step < 5 && (
-          <button onClick={goBack} className="back-btn">
-            ← {text.back}
-          </button>
-        )}
-
       </div>
 
-      {/* PROGRESS */}
+      {/* ================= PROGRESS ================= */}
       {step < 5 && (
         <div className="progress">
-          <div
-            className="progress-inner"
-            style={{ width: `${progress}%`, background: "#2563eb" }}
-          />
+          <div className="progress-inner" style={{ width: `${progress}%` }} />
         </div>
       )}
 
@@ -256,109 +245,85 @@ export default function App() {
         </p>
       )}
 
-      {/* ================================
-         STACKED CARD SCREENS (REVOLUT STYLE)
-      ================================= */}
+      {/* ================= STEP FLOW ================= */}
 
-      <div style={{ position: "relative", minHeight: "60vh" }}>
-
-        {/* STEP 1 */}
-        <div style={getScreenStyle(1)}>
-          <div className="step-column">
-            {years.map((y) => (
-              <button key={y} onClick={() => handleYear(y)} className="btn">
-                {y}
-              </button>
-            ))}
-          </div>
+      {step === 1 && (
+        <div className="step-column">
+          {years.map((y) => (
+            <button key={y} onClick={() => handleYear(y)} className="btn">
+              {y}
+            </button>
+          ))}
         </div>
+      )}
 
-        {/* STEP 2 */}
-        <div style={getScreenStyle(2)}>
-          <div className="step-column">
-            {brands.map((b) => (
-              <button key={b} onClick={() => handleBrand(b)} className="btn">
-                {b}
-              </button>
-            ))}
-          </div>
+      {step === 2 && (
+        <div className="step-column">
+          {brands.map((b) => (
+            <button key={b} onClick={() => handleBrand(b)} className="btn">
+              {b}
+            </button>
+          ))}
         </div>
+      )}
 
-        {/* STEP 3 */}
-        <div style={getScreenStyle(3)}>
-          <div className="step-column">
-            {models.map((m) => (
-              <button key={m} onClick={() => handleModel(m)} className="btn">
-                {m}
-              </button>
-            ))}
-          </div>
+      {step === 3 && (
+        <div className="step-column">
+          {models.map((m) => (
+            <button key={m} onClick={() => handleModel(m)} className="btn">
+              {m}
+            </button>
+          ))}
         </div>
+      )}
 
-        {/* STEP 4 */}
-        <div style={getScreenStyle(4)}>
-          <div className="step-column">
+      {step === 4 && (
+        <div className="step-column">
 
-            {categories.map((c) => (
-              <button key={c} onClick={() => setCategory(c)} className="btn">
-                {c}
-              </button>
-            ))}
+          {categories.map((c) => (
+            <button key={c} onClick={() => setCategory(c)} className="btn">
+              {c}
+            </button>
+          ))}
 
-            {category && (
-              <div className="sticky-cta">
-                <button onClick={getValuation} className="btn-primary">
-                  {text.getValuation}
-                </button>
-              </div>
-            )}
-
-          </div>
-        </div>
-
-        {/* STEP 5 (VALUATION CARD) */}
-        <div style={getScreenStyle(5)}>
-
-          {result && (
-            <div style={{ textAlign: "center", display: "flex", flexDirection: "column", gap: 6 }}>
-
-              <h1 style={{
-                fontSize: 38,
-                fontWeight: 900,
-                color: "#0f172a",
-                margin: 0,
-                letterSpacing: "-1px"
-              }}>
-                £{animatedValue.toLocaleString()}
-              </h1>
-
-              <p style={{ margin: 0, fontSize: 13, color: "#475569" }}>
-                £{result.min_price.toLocaleString()} – £{result.max_price.toLocaleString()}
-              </p>
-
-              <PriceScatter data={result.scatter} lang={lang} />
-
-              <div style={{ marginTop: 8, height: 150, borderRadius: 14, overflow: "hidden" }}>
-                <a href={ads[adIndex].url} target="_blank" rel="noopener noreferrer">
-                  <img
-                    src={ads[adIndex].img}
-                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                  />
-                </a>
-              </div>
-
-              <div className="sticky-cta">
-                <button onClick={resetFlow} className="btn-primary">
-                  {text.restart}
-                </button>
-              </div>
-
-            </div>
+          {/* CTA is IN FLOW (NOT OVERLAYING ANYTHING) */}
+          {category && (
+            <button onClick={getValuation} className="btn-primary">
+              {text.getValuation}
+            </button>
           )}
 
         </div>
+      )}
 
-      </div>
+      {/* ================= RESULT ================= */}
+
+      {step === 5 && result && (
+        <div style={{ textAlign: "center", display: "flex", flexDirection: "column", gap: 6 }}>
+
+          <h1 style={{ fontSize: 34, fontWeight: 900, margin: 0 }}>
+            £{animatedValue.toLocaleString()}
+          </h1>
+
+          <p style={{ margin: 0, fontSize: 13, color: "#475569" }}>
+            £{result.min_price.toLocaleString()} – £{result.max_price.toLocaleString()}
+          </p>
+
+          <PriceScatter data={result.scatter} lang={lang} />
+
+          <div style={{ marginTop: 10, height: 150, borderRadius: 14, overflow: "hidden" }}>
+            <a href={ads[adIndex].url} target="_blank" rel="noopener noreferrer">
+              <img src={ads[adIndex].img} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            </a>
+          </div>
+
+          <button onClick={resetFlow} className="btn-primary">
+            {text.restart}
+          </button>
+
+        </div>
+      )}
+
     </div>
   );
 }
