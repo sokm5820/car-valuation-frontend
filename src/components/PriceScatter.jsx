@@ -7,6 +7,7 @@ import {
   Tooltip,
   CartesianGrid,
   Label,
+  Legend,
 } from "recharts";
 
 export default function PriceScatter({ data, lang = "en" }) {
@@ -43,24 +44,18 @@ export default function PriceScatter({ data, lang = "en" }) {
 
   const text = t[lang] || t.en;
 
-  // =========================
-  // SAFE DATA (RESTORED LOGIC)
-  // =========================
   const safeData = (data || [])
     .map((d) => {
       const price = Number(d.price ?? d.Price);
       const mileage = Number(d.mileage ?? d.KM ?? d.km);
 
-      // IMPORTANT: backend uses DATE (uppercase)
-      const dateRaw = d.DATE ?? d.date ?? d.Date;
-
       return {
         price: Number.isFinite(price) ? Math.round(price) : null,
         mileage: Number.isFinite(mileage) ? Math.round(mileage) : null,
-        date: dateRaw ? new Date(dateRaw) : null,
       };
     })
-    .filter((d) => d.price > 0 && d.mileage > 0);
+    .filter((d) => d.price > 0 && d.mileage > 0)
+    .sort((a, b) => a.mileage - b.mileage);
 
   if (!safeData.length) {
     return (
@@ -71,7 +66,6 @@ export default function PriceScatter({ data, lang = "en" }) {
           alignItems: "center",
           justifyContent: "center",
           color: "#94a3b8",
-          fontSize: 13,
         }}
       >
         {text.noData}
@@ -79,29 +73,17 @@ export default function PriceScatter({ data, lang = "en" }) {
     );
   }
 
-  // =========================
-  // ACTIVE / REMOVED SPLIT (SAFE)
-  // =========================
-  const validDates = safeData
-    .map((d) => d.date?.getTime())
-    .filter(Boolean);
+  const STEP = 25000;
 
-  const maxDate = validDates.length ? Math.max(...validDates) : null;
-
-  const active = maxDate
-    ? safeData.filter((d) => d.date?.getTime() === maxDate)
-    : safeData;
-
-  const removed = maxDate
-    ? safeData.filter((d) => d.date?.getTime() !== maxDate)
-    : [];
-
-  // =========================
-  // AXIS SCALE (UNCHANGED)
-  // =========================
-  const STEP = 20000;
   const maxPrice = Math.max(...safeData.map((d) => d.price));
-  const yMax = (Math.floor(maxPrice / STEP) + 1) * STEP;
+  const minMileage = Math.min(...safeData.map((d) => d.mileage));
+  const maxMileage = Math.max(...safeData.map((d) => d.mileage));
+
+  // ✅ CLEAN DISCRETE STEP CEILING (no edge points ever)
+  const yMax = Math.ceil(maxPrice / STEP) * STEP + STEP;
+
+  const xMin = Math.max(0, Math.floor(minMileage / 10000) * 10000);
+  const xMax = Math.ceil(maxMileage / 10000) * 10000 + 10000;
 
   const yTicks = Array.from(
     { length: yMax / STEP + 1 },
@@ -109,138 +91,104 @@ export default function PriceScatter({ data, lang = "en" }) {
   );
 
   return (
-    <div
-      style={{
-        display: "flex",
-        width: "100%",
-        height: 350,
-        gap: 12,
-      }}
-    >
-      {/* =========================
-          CHART AREA
-      ========================= */}
-      <div style={{ flex: 1 }}>
-        <ResponsiveContainer width="100%" height="100%">
-          <ScatterChart
-            margin={{
-              top: 10,
-              right: 10,
-              bottom: 20,
-              left: 55, // keeps axis labels visible
-            }}
+    <div style={{ width: "100%", height: 350 }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <ScatterChart
+          margin={{
+            top: 10,
+            right: 30,
+            bottom: 55,
+            left: 60, // slightly more breathing room
+          }}
+        >
+          <CartesianGrid stroke="#e2e8f0" strokeDasharray="4 4" />
+
+          <XAxis
+            type="number"
+            dataKey="mileage"
+            domain={[xMin, xMax]}
+            stroke="#cbd5e1"
+            tick={{ fontSize: 12, fill: "#94a3b8" }}
+            tickLine={{ stroke: "#cbd5e1" }}
           >
-            <CartesianGrid stroke="#e2e8f0" strokeDasharray="4 4" />
-
-            <XAxis
-              type="number"
-              dataKey="mileage"
-              stroke="#cbd5e1"
-              tick={{ fontSize: 12, fill: "#94a3b8" }}
-              tickLine={{ stroke: "#cbd5e1" }}
-              tickMargin={10}
-            >
-              <Label
-                value={text.mileage}
-                position="bottom"
-                offset={0}
-                style={{ fill: "#64748b", fontSize: 12 }}
-              />
-            </XAxis>
-
-            <YAxis
-              type="number"
-              dataKey="price"
-              domain={[0, yMax]}
-              ticks={yTicks}
-              stroke="#cbd5e1"
-              tick={{ fontSize: 12, fill: "#94a3b8" }}
-              tickLine={{ stroke: "#cbd5e1" }}
-              tickMargin={10}
-            >
-              <Label
-                value={text.price}
-                angle={-90}
-                position="left"
-                offset={10}
-                style={{ fill: "#64748b", fontSize: 12 }}
-              />
-            </YAxis>
-
-            <Tooltip
-              cursor={{ stroke: "#4f46e5", strokeWidth: 1 }}
-              content={({ active, payload }) => {
-                if (!active || !payload?.length) return null;
-
-                const p = payload[0].payload;
-
-                return (
-                  <div
-                    style={{
-                      background: "white",
-                      border: "1px solid #e5e7eb",
-                      borderRadius: 10,
-                      padding: 8,
-                      fontSize: 12,
-                      boxShadow: "0 10px 24px rgba(0,0,0,0.08)",
-                    }}
-                  >
-                    <div style={{ fontWeight: 600 }}>
-                      £{p.price.toLocaleString()}
-                    </div>
-                    <div style={{ color: "#64748b", fontSize: 11 }}>
-                      {p.mileage.toLocaleString()} km
-                    </div>
-                  </div>
-                );
-              }}
+            <Label
+              value={text.mileage}
+              position="bottom"
+              offset={10}
+              style={{ fill: "#64748b", fontSize: 12 }}
             />
+          </XAxis>
 
-            <Scatter name="active" data={active} fill="#4f46e5" />
-            <Scatter name="removed" data={removed} fill="#9ca3af" />
-          </ScatterChart>
-        </ResponsiveContainer>
-      </div>
+          <YAxis
+            type="number"
+            dataKey="price"
+            domain={[0, yMax]}
+            ticks={yTicks}
+            stroke="#cbd5e1"
+            tick={{ fontSize: 12, fill: "#94a3b8" }}
+            tickLine={{ stroke: "#cbd5e1" }}
+          >
+            <Label
+              value={text.price}
+              angle={-90}
+              position="left"
+              offset={14}
+              style={{ fill: "#64748b", fontSize: 12 }}
+            />
+          </YAxis>
 
-      {/* =========================
-          LEGEND (RIGHT SIDE, VERTICAL)
-      ========================= */}
-      <div
-        style={{
-          width: 160,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "flex-start",
-          paddingTop: 10,
-          gap: 12,
-          fontSize: 12,
-          color: "#64748b",
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <div
-            style={{
-              width: 8,
-              height: 8,
-              borderRadius: 999,
-              background: "#4f46e5",
+          <Tooltip
+            cursor={{ stroke: "#4f46e5", strokeWidth: 1 }}
+            content={({ active, payload }) => {
+              if (!active || !payload?.length) return null;
+
+              const p = payload[0].payload;
+
+              return (
+                <div
+                  style={{
+                    background: "white",
+                    border: "1px solid #e5e7eb",
+                    borderRadius: 10,
+                    padding: 10,
+                    fontSize: 12,
+                    boxShadow: "0 8px 20px rgba(0,0,0,0.06)",
+                  }}
+                >
+                  <div style={{ fontWeight: 700, marginBottom: 2 }}>
+                    £{p.price.toLocaleString()}
+                  </div>
+                  <div style={{ fontSize: 11, color: "#64748b" }}>
+                    {p.mileage.toLocaleString()} km
+                  </div>
+                </div>
+              );
             }}
           />
-          {text.active}
-        </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <div
-            style={{
-              width: 8,
-              height: 8,
-              borderRadius: 999,
-              background: "#9ca3af",
+          <Legend
+            verticalAlign="middle"
+            align="right"
+            layout="vertical"
+            wrapperStyle={{
+              right: 0,
+              top: 40,
+              fontSize: 12,
+              color: "#64748b",
+              lineHeight: "24px",
+            }}
+            iconSize={8}
+            formatter={(value) => {
+              if (value === "active") return text.active;
+              if (value === "removed") return text.removed;
+              return value;
             }}
           />
-          {text.removed}
-        </div>
-      </div>
+
+          <Scatter name="active" data={safeData} fill="#4f46e5" />
+          <Scatter name="removed" data={[]} fill="#9ca3af" />
+        </ScatterChart>
+      </ResponsiveContainer>
     </div>
   );
 }
