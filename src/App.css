@@ -17,59 +17,63 @@ body {
 }
 
 /* ================================
-   GLOBAL CONTAINER
+   GLOBAL CONTAINER (TIGHTER)
 ================================ */
 
 .app-container {
   width: 100%;
   max-width: 1040px;
   margin: 0 auto;
-  padding: 32px 28px;
+  padding: 26px 24px;
 
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 14px; /* tighter overall layout */
 }
 
 /* ================================
-   HEADER
+   HEADER (FIXED SINGLE LINE)
 ================================ */
 
 .header-row {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center; /* important fix */
+
+  margin-bottom: 2px;
 }
 
 .title {
-  font-size: 30px;
+  font-size: 22px; /* 🔥 reduced so it stays one line */
   font-weight: 800;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.3px;
+  white-space: nowrap;
 }
 
 .subtitle {
-  font-size: 13px;
+  font-size: 12px;
   color: #2563eb;
+  margin-top: 0px;
 }
 
 /* ================================
-   LANGUAGE SWITCH
+   LANGUAGE
 ================================ */
 
 .lang-box {
   display: flex;
   gap: 6px;
   background: #f1f5f9;
-  padding: 4px;
+  padding: 3px;
   border-radius: 999px;
   border: 1px solid #e2e8f0;
 }
 
 .lang-btn {
-  padding: 6px 10px;
+  padding: 5px 9px;
   border-radius: 999px;
   border: none;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   cursor: pointer;
   background: transparent;
@@ -86,7 +90,7 @@ body {
 ================================ */
 
 .back-btn {
-  font-size: 12px;
+  font-size: 11px;
   color: #2563eb;
   background: transparent;
   border: none;
@@ -95,12 +99,12 @@ body {
 }
 
 /* ================================
-   PROGRESS
+   PROGRESS BAR
 ================================ */
 
 .progress {
   width: 100%;
-  height: 6px;
+  height: 5px;
   background: #e2e8f0;
   border-radius: 999px;
   overflow: hidden;
@@ -112,74 +116,99 @@ body {
 }
 
 /* ================================
-   STEP BUTTONS (BASE)
-================================ */
-
-.step-column {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-/* ================================
-   BUTTONS
+   BUTTONS (ALL BLUE NOW)
 ================================ */
 
 .btn {
   width: 100%;
-  padding: 14px;
+  padding: 12px;
   border-radius: 14px;
 
-  border: 1px solid #e2e8f0;
-  background: white;
+  border: none;
+  background: #2563eb; /* 🔥 ALL BUTTONS BLUE */
+  color: white;
 
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 13px;
+  font-weight: 600;
+
   text-align: center;
-
   cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
 }
 
 .btn-primary {
-  padding: 14px;
-  border-radius: 14px;
-  border: none;
-
   background: #2563eb;
   color: white;
-
-  font-size: 14px;
-  font-weight: 600;
 }
 
 /* ================================
-   RESULT (VALUATION SCREEN)
+   STEP GRID (YEAR FIX 🔥)
+================================ */
+
+.step-column {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 🔥 4 per row */
+  gap: 8px;
+}
+
+/* make year buttons compact */
+.step-column .btn {
+  padding: 10px 8px;
+  font-size: 12px;
+  border-radius: 999px; /* pill style */
+}
+
+/* ================================
+   RESULT (VALUATION SCREEN FIX)
 ================================ */
 
 .result {
   text-align: center;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px; /* 🔥 tighter */
+  padding: 0;
 }
 
+/* BIG VALUE but less vertical waste */
 .result h1 {
-  font-size: 38px;
+  font-size: 34px;
   font-weight: 800;
+  margin-bottom: 2px;
 }
 
 .result p {
   color: #64748b;
+  font-size: 13px;
+  margin-top: 0;
 }
 
 /* ================================
-   AD
+   LOADING (SUBTLE FIX)
+================================ */
+
+.loading {
+  font-size: 12px; /* 🔥 smaller + subtle */
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+/* ================================
+   AD (FIXED LAYOUT FLOW)
 ================================ */
 
 .ad {
-  height: 170px;
+  margin-top: 10px;
+  height: 160px;
   border-radius: 14px;
   overflow: hidden;
+
+  flex-shrink: 0; /* 🔥 prevents cutoff issues */
 }
 
 .ad img {
@@ -189,104 +218,68 @@ body {
 }
 
 /* ================================
-   ================================
-   📱 MOBILE OPTIMIZATION
-   ================================
+   MOBILE OPTIMIZATION
 ================================ */
 
 @media (max-width: 768px) {
 
   .app-container {
-    padding: 18px 14px;
-    gap: 14px;
+    padding: 16px 14px;
+    gap: 12px;
   }
 
-  /* HEADER tighter */
   .title {
-    font-size: 22px;
+    font-size: 18px; /* keeps single line */
   }
 
   .subtitle {
-    font-size: 12px;
-  }
-
-  /* Language smaller */
-  .lang-btn {
     font-size: 11px;
-    padding: 5px 8px;
   }
-
-  /* Progress tighter */
-  .progress {
-    height: 5px;
-  }
-
-  /* Buttons slightly smaller */
-  .btn {
-    padding: 12px;
-    font-size: 13px;
-    border-radius: 12px;
-  }
-
-  .btn-primary {
-    padding: 12px;
-    font-size: 13px;
-  }
-
-  /* RESULT scales down (VERY IMPORTANT for one-screen fit) */
-  .result h1 {
-    font-size: 28px;
-  }
-
-  .result p {
-    font-size: 13px;
-  }
-
-  /* AD smaller */
-  .ad {
-    height: 140px;
-  }
-
-  /* ================================
-     YEAR / OPTION GRID FIX (KEY CHANGE)
-     ================================ */
 
   .step-column {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+    grid-template-columns: repeat(4, 1fr); /* still 4 per row */
+    gap: 6px;
   }
 
-  /* Make buttons feel like pills on mobile */
   .step-column .btn {
-    border-radius: 999px;
-    padding: 10px 12px;
-    font-size: 12px;
+    font-size: 11px;
+    padding: 8px 6px;
   }
 
+  .result h1 {
+    font-size: 26px;
+  }
+
+  .loading {
+    font-size: 11px;
+  }
+
+  .ad {
+    height: 130px;
+  }
 }
 
 /* ================================
-   EXTRA SMALL PHONES
+   VERY SMALL PHONES
 ================================ */
 
 @media (max-width: 420px) {
 
   .title {
-    font-size: 20px;
-  }
-
-  .result h1 {
-    font-size: 24px;
+    font-size: 16px;
   }
 
   .step-column {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
   }
 
   .step-column .btn {
-    font-size: 11px;
-    padding: 9px 10px;
+    font-size: 10px;
+    padding: 7px 5px;
+  }
+
+  .result h1 {
+    font-size: 22px;
   }
 }
