@@ -39,7 +39,7 @@ body {
 }
 
 /* ================================
-   HEADER (FIX: LEFT ALIGN CONSISTENCY)
+   HEADER
 ================================ */
 
 .header-row {
@@ -60,22 +60,6 @@ body {
   font-size: 12px;
   color: #64748b;
   margin-top: 2px;
-}
-
-/* ================================
-   LOGO ROW (RESTORED BEHAVIOR)
-================================ */
-
-.logo-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 6px;
-}
-
-.username {
-  font-size: 12px;
-  color: #64748b;
 }
 
 /* ================================
@@ -128,7 +112,7 @@ body {
 }
 
 /* ================================
-   PROGRESS BAR (TIGHTENED)
+   PROGRESS BAR (TIGHT)
 ================================ */
 
 .progress {
@@ -137,7 +121,7 @@ body {
   background: #e2e8f0;
   border-radius: 999px;
   overflow: hidden;
-  margin-bottom: 6px; /* ✅ reduced spacing */
+  margin-bottom: 2px; /* 🔥 reduced further */
 }
 
 .progress-inner {
@@ -148,15 +132,21 @@ body {
 }
 
 /* ================================
-   STEP LABEL (NEW - CLEAN SPACING)
+   STEP LABEL (FIXED GAP ISSUE)
+   🔥 THIS REMOVES GREY LINE EFFECT
 ================================ */
 
 .step-label {
   font-size: 13px;
   color: #64748b;
-  margin-top: 4px;
-  margin-bottom: 6px;
+  margin-top: 2px;
+  margin-bottom: 4px;
+
   font-weight: 500;
+
+  /* 🔥 prevents weird divider illusion on some browsers */
+  border: none;
+  outline: none;
 }
 
 /* ================================
@@ -230,10 +220,6 @@ body {
   box-shadow: 0 14px 32px rgba(37, 99, 235, 0.32);
 }
 
-.btn-primary:active {
-  transform: scale(0.98);
-}
-
 /* ================================
    STEP GRID
 ================================ */
@@ -246,15 +232,16 @@ body {
 }
 
 /* ================================
-   RESULT SCREEN
+   RESULT SCREEN (🔥 MAIN FIX AREA)
 ================================ */
 
 .result {
   text-align: center;
   display: flex;
   flex-direction: column;
-  gap: 10px; /* already tight */
-  margin-top: 8px;
+
+  gap: 8px; /* 🔥 reduced */
+  margin-top: 6px;
 }
 
 .result h1 {
@@ -282,21 +269,26 @@ body {
 }
 
 /* ================================
-   AD (TIGHTENED)
+   AD (🔥 MASSIVE GAP FIX)
 ================================ */
 
 .ad {
-  margin-top: 10px; /* already reduced */
+  margin-top: 6px; /* was 10px */
   height: 150px;
   border-radius: 14px;
   overflow: hidden;
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+
+  /* 🔥 removes extra whitespace inside some browsers */
+  display: block;
 }
 
+/* 🔥 kills inline-image gap under charts */
 .ad img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
 
 /* ================================
@@ -314,16 +306,6 @@ body {
   justify-content: center;
 
   pointer-events: none;
-}
-
-.sticky-cta .btn-primary {
-  pointer-events: auto;
-  width: auto;
-  min-width: 200px;
-  height: 52px;
-  font-size: 15px;
-
-  box-shadow: 0 18px 40px rgba(37, 99, 235, 0.28);
 }
 
 /* ================================
@@ -352,10 +334,6 @@ body {
 
   .ad {
     height: 130px;
-  }
-
-  .sticky-cta .btn-primary {
-    width: 100%;
-    height: 54px;
+    margin-top: 4px; /* 🔥 tighter on mobile */
   }
 }
