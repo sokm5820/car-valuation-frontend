@@ -11,6 +11,9 @@ import {
 } from "recharts";
 
 export default function PriceScatter({ data, lang = "en" }) {
+  const isMobile =
+    typeof window !== "undefined" && window.innerWidth < 768;
+
   const t = {
     en: {
       mileage: "Mileage (km)",
@@ -61,7 +64,7 @@ export default function PriceScatter({ data, lang = "en" }) {
     return (
       <div
         style={{
-          height: 300,
+          height: isMobile ? 220 : 300,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -75,56 +78,79 @@ export default function PriceScatter({ data, lang = "en" }) {
 
   const STEP = 20000;
   const maxPrice = Math.max(...safeData.map((d) => d.price));
-  const yMax = (Math.floor(maxPrice / STEP) + 1) * STEP;
+  const yMax = (Math.floor(maxPrice / STEP) + 2) * STEP;
 
-  const yTicks = Array.from({ length: yMax / STEP + 1 }, (_, i) => i * STEP);
+  const yTicks = Array.from(
+    { length: yMax / STEP + 1 },
+    (_, i) => i * STEP
+  );
+
+  const maxMileage = Math.max(...safeData.map((d) => d.mileage));
+  const xMax = Math.ceil(maxMileage / 250) * 250 + 250;
+
+  const xTicks = Array.from(
+    { length: xMax / 250 + 1 },
+    (_, i) => i * 250
+  );
+
+  const chartHeight = isMobile ? 240 : 350;
 
   return (
-    <div style={{ width: "100%", height: 350 }}>
-      <ResponsiveContainer width="100%" height="100%">
+    <div style={{ width: "100%", height: chartHeight + 40 }}>
+      <ResponsiveContainer width="100%" height={chartHeight}>
         <ScatterChart
           margin={{
             top: 10,
-            right: 20,
-            bottom: 65,
-            left: 50,
+            right: isMobile ? 10 : 20,
+            left: isMobile ? 10 : 40,
+            bottom: isMobile ? 20 : 50,
           }}
         >
           <CartesianGrid stroke="#e2e8f0" strokeDasharray="4 4" />
 
+          {/* X AXIS */}
           <XAxis
             type="number"
             dataKey="mileage"
+            domain={[0, xMax]}
+            ticks={xTicks}
             stroke="#cbd5e1"
-            tick={{ fontSize: 12, fill: "#94a3b8" }}
+            tick={{ fontSize: 11, fill: "#94a3b8" }}
             tickLine={{ stroke: "#cbd5e1" }}
+            tickMargin={8}
           >
             <Label
               value={text.mileage}
               position="bottom"
-              offset={2}
+              offset={0}
               style={{ fill: "#64748b", fontSize: 12 }}
             />
           </XAxis>
 
+          {/* Y AXIS (ONLY CHANGE IS HERE) */}
           <YAxis
             type="number"
             dataKey="price"
             domain={[0, yMax]}
             ticks={yTicks}
             stroke="#cbd5e1"
-            tick={{ fontSize: 12, fill: "#94a3b8" }}
+            tick={{ fontSize: 11, fill: "#94a3b8" }}
             tickLine={{ stroke: "#cbd5e1" }}
+            width={isMobile ? 45 : 70}
+            tickMargin={6}
           >
-            <Label
-              value={text.price}
-              angle={-90}
-              position="left"
-              offset={12}
-              style={{ fill: "#64748b", fontSize: 12 }}
-            />
+            {!isMobile && (
+              <Label
+                value={text.price}
+                angle={-90}
+                position="insideLeft"
+                offset={10}
+                style={{ fill: "#64748b", fontSize: 12 }}
+              />
+            )}
           </YAxis>
 
+          {/* TOOLTIP */}
           <Tooltip
             cursor={{ stroke: "#4f46e5", strokeWidth: 1 }}
             content={({ active, payload }) => {
@@ -138,14 +164,15 @@ export default function PriceScatter({ data, lang = "en" }) {
                     background: "white",
                     border: "1px solid #e5e7eb",
                     borderRadius: 10,
-                    padding: 8,
+                    padding: 10,
                     fontSize: 12,
+                    boxShadow: "0 10px 25px rgba(0,0,0,0.06)",
                   }}
                 >
-                  <div style={{ fontWeight: 600 }}>
+                  <div style={{ fontWeight: 700, fontSize: 13 }}>
                     £{p.price.toLocaleString()}
                   </div>
-                  <div style={{ color: "#64748b" }}>
+                  <div style={{ color: "#64748b", fontSize: 11 }}>
                     {p.mileage.toLocaleString()} km
                   </div>
                 </div>
@@ -153,17 +180,18 @@ export default function PriceScatter({ data, lang = "en" }) {
             }}
           />
 
+          {/* LEGEND */}
           <Legend
-            verticalAlign="bottom"
-            align="left"
+            verticalAlign={isMobile ? "bottom" : "top"}
+            align={isMobile ? "center" : "right"}
+            layout={isMobile ? "horizontal" : "vertical"}
             wrapperStyle={{
-              paddingTop: 22,
               fontSize: 12,
               color: "#64748b",
-              display: "flex",
-              alignItems: "center",
+              paddingTop: isMobile ? 10 : 0,
+              paddingRight: isMobile ? 0 : 10,
             }}
-            iconSize={8}
+            iconSize={10}
             formatter={(value) => {
               if (value === "active") return text.active;
               if (value === "removed") return text.removed;
@@ -171,6 +199,7 @@ export default function PriceScatter({ data, lang = "en" }) {
             }}
           />
 
+          {/* DATA */}
           <Scatter name="active" data={safeData} fill="#4f46e5" />
           <Scatter name="removed" data={[]} fill="#9ca3af" />
         </ScatterChart>
