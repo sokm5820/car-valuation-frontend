@@ -76,6 +76,7 @@ export default function App() {
     const interval = setInterval(() => {
       setAdIndex((prev) => (prev + 1) % ads.length);
     }, 3500);
+
     return () => clearInterval(interval);
   }, []);
 
@@ -117,9 +118,13 @@ export default function App() {
     );
 
     const data = await res.json();
-    const normalized = Array.isArray(data) ? data : data.categories || [];
+
+    const normalized = Array.isArray(data)
+      ? data
+      : data.categories || [];
 
     setCategories(normalized);
+
     setLoading(false);
     setStep(4);
   };
@@ -152,20 +157,20 @@ export default function App() {
     if (step === 4) setStep(3), setCategory("");
     else if (step === 3) setStep(2), setModel("");
     else if (step === 2) setStep(1), setBrand("");
-    else if (step === 5) setStep(4);
   };
 
   useEffect(() => {
     if (!result?.median_price) return;
 
-    const startTime = performance.now();
-    const duration = 900;
+    const start = 0;
     const end = result.median_price;
+    const duration = 900;
+    const startTime = performance.now();
 
     const animate = (t) => {
       const p = Math.min((t - startTime) / duration, 1);
       const eased = 1 - Math.pow(1 - p, 3);
-      setAnimatedValue(Math.floor(end * eased));
+      setAnimatedValue(Math.floor(start + (end - start) * eased));
       if (p < 1) requestAnimationFrame(animate);
     };
 
@@ -173,57 +178,158 @@ export default function App() {
   }, [result]);
 
   return (
-    <div className="app-container">
-
-      {/* LOGO */}
-      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+    <div
+      className="app-container"
+      style={{
+        position: "relative",
+        fontFamily: "Poppins, sans-serif",
+      }}
+    >
+      {/* LOGO + USERNAME */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+          marginTop: 6,
+          marginBottom: 6,
+        }}
+      >
         <img
           src="https://res.cloudinary.com/dtaihpiwt/image/upload/v1777154527/SHOPTECH_LOGO_9_hnwij5.png"
-          style={{ height: 24 }}
+          style={{ height: 24, width: "auto" }}
         />
-        <div style={{ fontSize: 12 }}>@analist.kibris</div>
+        <div style={{ fontSize: 12, color: "#0f172a" }}>
+          @analist.kibris
+        </div>
       </div>
 
-      {/* HEADER */}
-      <div className="header-row">
-        <div>
-          <div style={{ fontSize: 18, fontWeight: 800 }}>
+      {/* HEADER + LANGUAGE */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "flex-start",
+          marginBottom: 4,
+        }}
+      >
+        <div style={{ textAlign: "left" }}>
+          <div
+            style={{
+              fontSize: 28,
+              fontWeight: 800,
+              textTransform: "uppercase",
+              letterSpacing: "-0.5px",
+            }}
+          >
             {text.title}
           </div>
-          <div style={{ fontSize: 12, color: "#2563eb" }}>
+
+          <div
+            style={{
+              fontSize: 13,
+              marginTop: 2,
+              color: "#2563eb",
+            }}
+          >
             {text.subtitle}
           </div>
         </div>
 
-        {step > 1 && (
-          <button onClick={goBack} className="back-btn">
-            ← {text.back}
-          </button>
-        )}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 8,
+            alignItems: "flex-end",
+          }}
+        >
+          {/* ✅ REMOVED ARABIC */}
+          <div
+            style={{
+              display: "flex",
+              background: "#f1f5f9",
+              borderRadius: 999,
+              padding: 4,
+              gap: 4,
+              border: "1px solid #e2e8f0",
+            }}
+          >
+            {["tr", "en", "ru"].map((l) => (
+              <button
+                key={l}
+                onClick={() => changeLang(l)}
+                style={{
+                  padding: "6px 10px",
+                  borderRadius: 999,
+                  border: "none",
+                  fontSize: 12,
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  background: lang === l ? "#2563eb" : "transparent",
+                  color: lang === l ? "white" : "#475569",
+                }}
+              >
+                {l.toUpperCase()}
+              </button>
+            ))}
+          </div>
+
+          {step > 1 && step < 5 && (
+            <button
+              onClick={goBack}
+              style={{
+                padding: "5px 10px",
+                borderRadius: 8,
+                border: "1px solid #e2e8f0",
+                background: "transparent",
+                color: "#64748b",
+                fontSize: 12,
+                fontWeight: 500,
+                cursor: "pointer",
+              }}
+            >
+              ← {text.back}
+            </button>
+          )}
+        </div>
       </div>
 
       {/* PROGRESS */}
       {step < 5 && (
-        <div className="progress">
+        <div
+          style={{
+            width: "100%",
+            height: 6,
+            background: "#e2e8f0",
+            borderRadius: 999,
+            overflow: "hidden",
+            marginBottom: 10,
+          }}
+        >
           <div
-            className="progress-inner"
-            style={{ width: `${progress}%` }}
+            style={{
+              width: `${progress}%`,
+              height: "100%",
+              background: "#2563eb",
+              transition: "width 0.3s ease",
+            }}
           />
         </div>
       )}
 
-      {/* LOADING (FIXED SMALL) */}
-      {loading && (
-        <p style={{ fontSize: 11, color: "#94a3b8" }}>
-          {text.loading}
-        </p>
-      )}
+      {loading && <p>{text.loading}</p>}
 
-      {/* STEPS */}
+      {/* ✅ BUTTONS NOW CENTER TEXT */}
       {step === 1 && (
         <div className="step-column">
           {years.map((y) => (
-            <button key={y} onClick={() => handleYear(y)} className="btn">
+            <button
+              key={y}
+              onClick={() => handleYear(y)}
+              className="btn"
+              style={{ textAlign: "center" }}
+            >
               {y}
             </button>
           ))}
@@ -233,7 +339,12 @@ export default function App() {
       {step === 2 && (
         <div className="step-column">
           {brands.map((b) => (
-            <button key={b} onClick={() => handleBrand(b)} className="btn">
+            <button
+              key={b}
+              onClick={() => handleBrand(b)}
+              className="btn"
+              style={{ textAlign: "center" }}
+            >
               {b}
             </button>
           ))}
@@ -243,7 +354,12 @@ export default function App() {
       {step === 3 && (
         <div className="step-column">
           {models.map((m) => (
-            <button key={m} onClick={() => handleModel(m)} className="btn">
+            <button
+              key={m}
+              onClick={() => handleModel(m)}
+              className="btn"
+              style={{ textAlign: "center" }}
+            >
               {m}
             </button>
           ))}
@@ -253,54 +369,75 @@ export default function App() {
       {step === 4 && (
         <div className="step-column">
           {categories.map((c) => (
-            <button key={c} onClick={() => setCategory(c)} className="btn">
+            <button
+              key={c}
+              onClick={() => setCategory(c)}
+              className="btn"
+              style={{ textAlign: "center" }}
+            >
               {c}
             </button>
           ))}
 
           {category && (
-            <div className="sticky-cta">
-              <button onClick={getValuation} className="btn-primary">
-                {text.getValuation}
-              </button>
-            </div>
+            <button className="btn-primary" onClick={getValuation}>
+              {text.getValuation}
+            </button>
           )}
         </div>
       )}
 
-      {/* VALUATION */}
       {step === 5 && result && (
-        <div style={{ textAlign: "center", display: "flex", flexDirection: "column", gap: 4 }}>
-
-          <button onClick={goBack} className="back-btn">
-            ← {text.back}
-          </button>
-
-          <h1 style={{ fontSize: 34, fontWeight: 800, color: "#0f172a", margin: 0 }}>
+        <div
+          style={{
+            textAlign: "center",
+            marginTop: 2,
+            display: "flex",
+            flexDirection: "column",
+            gap: 6,
+          }}
+        >
+          <h1 style={{ fontWeight: 800 }}>
             £{animatedValue.toLocaleString()}
           </h1>
 
-          <p style={{ margin: 0, fontSize: 13, color: "#475569" }}>
+          <p style={{ marginTop: 0, color: "#475569", fontWeight: 500 }}>
             £{result.min_price.toLocaleString()} – £{result.max_price.toLocaleString()}
           </p>
 
           <PriceScatter data={result.scatter} lang={lang} />
 
-          <div style={{ marginTop: 10, height: 150, borderRadius: 14, overflow: "hidden" }}>
-            <a href={ads[adIndex].url} target="_blank" rel="noopener noreferrer">
-              <img
-                src={ads[adIndex].img}
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              />
-            </a>
+          <div style={{ marginTop: 14 }}>
+            <div
+              style={{
+                borderRadius: 14,
+                overflow: "hidden",
+                height: 170,
+                cursor: "pointer",
+              }}
+            >
+              <a
+                href={ads[adIndex].url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img
+                  src={ads[adIndex].img}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                  }}
+                />
+              </a>
+            </div>
           </div>
 
-          <div className="sticky-cta">
+          <div style={{ marginTop: 14 }}>
             <button onClick={resetFlow} className="btn-primary">
               {text.restart}
             </button>
           </div>
-
         </div>
       )}
     </div>

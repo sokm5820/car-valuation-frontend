@@ -42,7 +42,7 @@ body {
 }
 
 .title {
-  font-size: 18px; /* softer, more premium */
+  font-size: 18px;
   font-weight: 700;
   letter-spacing: -0.2px;
   white-space: nowrap;
@@ -78,7 +78,7 @@ body {
 }
 
 .lang-btn.active {
-  background: #334155; /* 🔥 softer professional tone */
+  background: #334155;
   color: white;
 }
 
@@ -96,7 +96,7 @@ body {
 }
 
 /* ================================
-   PROGRESS BAR (SOFT PREMIUM BLUE)
+   PROGRESS BAR
 ================================ */
 
 .progress {
@@ -113,12 +113,12 @@ body {
 }
 
 /* ================================
-   BUTTON SYSTEM (CONSISTENT HEIGHT)
+   BUTTON SYSTEM (BASE)
 ================================ */
 
 .btn {
   width: 100%;
-  height: 42px; /* 🔥 FIXED HEIGHT */
+  height: 42px;
   border-radius: 12px;
 
   border: 1px solid #e2e8f0;
@@ -141,19 +141,60 @@ body {
   transform: translateY(-1px);
 }
 
-/* PRIMARY ACTION BUTTON */
+/* ================================
+   PRIMARY CTA (DEGERI GETIR) — PREMIUM FIX
+================================ */
+
 .btn-primary {
-  background: #334155; /* 🔥 toned-down premium dark slate */
+  background: linear-gradient(135deg, #334155, #475569);
   color: white;
   border: none;
+
+  height: 46px;
+  border-radius: 999px;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  cursor: pointer;
+
+  box-shadow: 0 8px 20px rgba(51, 65, 85, 0.18);
+
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+/* arrow effect */
+.btn-primary::after {
+  content: "→";
+  font-size: 16px;
+  margin-left: 4px;
+  transition: transform 0.2s ease;
 }
 
 .btn-primary:hover {
-  background: #1f2937;
+  background: linear-gradient(135deg, #1f2937, #334155);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 26px rgba(51, 65, 85, 0.25);
+}
+
+.btn-primary:hover::after {
+  transform: translateX(3px);
+}
+
+.btn-primary:active {
+  transform: scale(0.97);
+  box-shadow: 0 5px 14px rgba(51, 65, 85, 0.18);
 }
 
 /* ================================
-   YEAR GRID (4 PER ROW FIXED)
+   YEAR GRID (4 PER ROW)
 ================================ */
 
 .step-column {
@@ -162,16 +203,15 @@ body {
   gap: 8px;
 }
 
-/* year pills */
 .step-column .btn {
-  height: 38px; /* slightly tighter than normal buttons */
+  height: 38px;
   border-radius: 999px;
   font-size: 12px;
   padding: 0;
 }
 
 /* ================================
-   RESULT SCREEN (TIGHTER PREMIUM LAYOUT)
+   RESULT SCREEN
 ================================ */
 
 .result {
@@ -210,6 +250,8 @@ body {
   height: 150px;
   border-radius: 14px;
   overflow: hidden;
+
+  flex-shrink: 0;
 }
 
 .ad img {
@@ -219,7 +261,7 @@ body {
 }
 
 /* ================================
-   MOBILE OPTIMIZATION
+   📱 MOBILE OPTIMIZATION
 ================================ */
 
 @media (max-width: 768px) {
@@ -253,5 +295,24 @@ body {
 
   .ad {
     height: 130px;
+  }
+
+  /* ================================
+     STICKY CTA (MOBILE ONLY)
+  ================================= */
+
+  .sticky-cta {
+    position: fixed;
+    bottom: 14px;
+    left: 14px;
+    right: 14px;
+    z-index: 999;
+  }
+
+  .sticky-cta .btn-primary {
+    width: 100%;
+    height: 52px;
+    font-size: 15px;
+    box-shadow: 0 14px 30px rgba(51, 65, 85, 0.25);
   }
 }
