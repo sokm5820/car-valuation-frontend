@@ -47,7 +47,7 @@ export default function PriceScatter({ data, lang = "en" }) {
 
   const text = t[lang] || t.en;
 
-  const safeData = (data || [])
+  const normalized = (data || [])
     .map((d) => {
       const price = Number(d.price ?? d.Price);
       const mileage = Number(d.mileage ?? d.KM ?? d.km);
@@ -55,12 +55,13 @@ export default function PriceScatter({ data, lang = "en" }) {
       return {
         price: Number.isFinite(price) ? Math.round(price) : null,
         mileage: Number.isFinite(mileage) ? Math.round(mileage) : null,
+        status: d.status || "active", // 🔥 important fallback
       };
     })
     .filter((d) => d.price > 0 && d.mileage > 0)
     .sort((a, b) => a.mileage - b.mileage);
 
-  if (!safeData.length) {
+  if (!normalized.length) {
     return (
       <div
         style={{
@@ -76,20 +77,21 @@ export default function PriceScatter({ data, lang = "en" }) {
     );
   }
 
+  // 🔥 SPLIT DATA PROPERLY
+  const activeData = normalized.filter((d) => d.status !== "removed");
+  const removedData = normalized.filter((d) => d.status === "removed");
+
   const STEP = 20000;
 
-  const maxPrice = Math.max(...safeData.map((d) => d.price));
-
-  // ✅ FIX 1: dynamic headroom instead of +2 STEP padding
-  const yMaxRaw = maxPrice * 1.1; // 10% padding above max
-  const yMax = Math.ceil(yMaxRaw / STEP) * STEP;
+  const maxPrice = Math.max(...normalized.map((d) => d.price));
+  const yMax = Math.ceil((maxPrice * 1.1) / STEP) * STEP;
 
   const yTicks = Array.from(
     { length: yMax / STEP + 1 },
     (_, i) => i * STEP
   );
 
-  const maxMileage = Math.max(...safeData.map((d) => d.mileage));
+  const maxMileage = Math.max(...normalized.map((d) => d.mileage));
   const xMax = Math.ceil(maxMileage / 250) * 250 + 250;
 
   const xTicks = Array.from(
@@ -112,7 +114,6 @@ export default function PriceScatter({ data, lang = "en" }) {
         >
           <CartesianGrid stroke="#e2e8f0" strokeDasharray="4 4" />
 
-          {/* X AXIS */}
           <XAxis
             type="number"
             dataKey="mileage"
@@ -126,12 +127,10 @@ export default function PriceScatter({ data, lang = "en" }) {
             <Label
               value={text.mileage}
               position="bottom"
-              offset={0}
               style={{ fill: "#64748b", fontSize: 12 }}
             />
           </XAxis>
 
-          {/* Y AXIS (FIXED SCALING) */}
           <YAxis
             type="number"
             dataKey="price"
@@ -148,13 +147,11 @@ export default function PriceScatter({ data, lang = "en" }) {
                 value={text.price}
                 angle={-90}
                 position="insideLeft"
-                offset={10}
                 style={{ fill: "#64748b", fontSize: 12 }}
               />
             )}
           </YAxis>
 
-          {/* TOOLTIP */}
           <Tooltip
             cursor={{ stroke: "#4f46e5", strokeWidth: 1 }}
             content={({ active, payload }) => {
@@ -184,7 +181,7 @@ export default function PriceScatter({ data, lang = "en" }) {
             }}
           />
 
-          {/* LEGEND */}
+          {/* 🔥 FIXED LEGEND */}
           <Legend
             verticalAlign={isMobile ? "bottom" : "top"}
             align={isMobile ? "center" : "right"}
@@ -203,9 +200,14 @@ export default function PriceScatter({ data, lang = "en" }) {
             }}
           />
 
-          {/* DATA */}
-          <Scatter name="active" data={safeData} fill="#4f46e5" />
-          <Scatter name="removed" data={[]} fill="#9ca3af" />
+          {/* ONLY RENDER IF EXISTS */}
+          {activeData.length > 0 && (
+            <Scatter name="active" data={activeData} fill="#4f46e5" />
+          )}
+
+          {removedData.length > 0 && (
+            <Scatter name="removed" data={removedData} fill="#9ca3af" />
+          )}
         </ScatterChart>
       </ResponsiveContainer>
     </div>
