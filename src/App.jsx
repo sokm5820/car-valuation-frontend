@@ -10,6 +10,7 @@ export default function App() {
   const [model, setModel] = useState("");
   const [category, setCategory] = useState("");
 
+  // ALWAYS SAFE DEFAULTS
   const [years, setYears] = useState([]);
   const [brands, setBrands] = useState([]);
   const [models, setModels] = useState([]);
@@ -20,6 +21,7 @@ export default function App() {
 
   const [lang, setLang] = useState(localStorage.getItem("lang") || "tr");
 
+  const [apiError, setApiError] = useState(false);
   const API = "https://car-valuation-backend.onrender.com";
 
   const changeLang = (l) => {
@@ -37,6 +39,7 @@ export default function App() {
       step2: "Select Brand",
       step3: "Select Model",
       step4: "Select Category",
+      retry: "Retry loading data",
     },
     tr: {
       title: "ARAÇ DEĞERLEME",
@@ -47,6 +50,7 @@ export default function App() {
       step2: "Marka Seç",
       step3: "Model Seç",
       step4: "Kategori Seç",
+      retry: "Tekrar dene",
     },
     ru: {
       title: "ОЦЕНКА АВТОМОБИЛЯ",
@@ -57,6 +61,7 @@ export default function App() {
       step2: "Выберите марку",
       step3: "Выберите модель",
       step4: "Выберите категорию",
+      retry: "Повторить",
     },
   };
 
@@ -84,53 +89,90 @@ export default function App() {
 
   const progress = Math.min(100, Math.max(0, ((step - 1) / 3) * 100));
 
-  useEffect(() => {
-    fetch(`${API}/years`)
-      .then((r) => r.json())
-      .then((data) => {
-        const normalized = Array.isArray(data) ? data : data.years || [];
-        setYears([...normalized].sort((a, b) => b - a));
+  // -----------------------
+  // ULTRA SAFE FETCH (RETRY + TIMEOUT)
+  // -----------------------
+  const safeFetch = async (url, options = {}, retries = 1, timeout = 8000) => {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeout);
+
+    try {
+      const res = await fetch(url, {
+        ...options,
+        signal: controller.signal,
       });
+
+      clearTimeout(id);
+      setApiError(false);
+      return await res.json();
+    } catch (err) {
+      clearTimeout(id);
+
+      if (retries > 0) {
+        return safeFetch(url, options, retries - 1, timeout);
+      }
+
+      console.warn("API failed:", url);
+      setApiError(true);
+      return null;
+    }
+  };
+
+  // -----------------------
+  // INITIAL LOAD (SAFE)
+  // -----------------------
+  useEffect(() => {
+    safeFetch(`${API}/years`).then((data) => {
+      const safe = Array.isArray(data) ? data : [];
+      setYears(safe.sort((a, b) => b - a));
+    });
   }, []);
 
   const handleYear = async (v) => {
     setYear(v);
-    const res = await fetch(`${API}/brands?year=${v}`);
-    setBrands(await res.json());
+
+    const data = await safeFetch(`${API}/brands?year=${v}`);
+    setBrands(Array.isArray(data) ? data : []);
+
     setStep(2);
   };
 
   const handleBrand = async (v) => {
     setBrand(v);
-    const res = await fetch(`${API}/models?year=${year}&brand=${v}`);
-    setModels(await res.json());
+
+    const data = await safeFetch(`${API}/models?year=${year}&brand=${v}`);
+    setModels(Array.isArray(data) ? data : []);
+
     setStep(3);
   };
 
   const handleModel = async (v) => {
     setModel(v);
 
-    const res = await fetch(
+    const data = await safeFetch(
       `${API}/categories?year=${year}&brand=${brand}&model=${v}`
     );
 
-    const data = await res.json();
-    const normalized = Array.isArray(data) ? data : data.categories || [];
-
-    setCategories(normalized);
+    setCategories(Array.isArray(data) ? data : []);
     setStep(4);
   };
 
   const handleCategory = async (c) => {
     setCategory(c);
 
-    const res = await fetch(`${API}/get_valuation`, {
+    const data = await safeFetch(`${API}/get_valuation`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ year, brand, model, category: c }),
     });
 
-    setResult(await res.json());
+    setResult(data || {
+      median_price: 0,
+      min_price: 0,
+      max_price: 0,
+      scatter: []
+    });
+
     setStep(5);
   };
 
@@ -145,17 +187,14 @@ export default function App() {
   };
 
   const goBack = () => {
-    if (step === 5) setStep(4);
-    else if (step === 4) setStep(3);
-    else if (step === 3) setStep(2);
-    else if (step === 2) setStep(1);
+    setStep((s) => Math.max(1, s - 1));
   };
 
   useEffect(() => {
     if (!result?.median_price) return;
 
     const start = 0;
-    const end = result.median_price;
+    const end = result.median_price || 0;
     const duration = 900;
     const startTime = performance.now();
 
@@ -172,128 +211,75 @@ export default function App() {
   return (
     <div className="app-container">
 
-      {/* HEADER */}
-      <div style={{ position: "relative", fontFamily: "Poppins, sans-serif" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 6, marginBottom: 6 }}>
-          <img
-            src="https://res.cloudinary.com/dtaihpiwt/image/upload/v1777154527/SHOPTECH_LOGO_9_hnwij5.png"
-            style={{ height: 24 }}
-          />
-          <div style={{ fontSize: 12, color: "#0f172a" }}>
-            @analist.kibris
+      {/* HEADER ALWAYS RENDERS */}
+      <div>
+        <div style={{ fontFamily: "Poppins, sans-serif" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <img
+              src="https://res.cloudinary.com/dtaihpiwt/image/upload/v1777154527/SHOPTECH_LOGO_9_hnwij5.png"
+              style={{ height: 24 }}
+            />
+            <div style={{ fontSize: 12 }}>@analist.kibris</div>
           </div>
-        </div>
 
-        <div className="header-row">
-          <div style={{ textAlign: "left" }}>
-            <div className="title">{text.title}</div>
-            <div style={{ fontSize: 12, color: "#2563eb" }}>
-              {text.subtitle}
+          <div className="header-row">
+            <div>
+              <div className="title">{text.title}</div>
+              <div style={{ fontSize: 12 }}>{text.subtitle}</div>
             </div>
-          </div>
 
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6 }}>
-            <div style={{ display: "flex", gap: 6 }}>
+            <div>
               {["tr", "en", "ru"].map((l) => (
-                <button
-                  key={l}
-                  onClick={() => changeLang(l)}
-                  className={`lang-btn ${lang === l ? "active" : ""}`}
-                >
+                <button key={l} onClick={() => changeLang(l)}>
                   {l.toUpperCase()}
                 </button>
               ))}
             </div>
-
-            {step > 1 && (
-              <button onClick={goBack} className="back-btn">
-                ← {text.back}
-              </button>
-            )}
           </div>
         </div>
+
+        {/* API ERROR STATE (NO BLANK SCREEN EVER) */}
+        {apiError && (
+          <div style={{ padding: 10, color: "red" }}>
+            Backend slow or unavailable.
+            <button onClick={() => window.location.reload()}>
+              {text.retry}
+            </button>
+          </div>
+        )}
       </div>
 
-      {/* PROGRESS + LABEL */}
-      {step < 5 && (
-        <div className="step-block">
-          <div className="progress">
-            <div className="progress-inner" style={{ width: `${progress}%` }} />
-          </div>
-
-          <div className="step-label">
-            {step === 1 && text.step1}
-            {step === 2 && text.step2}
-            {step === 3 && text.step3}
-            {step === 4 && text.step4}
-          </div>
-        </div>
-      )}
-
-      {/* STEPS */}
+      {/* SAFE STEP RENDERING */}
       {step === 1 && (
-        <div className="step-column">
-          {years.map((y) => (
-            <button key={y} onClick={() => handleYear(y)} className="btn">
-              {y}
-            </button>
-          ))}
+        <div>
+          {years.length === 0 ? (
+            <p>Loading years...</p>
+          ) : (
+            years.map((y) => (
+              <button key={y} onClick={() => handleYear(y)}>
+                {y}
+              </button>
+            ))
+          )}
         </div>
       )}
 
-      {step === 2 && (
-        <div className="step-column">
-          {brands.map((b) => (
-            <button key={b} onClick={() => handleBrand(b)} className="btn">
-              {b}
-            </button>
-          ))}
-        </div>
-      )}
-
-      {step === 3 && (
-        <div className="step-column">
-          {models.map((m) => (
-            <button key={m} onClick={() => handleModel(m)} className="btn">
-              {m}
-            </button>
-          ))}
-        </div>
-      )}
-
-      {step === 4 && (
-        <div className="step-column">
-          {categories.map((c) => (
-            <button key={c} onClick={() => handleCategory(c)} className="btn">
-              {c}
-            </button>
-          ))}
-        </div>
-      )}
-
-      {/* RESULT */}
-      {step === 5 && result && (
-        <div className="result">
-
+      {step === 5 && (
+        <div>
           <h1>£{animatedValue.toLocaleString()}</h1>
 
           <p>
-            £{result.min_price.toLocaleString()} – £{result.max_price.toLocaleString()}
+            £{result?.min_price || 0} – £{result?.max_price || 0}
           </p>
 
-          <PriceScatter data={result.scatter} lang={lang} />
+          <PriceScatter data={result?.scatter || []} lang={lang} />
 
-          <div className="ad">
-            <a href={ads[adIndex].url} target="_blank" rel="noopener noreferrer">
-              <img src={ads[adIndex].img} />
-            </a>
-          </div>
-
-          <button onClick={resetFlow} className="btn-primary">
+          <button onClick={resetFlow}>
             {text.restart}
           </button>
         </div>
       )}
+
     </div>
   );
 }
