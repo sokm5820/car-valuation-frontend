@@ -1,6 +1,7 @@
 import "./App.css";
 import { useEffect, useState } from "react";
 import PriceScatter from "./components/PriceScatter";
+import { Analytics } from "@vercel/analytics/react";
 
 export default function App() {
   const [step, setStep] = useState(1);
@@ -290,6 +291,8 @@ export default function App() {
           </button>
         </div>
       )}
+
+      <Analytics />
     </div>
   );
 }

@@ -30,27 +30,33 @@ export default function App() {
   const t = {
     en: {
       title: "VEHICLE VALUATION",
-      subtitle: "Step-by-step market pricing",
-      getValuation: "Get valuation",
+      subtitle: "Your vehicle's value in just 4 clicks",
       restart: "Search another car",
       back: "Back",
-      loading: "Loading...",
+      step1: "Select Year",
+      step2: "Select Brand",
+      step3: "Select Model",
+      step4: "Select Category",
     },
     tr: {
       title: "ARAÇ DEĞERLEME",
-      subtitle: "Adım adım piyasa fiyatlandırması",
-      getValuation: "Değeri getir",
+      subtitle: "Aracınızın değeri sadece 4 adımda",
       restart: "Yeni araç ara",
       back: "Geri",
-      loading: "Yükleniyor...",
+      step1: "Yıl Seç",
+      step2: "Marka Seç",
+      step3: "Model Seç",
+      step4: "Kategori Seç",
     },
     ru: {
       title: "ОЦЕНКА АВТОМОБИЛЯ",
-      subtitle: "Пошаговая рыночная оценка",
-      getValuation: "Получить оценку",
+      subtitle: "Оценка за 4 шага",
       restart: "Новый поиск",
       back: "Назад",
-      loading: "Загрузка...",
+      step1: "Выберите год",
+      step2: "Выберите марку",
+      step3: "Выберите модель",
+      step4: "Выберите категорию",
     },
   };
 
@@ -58,11 +64,11 @@ export default function App() {
 
   const ads = [
     {
-      img: "https://res.cloudinary.com/dtaihpiwt/image/upload/v1777148944/ChatGPT_Image_Apr_25_2026_11_26_08_PM_r8afuy.png",
+      img: "https://res.cloudinary.com/dtaihpiwt/image/upload/v1777294450/ChatGPT_Image_Apr_27_2026_09_06_32_AM_cryytk.png",
       url: "https://wa.me/+905338760100",
     },
     {
-      img: "https://res.cloudinary.com/dtaihpiwt/image/upload/v1777148950/ChatGPT_Image_Apr_25_2026_11_26_50_PM_qq8lfa.png",
+      img: "https://res.cloudinary.com/dtaihpiwt/image/upload/v1777182806/ChatGPT_Image_Apr_26_2026_08_52_24_AM_bsvbwd.png",
       url: "https://wa.me/+905338760100",
     },
   ];
@@ -109,20 +115,19 @@ export default function App() {
     );
 
     const data = await res.json();
-    const normalized = Array.isArray(data)
-      ? data
-      : data.categories || [];
+    const normalized = Array.isArray(data) ? data : data.categories || [];
 
     setCategories(normalized);
-
     setStep(4);
   };
 
-  const getValuation = async () => {
+  const handleCategory = async (c) => {
+    setCategory(c);
+
     const res = await fetch(`${API}/get_valuation`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ year, brand, model, category }),
+      body: JSON.stringify({ year, brand, model, category: c }),
     });
 
     setResult(await res.json());
@@ -140,7 +145,8 @@ export default function App() {
   };
 
   const goBack = () => {
-    if (step === 4) setStep(3);
+    if (step === 5) setStep(4);
+    else if (step === 4) setStep(3);
     else if (step === 3) setStep(2);
     else if (step === 2) setStep(1);
   };
@@ -166,41 +172,26 @@ export default function App() {
   return (
     <div className="app-container">
 
-      {/* LOGO + USERNAME (RESTORED EXACTLY) */}
       <div style={{ position: "relative", fontFamily: "Poppins, sans-serif" }}>
-
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-            marginTop: 6,
-            marginBottom: 6,
-          }}
-        >
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 6, marginBottom: 6 }}>
           <img
             src="https://res.cloudinary.com/dtaihpiwt/image/upload/v1777154527/SHOPTECH_LOGO_9_hnwij5.png"
-            style={{ height: 24, width: "auto" }}
+            style={{ height: 24 }}
           />
           <div style={{ fontSize: 12, color: "#0f172a" }}>
             @analist.kibris
           </div>
         </div>
 
-        {/* HEADER */}
         <div className="header-row">
-
           <div style={{ textAlign: "left" }}>
             <div className="title">{text.title}</div>
-
-            {/* FIX: ensured blue stays consistent via CSS class or inline fallback */}
             <div style={{ fontSize: 12, color: "#2563eb" }}>
               {text.subtitle}
             </div>
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6 }}>
-
             <div style={{ display: "flex", gap: 6 }}>
               {["tr", "en", "ru"].map((l) => (
                 <button
@@ -213,24 +204,30 @@ export default function App() {
               ))}
             </div>
 
-            {step > 1 && step < 5 && (
+            {step > 1 && (
               <button onClick={goBack} className="back-btn">
                 ← {text.back}
               </button>
             )}
-
           </div>
         </div>
       </div>
 
-      {/* PROGRESS */}
       {step < 5 && (
-        <div className="progress">
-          <div className="progress-inner" style={{ width: `${progress}%` }} />
+        <div className="step-block">
+          <div className="progress">
+            <div className="progress-inner" style={{ width: `${progress}%` }} />
+          </div>
+
+          <div className="step-label">
+            {step === 1 && text.step1}
+            {step === 2 && text.step2}
+            {step === 3 && text.step3}
+            {step === 4 && text.step4}
+          </div>
         </div>
       )}
 
-      {/* STEPS (UNCHANGED) */}
       {step === 1 && (
         <div className="step-column">
           {years.map((y) => (
@@ -264,20 +261,13 @@ export default function App() {
       {step === 4 && (
         <div className="step-column">
           {categories.map((c) => (
-            <button key={c} onClick={() => setCategory(c)} className="btn">
+            <button key={c} onClick={() => handleCategory(c)} className="btn">
               {c}
             </button>
           ))}
-
-          {category && (
-            <button onClick={getValuation} className="btn-primary">
-              {text.getValuation}
-            </button>
-          )}
         </div>
       )}
 
-      {/* VALUATION (FULL RESTORED LAYOUT) */}
       {step === 5 && result && (
         <div className="result">
 
@@ -298,10 +288,8 @@ export default function App() {
           <button onClick={resetFlow} className="btn-primary">
             {text.restart}
           </button>
-
         </div>
       )}
-
     </div>
   );
 }
