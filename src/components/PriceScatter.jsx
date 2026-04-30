@@ -117,7 +117,7 @@ export default function PriceScatter({ data, lang = "en" }) {
             top: 10,
             right: isMobile ? 10 : 20,
             left: isMobile ? 10 : 40,
-            bottom: isMobile ? 30 : 60, // ⬅ increased spacing
+            bottom: isMobile ? 20 : 30,
           }}
         >
           <CartesianGrid stroke="#e2e8f0" strokeDasharray="4 4" />
@@ -196,7 +196,7 @@ export default function PriceScatter({ data, lang = "en" }) {
             wrapperStyle={{
               fontSize: 12,
               color: "#64748b",
-              paddingTop: isMobile ? 18 : 26, // ⬅ more spacing from axis
+              paddingTop: isMobile ? 8 : 0,
               paddingRight: isMobile ? 0 : 10,
             }}
             iconSize={10}
