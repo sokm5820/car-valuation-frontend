@@ -189,15 +189,16 @@ export default function PriceScatter({ data, lang = "en" }) {
             }}
           />
 
-          {/* ✅ FIXED LEGEND */}
+          {/* ✅ FIXED: top-right legend with spacing */}
           <Legend
-            verticalAlign="middle"
+            verticalAlign="top"
             align="right"
             layout="vertical"
             wrapperStyle={{
               fontSize: 12,
               color: "#64748b",
-              paddingRight: isMobile ? 5 : 10,
+              paddingTop: 5,
+              paddingRight: isMobile ? 10 : 18,
             }}
             iconSize={10}
             formatter={(value) => {
