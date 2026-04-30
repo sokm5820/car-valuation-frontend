@@ -63,12 +63,12 @@ export default function App() {
 
   const text = t[lang] || t.en;
 
-const ads = [
-  {
-    img: "https://res.cloudinary.com/dtaihpiwt/image/upload/v1777530515/ChatGPT_Image_Apr_30_2026_09_09_56_AM_gh28ai.png",
-    url: "https://wa.me/905338760100?text=Merhaba,%20reklam%20alanınızda%20yer%20almak%20istiyorum.%20Bilgi%20alabilir%20miyim?",
-  },
-];
+  const ads = [
+    {
+      img: "https://res.cloudinary.com/dtaihpiwt/image/upload/v1777530515/ChatGPT_Image_Apr_30_2026_09_09_56_AM_gh28ai.png",
+      url: "https://wa.me/905338760100?text=Merhaba,%20reklam%20alanınızda%20yer%20almak%20istiyorum.%20Bilgi%20alabilir%20miyim?",
+    },
+  ];
 
   const [adIndex, setAdIndex] = useState(0);
 
@@ -276,9 +276,16 @@ const ads = [
 
           <PriceScatter data={result.scatter} lang={lang} />
 
-          <div className="ad">
+          <div className="ad" style={{ display: "flex", justifyContent: "center" }}>
             <a href={ads[adIndex].url} target="_blank" rel="noopener noreferrer">
-              <img src={ads[adIndex].img} />
+              <img
+                src={ads[adIndex].img}
+                style={{
+                  height: "70vh",
+                  width: "100%",
+                  objectFit: "contain"
+                }}
+              />
             </a>
           </div>
 
