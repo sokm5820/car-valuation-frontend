@@ -274,15 +274,35 @@ export default function App() {
             £{result.min_price.toLocaleString()} – £{result.max_price.toLocaleString()}
           </p>
 
-          <PriceScatter data={result.scatter} lang={lang} />
+          <div style={{ marginBottom: 8 }}>
+            <PriceScatter data={result.scatter} lang={lang} />
+          </div>
 
-          <div className="ad" style={{ display: "flex", justifyContent: "center" }}>
-            <a href={ads[adIndex].url} target="_blank" rel="noopener noreferrer">
+          <div
+            className="ad"
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              margin: 0,
+              padding: 0,
+              lineHeight: 0
+            }}
+          >
+            <a
+              href={ads[adIndex].url}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ display: "inline-block", margin: 0, padding: 0 }}
+            >
               <img
                 src={ads[adIndex].img}
                 style={{
-                  height: "70vh",
-                  width: "100%",
+                  height: "50vh",
+                  width: "auto",
+                  display: "block",
+                  margin: 0,
+                  padding: 0,
                   objectFit: "contain"
                 }}
               />
