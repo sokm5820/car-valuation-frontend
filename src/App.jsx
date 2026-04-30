@@ -63,16 +63,12 @@ export default function App() {
 
   const text = t[lang] || t.en;
 
-  const ads = [
-    {
-      img: "https://res.cloudinary.com/dtaihpiwt/image/upload/v1777294450/ChatGPT_Image_Apr_27_2026_09_06_32_AM_cryytk.png",
-      url: "https://wa.me/+905338760100",
-    },
-    {
-      img: "https://res.cloudinary.com/dtaihpiwt/image/upload/v1777182806/ChatGPT_Image_Apr_26_2026_08_52_24_AM_bsvbwd.png",
-      url: "https://wa.me/+905338760100",
-    },
-  ];
+const ads = [
+  {
+    img: "https://res.cloudinary.com/dtaihpiwt/image/upload/v1777530515/ChatGPT_Image_Apr_30_2026_09_09_56_AM_gh28ai.png",
+    url: "https://wa.me/905338760100?text=Merhaba,%20reklam%20alanınızda%20yer%20almak%20istiyorum.%20Bilgi%20alabilir%20miyim?",
+  },
+];
 
   const [adIndex, setAdIndex] = useState(0);
 
