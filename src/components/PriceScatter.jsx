@@ -189,15 +189,15 @@ export default function PriceScatter({ data, lang = "en" }) {
             }}
           />
 
+          {/* ✅ FIXED LEGEND */}
           <Legend
-            verticalAlign={isMobile ? "bottom" : "top"}
-            align={isMobile ? "center" : "right"}
-            layout={isMobile ? "horizontal" : "vertical"}
+            verticalAlign="middle"
+            align="right"
+            layout="vertical"
             wrapperStyle={{
               fontSize: 12,
               color: "#64748b",
-              paddingTop: isMobile ? 8 : 0,
-              paddingRight: isMobile ? 0 : 10,
+              paddingRight: isMobile ? 5 : 10,
             }}
             iconSize={10}
             formatter={(value) => {
