@@ -65,8 +65,12 @@ export default function App() {
 
   const ads = [
     {
-      img: "https://res.cloudinary.com/dtaihpiwt/image/upload/v1777530515/ChatGPT_Image_Apr_30_2026_09_09_56_AM_gh28ai.png",
-      url: "https://wa.me/905338760100?text=Merhaba,%20reklam%20alanınızda%20yer%20almak%20istiyorum.%20Bilgi%20alabilir%20miyim?",
+      img: "https://res.cloudinary.com/dtaihpiwt/image/upload/v1777294450/ChatGPT_Image_Apr_27_2026_09_06_32_AM_cryytk.png",
+      url: "https://wa.me/+905338760100",
+    },
+    {
+      img: "https://res.cloudinary.com/dtaihpiwt/image/upload/v1777182806/ChatGPT_Image_Apr_26_2026_08_52_24_AM_bsvbwd.png",
+      url: "https://wa.me/+905338760100",
     },
   ];
 
@@ -274,38 +278,11 @@ export default function App() {
             £{result.min_price.toLocaleString()} – £{result.max_price.toLocaleString()}
           </p>
 
-          <div style={{ marginBottom: 8 }}>
-            <PriceScatter data={result.scatter} lang={lang} />
-          </div>
+          <PriceScatter data={result.scatter} lang={lang} />
 
-          <div
-            className="ad"
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              margin: 0,
-              padding: 0,
-              lineHeight: 0
-            }}
-          >
-            <a
-              href={ads[adIndex].url}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ display: "inline-block", margin: 0, padding: 0 }}
-            >
-              <img
-                src={ads[adIndex].img}
-                style={{
-                  height: "50vh",
-                  width: "auto",
-                  display: "block",
-                  margin: 0,
-                  padding: 0,
-                  objectFit: "contain"
-                }}
-              />
+          <div className="ad">
+            <a href={ads[adIndex].url} target="_blank" rel="noopener noreferrer">
+              <img src={ads[adIndex].img} />
             </a>
           </div>
 
