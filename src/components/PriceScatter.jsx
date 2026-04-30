@@ -115,7 +115,7 @@ export default function PriceScatter({ data, lang = "en" }) {
           style={{ outline: "none" }}
           margin={{
             top: 10,
-            right: isMobile ? 10 : 20,
+            right: isMobile ? 40 : 70, // ✅ increased chart margin creates real space
             left: isMobile ? 10 : 40,
             bottom: isMobile ? 20 : 30,
           }}
@@ -189,6 +189,7 @@ export default function PriceScatter({ data, lang = "en" }) {
             }}
           />
 
+          {/* ✅ FIXED LEGEND (proper spacing now visible) */}
           <Legend
             verticalAlign="top"
             align="right"
@@ -196,10 +197,8 @@ export default function PriceScatter({ data, lang = "en" }) {
             wrapperStyle={{
               fontSize: 12,
               color: "#64748b",
-              top: 0,
-              right: isMobile ? 12 : 24,
-              paddingTop: 5,
-              position: "absolute",
+              paddingTop: 6,
+              paddingRight: isMobile ? 16 : 28, // ✅ real visual separation
             }}
             iconSize={10}
             formatter={(value) => {
