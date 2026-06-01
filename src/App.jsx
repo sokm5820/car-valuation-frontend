@@ -65,7 +65,7 @@ export default function App() {
 
 const ads = [
   {
-    img: "https://res.cloudinary.com/dtaihpiwt/image/upload/v1780325479/ChatGPT_Image_Jun_1_2026_05_44_51_PM_j1n8ht.png",
+    img: "https://res.cloudinary.com/dtaihpiwt/image/upload/v1780326301/Jun_1_2026_06_04_23_PM_ctfisv.png",
     url: "https://www.instagram.com/osmancivan.cars/",
   },
 ];
