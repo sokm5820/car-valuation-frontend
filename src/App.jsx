@@ -65,8 +65,8 @@ export default function App() {
 
 const ads = [
   {
-    img: "https://res.cloudinary.com/dtaihpiwt/image/upload/v1777533738/ChatGPT_Image_Apr_30_2026_10_20_00_AM_sie4sg.png",
-    url: "https://wa.me/905338760100?text=Merhaba,%20reklam%20alanınızda%20yer%20almak%20istiyorum.%20Bilgi%20alabilir%20miyim?",
+    img: "https://res.cloudinary.com/dtaihpiwt/image/upload/v1780325479/ChatGPT_Image_Jun_1_2026_05_44_51_PM_j1n8ht.png",
+    url: "https://www.instagram.com/osmancivan.cars/",
   },
 ];
 
