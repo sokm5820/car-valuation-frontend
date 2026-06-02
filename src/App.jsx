@@ -63,27 +63,25 @@ export default function App() {
 
   const text = t[lang] || t.en;
 
+  // ✅ FIXED Instagram opener (more stable on mobile)
   const openInstagramProfile = (username) => {
-    const appLink = `instagram://user?username=${username}`;
-    const webLink = `https://www.instagram.com/${username}/`;
+    const appUrl = `instagram://user?username=${username}`;
+    const webUrl = `https://www.instagram.com/${username}/`;
 
-    let pageHidden = false;
+    const now = Date.now();
 
-    const handleVisibility = () => {
-      pageHidden = document.hidden;
-    };
+    // Try app first
+    window.location.assign(appUrl);
 
-    document.addEventListener("visibilitychange", handleVisibility);
-
-    window.location.href = appLink;
-
+    // Fallback if app didn’t open
     setTimeout(() => {
-      document.removeEventListener("visibilitychange", handleVisibility);
+      const elapsed = Date.now() - now;
 
-      if (!pageHidden) {
-        window.location.href = webLink;
+      // If still on page → open web version
+      if (elapsed < 2000) {
+        window.location.assign(webUrl);
       }
-    }, 1500);
+    }, 1200);
   };
 
   const ads = [
