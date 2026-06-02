@@ -63,23 +63,45 @@ export default function App() {
 
   const text = t[lang] || t.en;
 
-  // ✅ FIXED Instagram opener (more stable on mobile)
+  // 🚀 MAX-STRENGTH Instagram opener (best possible real-world method)
   const openInstagramProfile = (username) => {
     const appUrl = `instagram://user?username=${username}`;
     const webUrl = `https://www.instagram.com/${username}/`;
 
-    const now = Date.now();
+    const ua = navigator.userAgent || "";
+    const isAndroid = /Android/i.test(ua);
+    const isIOS = /iPhone|iPad|iPod/i.test(ua);
 
-    // Try app first
-    window.location.assign(appUrl);
+    const start = Date.now();
 
-    // Fallback if app didn’t open
+    // Create hidden iframe trigger (works better in in-app browsers like Instagram)
+    const iframe = document.createElement("iframe");
+    iframe.style.display = "none";
+    iframe.src = appUrl;
+    document.body.appendChild(iframe);
+
+    // Android strongest method: intent
+    if (isAndroid) {
+      const intentUrl =
+        `intent://instagram.com/_u/${username}#Intent;` +
+        `package=com.instagram.android;scheme=https;end`;
+
+      window.location.href = intentUrl;
+    }
+
+    // iOS fallback
+    if (isIOS) {
+      window.location.href = appUrl;
+    }
+
+    // cleanup + fallback
     setTimeout(() => {
-      const elapsed = Date.now() - now;
+      try {
+        document.body.removeChild(iframe);
+      } catch (e) {}
 
-      // If still on page → open web version
-      if (elapsed < 2000) {
-        window.location.assign(webUrl);
+      if (Date.now() - start < 1800) {
+        window.location.href = webUrl;
       }
     }, 1200);
   };
