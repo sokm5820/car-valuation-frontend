@@ -63,12 +63,35 @@ export default function App() {
 
   const text = t[lang] || t.en;
 
-const ads = [
-  {
-    img: "https://res.cloudinary.com/dtaihpiwt/image/upload/v1780330704/5F1C41C2-69A1-41B3-8306-E70BA17DDC76_f29ibs.png",
-    url: "https://www.instagram.com/osmancivan.cars/",
-  },
-];
+  const openInstagramProfile = (username) => {
+    const appLink = `instagram://user?username=${username}`;
+    const webLink = `https://www.instagram.com/${username}/`;
+
+    let pageHidden = false;
+
+    const handleVisibility = () => {
+      pageHidden = document.hidden;
+    };
+
+    document.addEventListener("visibilitychange", handleVisibility);
+
+    window.location.href = appLink;
+
+    setTimeout(() => {
+      document.removeEventListener("visibilitychange", handleVisibility);
+
+      if (!pageHidden) {
+        window.location.href = webLink;
+      }
+    }, 1500);
+  };
+
+  const ads = [
+    {
+      img: "https://res.cloudinary.com/dtaihpiwt/image/upload/v1780330704/5F1C41C2-69A1-41B3-8306-E70BA17DDC76_f29ibs.png",
+      username: "osmancivan.cars",
+    },
+  ];
 
   const [adIndex, setAdIndex] = useState(0);
 
@@ -277,9 +300,11 @@ const ads = [
           <PriceScatter data={result.scatter} lang={lang} />
 
           <div className="ad">
-            <a href={ads[adIndex].url} target="_blank" rel="noopener noreferrer">
-              <img src={ads[adIndex].img} />
-            </a>
+            <img
+              src={ads[adIndex].img}
+              onClick={() => openInstagramProfile(ads[adIndex].username)}
+              style={{ cursor: "pointer" }}
+            />
           </div>
 
           <button onClick={resetFlow} className="btn-primary">
