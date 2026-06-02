@@ -63,55 +63,12 @@ export default function App() {
 
   const text = t[lang] || t.en;
 
-  // 🚀 MAX-STRENGTH Instagram opener (best possible real-world method)
-  const openInstagramProfile = (username) => {
-    const appUrl = `instagram://user?username=${username}`;
-    const webUrl = `https://www.instagram.com/${username}/`;
-
-    const ua = navigator.userAgent || "";
-    const isAndroid = /Android/i.test(ua);
-    const isIOS = /iPhone|iPad|iPod/i.test(ua);
-
-    const start = Date.now();
-
-    // Create hidden iframe trigger (works better in in-app browsers like Instagram)
-    const iframe = document.createElement("iframe");
-    iframe.style.display = "none";
-    iframe.src = appUrl;
-    document.body.appendChild(iframe);
-
-    // Android strongest method: intent
-    if (isAndroid) {
-      const intentUrl =
-        `intent://instagram.com/_u/${username}#Intent;` +
-        `package=com.instagram.android;scheme=https;end`;
-
-      window.location.href = intentUrl;
-    }
-
-    // iOS fallback
-    if (isIOS) {
-      window.location.href = appUrl;
-    }
-
-    // cleanup + fallback
-    setTimeout(() => {
-      try {
-        document.body.removeChild(iframe);
-      } catch (e) {}
-
-      if (Date.now() - start < 1800) {
-        window.location.href = webUrl;
-      }
-    }, 1200);
-  };
-
-  const ads = [
-    {
-      img: "https://res.cloudinary.com/dtaihpiwt/image/upload/v1780330704/5F1C41C2-69A1-41B3-8306-E70BA17DDC76_f29ibs.png",
-      username: "osmancivan.cars",
-    },
-  ];
+const ads = [
+  {
+    img: "https://res.cloudinary.com/dtaihpiwt/image/upload/v1780330704/5F1C41C2-69A1-41B3-8306-E70BA17DDC76_f29ibs.png",
+    url: "https://www.instagram.com/osmancivan.cars/",
+  },
+];
 
   const [adIndex, setAdIndex] = useState(0);
 
@@ -320,11 +277,9 @@ export default function App() {
           <PriceScatter data={result.scatter} lang={lang} />
 
           <div className="ad">
-            <img
-              src={ads[adIndex].img}
-              onClick={() => openInstagramProfile(ads[adIndex].username)}
-              style={{ cursor: "pointer" }}
-            />
+            <a href={ads[adIndex].url} target="_blank" rel="noopener noreferrer">
+              <img src={ads[adIndex].img} />
+            </a>
           </div>
 
           <button onClick={resetFlow} className="btn-primary">
