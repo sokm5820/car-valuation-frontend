@@ -77,6 +77,25 @@ export default function App() {
     });
   }, []);
 
+  // ✅ Google Analytics (gtag.js) added here
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.async = true;
+    script.src = "https://www.googletagmanager.com/gtag/js?id=G-RR4B3F29EH";
+    document.head.appendChild(script);
+
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      window.dataLayer.push(arguments);
+    }
+
+    window.gtag = gtag;
+
+    gtag("js", new Date());
+    gtag("config", "G-RR4B3F29EH");
+  }, []);
+
   const changeLang = (l) => {
     setLang(l);
     localStorage.setItem("lang", l);
