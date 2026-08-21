@@ -23,7 +23,7 @@ const t = {
     phone: "Phone Number",
     phonePlaceholder: "Enter your phone number",
     consent:
-      "I agree to be contacted by dealerships about my car.",
+      "Yes, I'd like to hear from dealerships about my car.",
     submit: "Submit",
     submitting: "Submitting...",
     close: "Close",
@@ -56,7 +56,7 @@ const t = {
     phone: "Telefon Numaranız",
     phonePlaceholder: "Telefon numaranızı girin",
     consent:
-      "Galerilerin aracımla ilgili benimle iletişime geçmesini kabul ediyorum.",
+      "Evet, galerilerin aracımla ilgili benimle iletişime geçmesini istiyorum.",
     submit: "Gönder",
     submitting: "Gönderiliyor...",
     close: "Kapat",
@@ -89,7 +89,7 @@ const t = {
     phone: "Номер телефона",
     phonePlaceholder: "Введите номер телефона",
     consent:
-      "Я согласен, чтобы дилеры связались со мной по поводу моего автомобиля.",
+       "Да, я хочу, чтобы дилеры связались со мной по поводу моего автомобиля.",
     submit: "Отправить",
     submitting: "Отправка...",
     close: "Закрыть",

@@ -566,8 +566,8 @@ body {
 }
 
 .lead-consent input:checked {
-  background: #16a34a;
-  border-color: #16a34a;
+  background: #2563eb;
+  border-color: #2563eb;
 }
 
 .lead-consent input:checked::after {
