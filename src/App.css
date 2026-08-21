@@ -242,11 +242,11 @@ body {
 }
 
 .result h1 {
-  font-size: 34px;
+  font-size: 38px;
   font-weight: 900;
-  margin: 0;
+  margin: 4px 0 6px;
   color: #0b0f19;
-  letter-spacing: -0.8px;
+  letter-spacing: -0.9px;
 }
 
 .result p {
@@ -719,10 +719,11 @@ body {
 ================================ */
 
 @media (max-width: 768px) {
-
-  .result-actions {
-    gap: 6px;
+  .result h1 {
+    font-size: 30px;
+    margin: 4px 0 7px;
   }
+}
 
   .lead-overlay {
     padding: 14px;
