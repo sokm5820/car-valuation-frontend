@@ -36,13 +36,6 @@ export default function PriceScatter({ data, lang = "en" }) {
       removed: "Удалённые объявления",
       noData: "Нет данных",
     },
-    ar: {
-      mileage: "المسافة (كم)",
-      price: "السعر (£)",
-      active: "الإعلانات النشطة",
-      removed: "إعلانات محذوفة",
-      noData: "لا توجد بيانات",
-    },
   };
 
   const text = t[lang] || t.en;
@@ -99,16 +92,16 @@ export default function PriceScatter({ data, lang = "en" }) {
     (_, i) => i * 250
   );
 
-  const chartHeight = isMobile ? 240 : 350;
+  const chartHeight = isMobile ? 220 : 300;
 
   return (
-    <div
-      style={{
-        width: "100%",
-        height: chartHeight + 40,
-        outline: "none",
-      }}
-    >
+   <div
+  style={{
+    width: "100%",
+    height: chartHeight,
+    outline: "none",
+  }}
+>
       <ResponsiveContainer width="100%" height={chartHeight}>
         <ScatterChart
           tabIndex={-1}
@@ -117,7 +110,7 @@ export default function PriceScatter({ data, lang = "en" }) {
             top: 10,
             right: isMobile ? 10 : 20,
             left: isMobile ? 10 : 40,
-            bottom: isMobile ? 30 : 60, // ⬅ increased spacing
+            bottom: isMobile ? 24 : 40, // ⬅ increased spacing
           }}
         >
           <CartesianGrid stroke="#e2e8f0" strokeDasharray="4 4" />
@@ -196,7 +189,7 @@ export default function PriceScatter({ data, lang = "en" }) {
             wrapperStyle={{
               fontSize: 12,
               color: "#64748b",
-              paddingTop: isMobile ? 18 : 26, // ⬅ more spacing from axis
+              paddingTop: isMobile ? 6 : 10, // ⬅ more spacing from axis
               paddingRight: isMobile ? 0 : 10,
             }}
             iconSize={10}
