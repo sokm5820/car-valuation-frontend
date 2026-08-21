@@ -189,7 +189,7 @@ export default function PriceScatter({ data, lang = "en" }) {
             wrapperStyle={{
               fontSize: 12,
               color: "#64748b",
-              paddingTop: isMobile ? 14 : 10, // ⬅ more spacing from axis
+              paddingTop: isMobile ? 18 : 10, // ⬅ more spacing from axis
               paddingRight: isMobile ? 0 : 10,
             }}
             iconSize={10}

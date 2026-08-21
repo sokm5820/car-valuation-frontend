@@ -237,8 +237,8 @@ body {
   text-align: center;
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  margin-top: 2px;
+  gap: 8px;
+  margin-top: 6px;
 }
 
 .result h1 {
