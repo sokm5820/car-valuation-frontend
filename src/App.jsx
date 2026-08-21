@@ -18,7 +18,7 @@ const t = {
     sell: "Get Purchase Offers from Dealerships",
     formTitle: "Get Purchase Offers from Dealerships",
     formSubtitle: "Receive purchase offers from participating dealerships.",
-    name: "Your Name",
+    name: "Name",
     namePlaceholder: "Enter your name",
     phone: "Phone Number",
     phonePlaceholder: "Enter your phone number",
@@ -484,7 +484,6 @@ const resetFlow = () => {
         <>
           <div className="lead-modal-header">
             <h2>{text.formTitle}</h2>
-            <p>{text.formSubtitle}</p>
           </div>
 
           <div className="lead-form">
