@@ -336,14 +336,16 @@ body {
 
 /* Yeni araç ara */
 .btn-secondary-action {
-  background: #f1f3f5;
-  color: #495057;
-  border: 1px solid #e2e5e8;
-  box-shadow: none;
+  background: #ffffff;
+  color: #334155;
+  border: 1px solid #d7dee8;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
 }
 
 .btn-secondary-action:hover {
-  background: #e7eaed;
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  box-shadow: 0 5px 14px rgba(15, 23, 42, 0.07);
   transform: translateY(-1px);
 }
 
@@ -720,13 +722,6 @@ body {
 
   .result-actions {
     gap: 6px;
-  }
-
-  .btn-secondary-action,
-  .btn-sell-action {
-    height: 46px;
-    font-size: 11px;
-    padding: 0 8px;
   }
 
   .lead-overlay {
