@@ -15,26 +15,93 @@ const t = {
     title: "VEHICLE VALUATION",
     subtitle: "Your vehicle's value in just 4 clicks",
     restart: "Search another car",
+    sell: "Get Purchase Offers from Dealerships",
+    formTitle: "Get Purchase Offers from Dealerships",
+    formSubtitle: "Receive purchase offers from participating dealerships.",
+    name: "Name",
+    namePlaceholder: "Enter your name",
+    phone: "Phone Number",
+    phonePlaceholder: "Enter your phone number",
+    consent:
+      "Yes, I'd like to hear from dealerships about my car.",
+    submit: "Submit",
+    submitting: "Submitting...",
+    close: "Close",
+    successTitle: "Thank you!",
+    successMessage:
+      "Your request has been submitted. Interested dealerships will contact you.",
+    submitted: "Offer Request Submitted",
+    errorName: "Please enter your name.",
+    errorPhone: "Please enter your phone number.",
+    errorConsent: "You must agree to be contacted.",
+    errorSubmission:
+      "Something went wrong. Please try again.",
     back: "Back",
     step1: "Select Year",
     step2: "Select Brand",
     step3: "Select Model",
     step4: "Select Category",
   },
+
   tr: {
     title: "ARAÇ DEĞERLEME",
     subtitle: "Aracınızın değeri sadece 4 adımda",
     restart: "Yeni araç ara",
+    sell: "Galerilerden Teklif Al",
+    formTitle: "Galerilerden Teklif Al",
+    formSubtitle:
+      "Katılımcı galerilerden aracınız için satın alma teklifleri alın.",
+    name: "Adınız",
+    namePlaceholder: "Adınızı girin",
+    phone: "Telefon Numaranız",
+    phonePlaceholder: "Telefon numaranızı girin",
+    consent:
+      "Evet, galerilerin aracımla ilgili benimle iletişime geçmesini istiyorum.",
+    submit: "Gönder",
+    submitting: "Gönderiliyor...",
+    close: "Kapat",
+    successTitle: "Teşekkürler!",
+    successMessage:
+      "Talebiniz gönderildi. İlgilenen galeriler sizinle iletişime geçecektir.",
+    submitted: "Teklif Talebi Gönderildi",
+    errorName: "Lütfen adınızı girin.",
+    errorPhone: "Lütfen telefon numaranızı girin.",
+    errorConsent: "İletişime geçilmesini kabul etmelisiniz.",
+    errorSubmission:
+      "Bir sorun oluştu. Lütfen tekrar deneyin.",
     back: "Geri",
     step1: "Yıl Seç",
     step2: "Marka Seç",
     step3: "Model Seç",
     step4: "Kategori Seç",
   },
+
   ru: {
     title: "ОЦЕНКА АВТОМОБИЛЯ",
-    subtitle: "Оценка за 4 шага",
+    subtitle: "Оценка автомобиля всего за 4 шага",
     restart: "Новый поиск",
+    sell: "Получить предложения от дилеров",
+    formTitle: "Получить предложения от дилеров",
+    formSubtitle:
+      "Получите предложения о покупке автомобиля от участвующих дилеров.",
+    name: "Ваше имя",
+    namePlaceholder: "Введите ваше имя",
+    phone: "Номер телефона",
+    phonePlaceholder: "Введите номер телефона",
+    consent:
+       "Да, я хочу, чтобы дилеры связались со мной по поводу моего автомобиля.",
+    submit: "Отправить",
+    submitting: "Отправка...",
+    close: "Закрыть",
+    successTitle: "Спасибо!",
+    successMessage:
+      "Ваш запрос отправлен. Заинтересованные дилеры свяжутся с вами.",
+    submitted: "Запрос отправлен",
+    errorName: "Введите ваше имя.",
+    errorPhone: "Введите номер телефона.",
+    errorConsent: "Необходимо согласиться на связь.",
+    errorSubmission:
+      "Произошла ошибка. Попробуйте еще раз.",
     back: "Назад",
     step1: "Выберите год",
     step2: "Выберите марку",
@@ -45,6 +112,13 @@ const t = {
 
 export default function App() {
   const [step, setStep] = useState(1);
+  const [showLeadForm, setShowLeadForm] = useState(false);
+  const [leadName, setLeadName] = useState("");
+  const [leadPhone, setLeadPhone] = useState("");
+  const [leadConsent, setLeadConsent] = useState(false);
+  const [leadSubmitting, setLeadSubmitting] = useState(false);
+  const [leadSubmitted, setLeadSubmitted] = useState(false);
+  const [leadError, setLeadError] = useState("");
 
   const [year, setYear] = useState("");
   const [brand, setBrand] = useState("");
@@ -138,15 +212,80 @@ export default function App() {
     setStep(5);
   };
 
-  const resetFlow = () => {
-    setStep(1);
-    setYear("");
-    setBrand("");
-    setModel("");
-    setCategory("");
-    setResult(null);
-    setAnimatedValue(0);
-  };
+  const submitLead = async () => {
+  setLeadError("");
+
+  if (!leadName.trim()) {
+    setLeadError(text.errorName);
+    return;
+  }
+
+  if (!leadPhone.trim()) {
+    setLeadError(text.errorPhone);
+    return;
+  }
+
+  if (!leadConsent) {
+    setLeadError(text.errorConsent);
+    return;
+  }
+
+  setLeadSubmitting(true);
+
+  try {
+    const response = await fetch(`${API}/submit_lead`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        year,
+        brand,
+        model,
+        category,
+        valuation: result?.median_price,
+        min_price: result?.min_price,
+        max_price: result?.max_price,
+        name: leadName.trim(),
+        phone: leadPhone.trim(),
+        consent: true,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      setLeadError(text.errorSubmission);
+      return;
+    }
+
+    setLeadSubmitted(true);
+
+  } catch (error) {
+    console.error("Lead submission error:", error);
+    setLeadError(text.errorSubmission);
+  } finally {
+    setLeadSubmitting(false);
+  }
+};
+
+const resetFlow = () => {
+  setStep(1);
+  setYear("");
+  setBrand("");
+  setModel("");
+  setCategory("");
+  setResult(null);
+  setAnimatedValue(0);
+
+  setShowLeadForm(false);
+  setLeadName("");
+  setLeadPhone("");
+  setLeadConsent(false);
+  setLeadSubmitting(false);
+  setLeadSubmitted(false);
+  setLeadError("");
+};
 
   const goBack = () => setStep((s) => Math.max(1, s - 1));
 
@@ -284,18 +423,147 @@ export default function App() {
 
           <PriceScatter data={result.scatter} lang={lang} />
 
-          <div className="ad">
-            <a href={ad.url} target="_blank" rel="noopener noreferrer">
-              <img src={ad.img} alt="ad" />
-            </a>
-          </div>
+<div className="result-actions">
 
-          <button onClick={resetFlow} className="btn-primary">
-            {text.restart}
-          </button>
+  <button
+    onClick={resetFlow}
+    className="btn-secondary-action"
+  >
+    {text.restart}
+  </button>
+
+  <button
+    onClick={() => {
+      if (!leadSubmitted) {
+        setShowLeadForm(true);
+        setLeadError("");
+      }
+    }}
+    className={`btn-sell-action ${
+      leadSubmitted ? "submitted" : ""
+    }`}
+    disabled={leadSubmitted}
+  >
+    {leadSubmitted ? `✓ ${text.submitted}` : text.sell}
+  </button>
+
+</div>
+
+<div className="ad">
+  <a
+    href={ad.url}
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    <img src={ad.img} alt="ad" />
+  </a>
+</div>
         </div>
       )}
 
+{showLeadForm && (
+  <div
+    className="lead-overlay"
+    onClick={(e) => {
+      if (e.target === e.currentTarget) {
+        setShowLeadForm(false);
+      }
+    }}
+  >
+    <div className="lead-modal">
+
+      <button
+        className="lead-close"
+        onClick={() => setShowLeadForm(false)}
+        aria-label={text.close}
+      >
+        ×
+      </button>
+
+      {!leadSubmitted ? (
+        <>
+          <div className="lead-modal-header">
+            <h2>{text.formTitle}</h2>
+          </div>
+
+          <div className="lead-form">
+
+            <div className="lead-field">
+              <label>{text.name}</label>
+
+              <input
+                type="text"
+                value={leadName}
+                onChange={(e) => setLeadName(e.target.value)}
+                placeholder={text.namePlaceholder}
+              />
+            </div>
+
+            <div className="lead-field">
+              <label>{text.phone}</label>
+
+              <input
+                type="tel"
+                value={leadPhone}
+                onChange={(e) => setLeadPhone(e.target.value)}
+                placeholder={text.phonePlaceholder}
+              />
+            </div>
+
+            <label className="lead-consent">
+              <input
+                type="checkbox"
+                checked={leadConsent}
+                onChange={(e) =>
+                  setLeadConsent(e.target.checked)
+                }
+              />
+
+              <span>{text.consent}</span>
+            </label>
+
+            {leadError && (
+              <div className="lead-error">
+                {leadError}
+              </div>
+            )}
+
+            <button
+              className="lead-submit"
+              onClick={submitLead}
+              disabled={leadSubmitting}
+            >
+              {leadSubmitting
+                ? text.submitting
+                : text.submit}
+            </button>
+
+          </div>
+        </>
+      ) : (
+        <div className="lead-success">
+
+          <div className="success-icon">
+            ✓
+          </div>
+
+          <h2>{text.successTitle}</h2>
+
+          <p>{text.successMessage}</p>
+
+          <button
+            className="lead-submit"
+            onClick={() => setShowLeadForm(false)}
+          >
+            {text.close}
+          </button>
+
+        </div>
+      )}
+
+    </div>
+  </div>
+)}
       <Analytics />
     </div>
   );
