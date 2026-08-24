@@ -15,24 +15,31 @@ const t = {
     title: "VEHICLE VALUATION",
     subtitle: "Your vehicle's value in just 4 clicks",
     restart: "Search another car",
-    sell: "I want to sell this vehicle",
-    formTitle: "Share your vehicle details with our network of purchasers",
-    formSubtitle: "Receive purchase offers from participating dealerships.",
+
+    sell: "Sell this vehicle",
+    formTitle: "Share your vehicle with interested buyers",
+    formSubtitle: "Interested buyers can contact you directly.",
+
     name: "Name",
     namePlaceholder: "Enter your name",
     phone: "Phone Number",
     phonePlaceholder: "Enter your phone number",
+
     submit: "Submit",
     submitting: "Submitting...",
     close: "Close",
+
     successTitle: "Thank you!",
     successMessage:
-      "Your request has been submitted. Interested purchasers will contact you.",
-    submitted: "Offer Request Submitted",
+      "Your request has been submitted. Interested buyers will contact you.",
+
+    submitted: "Vehicle Submitted",
+
     errorName: "Please enter your name.",
     errorPhone: "Please enter your phone number.",
     errorSubmission:
       "Something went wrong. Please try again.",
+
     back: "Back",
     step1: "Select Year",
     step2: "Select Brand",
@@ -44,25 +51,31 @@ const t = {
     title: "ARAÇ DEĞERLEME",
     subtitle: "Aracınızın değeri sadece 4 adımda",
     restart: "Yeni araç ara",
-    sell: "Bu aracı satmak istiyorum",
-    formTitle: "Araç bilgilerinizi alıcı ağımızla paylaşın",
-    formSubtitle:
-      "Katılımcı galerilerden aracınız için satın alma teklifleri alın.",
+
+    sell: "Bu aracı sat",
+    formTitle: "Aracınızı ilgilenen alıcılarla paylaşın",
+    formSubtitle: "İlgilenen alıcılar sizinle doğrudan iletişime geçebilir.",
+
     name: "Adınız",
     namePlaceholder: "Adınızı girin",
     phone: "Telefon Numaranız",
     phonePlaceholder: "Telefon numaranızı girin",
+
     submit: "Gönder",
     submitting: "Gönderiliyor...",
     close: "Kapat",
+
     successTitle: "Teşekkürler!",
     successMessage:
       "Talebiniz gönderildi. İlgilenen alıcılar sizinle iletişime geçecektir.",
-    submitted: "Teklif Talebi Gönderildi",
+
+    submitted: "Araç Gönderildi",
+
     errorName: "Lütfen adınızı girin.",
     errorPhone: "Lütfen telefon numaranızı girin.",
     errorSubmission:
       "Bir sorun oluştu. Lütfen tekrar deneyin.",
+
     back: "Geri",
     step1: "Yıl Seç",
     step2: "Marka Seç",
@@ -74,25 +87,31 @@ const t = {
     title: "ОЦЕНКА АВТОМОБИЛЯ",
     subtitle: "Оценка автомобиля всего за 4 шага",
     restart: "Новый поиск",
-    sell: "Я хочу продать этот автомобиль",
-    formTitle: "Поделитесь данными об автомобиле с нашей сетью покупателей",
-    formSubtitle:
-      "Получите предложения о покупке автомобиля от участвующих дилеров.",
+
+    sell: "Продать автомобиль",
+    formTitle: "Поделитесь автомобилем с заинтересованными покупателями",
+    formSubtitle: "Заинтересованные покупатели смогут связаться с вами напрямую.",
+
     name: "Ваше имя",
     namePlaceholder: "Введите ваше имя",
     phone: "Номер телефона",
     phonePlaceholder: "Введите номер телефона",
+
     submit: "Отправить",
     submitting: "Отправка...",
     close: "Закрыть",
+
     successTitle: "Спасибо!",
     successMessage:
       "Ваш запрос отправлен. Заинтересованные покупатели свяжутся с вами.",
-    submitted: "Запрос отправлен",
+
+    submitted: "Автомобиль отправлен",
+
     errorName: "Введите ваше имя.",
     errorPhone: "Введите номер телефона.",
     errorSubmission:
       "Произошла ошибка. Попробуйте еще раз.",
+
     back: "Назад",
     step1: "Выберите год",
     step2: "Выберите марку",
