@@ -15,25 +15,22 @@ const t = {
     title: "VEHICLE VALUATION",
     subtitle: "Your vehicle's value in just 4 clicks",
     restart: "Search another car",
-    sell: "Get Purchase Offers from Dealerships",
-    formTitle: "Get Purchase Offers from Dealerships",
+    sell: "I want to sell this vehicle",
+    formTitle: "Share your vehicle details with our network of purchasers",
     formSubtitle: "Receive purchase offers from participating dealerships.",
     name: "Name",
     namePlaceholder: "Enter your name",
     phone: "Phone Number",
     phonePlaceholder: "Enter your phone number",
-    consent:
-      "Yes, I'd like to hear from dealerships about my car.",
     submit: "Submit",
     submitting: "Submitting...",
     close: "Close",
     successTitle: "Thank you!",
     successMessage:
-      "Your request has been submitted. Interested dealerships will contact you.",
+      "Your request has been submitted. Interested purchasers will contact you.",
     submitted: "Offer Request Submitted",
     errorName: "Please enter your name.",
     errorPhone: "Please enter your phone number.",
-    errorConsent: "You must agree to be contacted.",
     errorSubmission:
       "Something went wrong. Please try again.",
     back: "Back",
@@ -47,26 +44,23 @@ const t = {
     title: "ARAÇ DEĞERLEME",
     subtitle: "Aracınızın değeri sadece 4 adımda",
     restart: "Yeni araç ara",
-    sell: "Galerilerden Teklif Al",
-    formTitle: "Galerilerden Teklif Al",
+    sell: "Bu aracı satmak istiyorum",
+    formTitle: "Araç bilgilerinizi alıcı ağımızla paylaşın",
     formSubtitle:
       "Katılımcı galerilerden aracınız için satın alma teklifleri alın.",
     name: "Adınız",
     namePlaceholder: "Adınızı girin",
     phone: "Telefon Numaranız",
     phonePlaceholder: "Telefon numaranızı girin",
-    consent:
-      "Evet, galerilerin aracımla ilgili benimle iletişime geçmesini istiyorum.",
     submit: "Gönder",
     submitting: "Gönderiliyor...",
     close: "Kapat",
     successTitle: "Teşekkürler!",
     successMessage:
-      "Talebiniz gönderildi. İlgilenen galeriler sizinle iletişime geçecektir.",
+      "Talebiniz gönderildi. İlgilenen alıcılar sizinle iletişime geçecektir.",
     submitted: "Teklif Talebi Gönderildi",
     errorName: "Lütfen adınızı girin.",
     errorPhone: "Lütfen telefon numaranızı girin.",
-    errorConsent: "İletişime geçilmesini kabul etmelisiniz.",
     errorSubmission:
       "Bir sorun oluştu. Lütfen tekrar deneyin.",
     back: "Geri",
@@ -80,26 +74,23 @@ const t = {
     title: "ОЦЕНКА АВТОМОБИЛЯ",
     subtitle: "Оценка автомобиля всего за 4 шага",
     restart: "Новый поиск",
-    sell: "Получить предложения от дилеров",
-    formTitle: "Получить предложения от дилеров",
+    sell: "Я хочу продать этот автомобиль",
+    formTitle: "Поделитесь данными об автомобиле с нашей сетью покупателей",
     formSubtitle:
       "Получите предложения о покупке автомобиля от участвующих дилеров.",
     name: "Ваше имя",
     namePlaceholder: "Введите ваше имя",
     phone: "Номер телефона",
     phonePlaceholder: "Введите номер телефона",
-    consent:
-       "Да, я хочу, чтобы дилеры связались со мной по поводу моего автомобиля.",
     submit: "Отправить",
     submitting: "Отправка...",
     close: "Закрыть",
     successTitle: "Спасибо!",
     successMessage:
-      "Ваш запрос отправлен. Заинтересованные дилеры свяжутся с вами.",
+      "Ваш запрос отправлен. Заинтересованные покупатели свяжутся с вами.",
     submitted: "Запрос отправлен",
     errorName: "Введите ваше имя.",
     errorPhone: "Введите номер телефона.",
-    errorConsent: "Необходимо согласиться на связь.",
     errorSubmission:
       "Произошла ошибка. Попробуйте еще раз.",
     back: "Назад",
@@ -115,7 +106,6 @@ export default function App() {
   const [showLeadForm, setShowLeadForm] = useState(false);
   const [leadName, setLeadName] = useState("");
   const [leadPhone, setLeadPhone] = useState("");
-  const [leadConsent, setLeadConsent] = useState(false);
   const [leadSubmitting, setLeadSubmitting] = useState(false);
   const [leadSubmitted, setLeadSubmitted] = useState(false);
   const [leadError, setLeadError] = useState("");
@@ -225,11 +215,6 @@ export default function App() {
     return;
   }
 
-  if (!leadConsent) {
-    setLeadError(text.errorConsent);
-    return;
-  }
-
   setLeadSubmitting(true);
 
   try {
@@ -281,7 +266,6 @@ const resetFlow = () => {
   setShowLeadForm(false);
   setLeadName("");
   setLeadPhone("");
-  setLeadConsent(false);
   setLeadSubmitting(false);
   setLeadSubmitted(false);
   setLeadError("");
@@ -509,18 +493,6 @@ const resetFlow = () => {
                 placeholder={text.phonePlaceholder}
               />
             </div>
-
-            <label className="lead-consent">
-              <input
-                type="checkbox"
-                checked={leadConsent}
-                onChange={(e) =>
-                  setLeadConsent(e.target.checked)
-                }
-              />
-
-              <span>{text.consent}</span>
-            </label>
 
             {leadError && (
               <div className="lead-error">
