@@ -14,10 +14,10 @@ const t = {
   en: {
     title: "VEHICLE VALUATION",
     subtitle: "Your vehicle's value in just 4 clicks",
-    restart: "Search another car",
+    restart: "Search another Vehicle",
 
-    sell: "Sell this vehicle",
-    formTitle: "Share your vehicle with interested buyers",
+    sell: "Sell this Vehicle",
+    formTitle: "Receive Purchase Offers",
     formSubtitle: "Interested buyers can contact you directly.",
 
     name: "Name",
@@ -50,10 +50,10 @@ const t = {
   tr: {
     title: "ARAÇ DEĞERLEME",
     subtitle: "Aracınızın değeri sadece 4 adımda",
-    restart: "Yeni araç ara",
+    restart: "Başka Araç Ara",
 
-    sell: "Bu aracı sat",
-    formTitle: "Aracınızı ilgilenen alıcılarla paylaşın",
+    sell: "Bu Aracı Sat",
+    formTitle: "Satın Alma Teklifleri Al",
     formSubtitle: "İlgilenen alıcılar sizinle doğrudan iletişime geçebilir.",
 
     name: "Adınız",
@@ -86,10 +86,10 @@ const t = {
   ru: {
     title: "ОЦЕНКА АВТОМОБИЛЯ",
     subtitle: "Оценка автомобиля всего за 4 шага",
-    restart: "Новый поиск",
+    restart: "Найти другой автомобиль",
 
     sell: "Продать автомобиль",
-    formTitle: "Поделитесь автомобилем с заинтересованными покупателями",
+    formTitle: "Получить предложения о покупке",
     formSubtitle: "Заинтересованные покупатели смогут связаться с вами напрямую.",
 
     name: "Ваше имя",
