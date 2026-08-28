@@ -110,7 +110,7 @@ export default function PriceScatter({ data, lang = "en" }) {
             top: 8,
             right: isMobile ? 10 : 20,
             left: isMobile ? 10 : 40,
-            bottom: isMobile ? 18 : 24,
+            bottom: isMobile ? 12 : 24,
           }}
         >
           <CartesianGrid stroke="#e2e8f0" strokeDasharray="4 4" />
@@ -128,6 +128,7 @@ export default function PriceScatter({ data, lang = "en" }) {
             <Label
               value={text.mileage}
               position="bottom"
+              offset={isMobile ? 2 : 5}
               style={{ fill: "#64748b", fontSize: 12 }}
             />
           </XAxis>
