@@ -6,8 +6,8 @@ import { Analytics } from "@vercel/analytics/react";
 const API = "https://car-valuation-backend.onrender.com";
 
 const ad = {
-  img: "https://res.cloudinary.com/dtaihpiwt/image/upload/v1787928901/ZIRVE_INSURANCE_AD_hg9ln9.png",
-  url: "https://wa.me/905338760100?text=Merhaba,%20reklam%20alanınızda%20yer%20almak%20istiyorum.%20Bilgi%20alabilir%20miyim?",
+  img: "https://res.cloudinary.com/dtaihpiwt/image/upload/v1787932610/ChatGPT_Image_Aug_28_2026_06_56_35_PM_cujizm.png",
+  url: "https://wa.me/905488940154?text=Merhaba,%20ara%C3%A7%20sigortas%C4%B1%20hakk%C4%B1nda%20bilgi%20almak%20istiyorum.",
 };
 
 const t = {
