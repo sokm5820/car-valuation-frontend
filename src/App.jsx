@@ -6,7 +6,7 @@ import { Analytics } from "@vercel/analytics/react";
 const API = "https://car-valuation-backend.onrender.com";
 
 const ad = {
-  img: "https://res.cloudinary.com/dtaihpiwt/image/upload/v1787932610/ChatGPT_Image_Aug_28_2026_06_56_35_PM_cujizm.png",
+  img: "https://res.cloudinary.com/dtaihpiwt/image/upload/v1787942611/ChatGPT_Image_Aug_28_2026_09_42_34_PM_qb3sh6.png",
   url: "https://wa.me/905488940154?text=Merhaba,%20ara%C3%A7%20sigortas%C4%B1%20hakk%C4%B1nda%20bilgi%20almak%20istiyorum.",
 };
 
