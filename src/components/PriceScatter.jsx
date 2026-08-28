@@ -144,17 +144,14 @@ export default function PriceScatter({ data, lang = "en" }) {
             width={isMobile ? 45 : 70}
             tickMargin={6}
           >
-            <Label
-              value={text.price}
-              angle={-90}
-              position="insideLeft"
-              offset={isMobile ? 0 : 5}
-              style={{
-                fill: "#64748b",
-                fontSize: 12,
-                textAnchor: "middle",
-              }}
-            />
+            {!isMobile && (
+              <Label
+                value={text.price}
+                angle={-90}
+                position="insideLeft"
+                style={{ fill: "#64748b", fontSize: 12 }}
+              />
+            )}
           </YAxis>
 
           <Tooltip
