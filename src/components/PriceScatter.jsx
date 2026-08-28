@@ -92,7 +92,7 @@ export default function PriceScatter({ data, lang = "en" }) {
     (_, i) => i * 250
   );
 
-  const chartHeight = isMobile ? 220 : 300;
+  const chartHeight = isMobile ? 205 : 210;
 
   return (
    <div
@@ -107,10 +107,10 @@ export default function PriceScatter({ data, lang = "en" }) {
           tabIndex={-1}
           style={{ outline: "none" }}
           margin={{
-            top: 10,
+            top: 8,
             right: isMobile ? 10 : 20,
             left: isMobile ? 10 : 40,
-            bottom: isMobile ? 24 : 40, // ⬅ increased spacing
+            bottom: isMobile ? 12 : 24,
           }}
         >
           <CartesianGrid stroke="#e2e8f0" strokeDasharray="4 4" />
@@ -189,7 +189,7 @@ export default function PriceScatter({ data, lang = "en" }) {
             wrapperStyle={{
               fontSize: 12,
               color: "#64748b",
-              paddingTop: isMobile ? 18 : 10, // ⬅ more spacing from axis
+              paddingTop: isMobile ? 6 : 6,
               paddingRight: isMobile ? 0 : 10,
             }}
             iconSize={10}
