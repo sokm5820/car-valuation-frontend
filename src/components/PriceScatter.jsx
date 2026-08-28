@@ -128,7 +128,7 @@ export default function PriceScatter({ data, lang = "en" }) {
             <Label
               value={text.mileage}
               position="bottom"
-              offset={isMobile ? 2 : 5}
+              offset={isMobile ? -1 : 5}
               style={{ fill: "#64748b", fontSize: 12 }}
             />
           </XAxis>
