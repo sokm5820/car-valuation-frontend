@@ -110,7 +110,7 @@ export default function PriceScatter({ data, lang = "en" }) {
             top: 8,
             right: isMobile ? 10 : 20,
             left: isMobile ? 10 : 40,
-            bottom: isMobile ? 12 : 24,
+            bottom: isMobile ? 16 : 24,
           }}
         >
           <CartesianGrid stroke="#e2e8f0" strokeDasharray="4 4" />
