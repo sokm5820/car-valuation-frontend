@@ -48,7 +48,7 @@ const t = {
   },
 
   tr: {
-    title: "KIBRIS ARAÇ DEĞERLEME",
+    title: "ARAÇ DEĞERLEME",
     subtitle: "Aracınızın değeri sadece 4 adımda",
     restart: "Başka Araç Ara",
 
@@ -84,7 +84,7 @@ const t = {
   },
 
   ru: {
-    title: "ОЦЕНКА АВТОМОБИЛЯ — КИПР",
+    title: "ОЦЕНКА АВТОМОБИЛЯ",
     subtitle: "Оценка автомобиля всего за 4 шага",
     restart: "Найти другой автомобиль",
 
@@ -580,7 +580,7 @@ return (
           ? "Kuzey Kıbrıs Araç Değerleme"
           : lang === "ru"
           ? "Оценка автомобиля на Северном Кипре"
-          : "North Cyprus Car Valuation"}
+          : "North Cyprus Vehicle Valuation"}
       </div>
 
       <div className="seo-footer-text">
@@ -588,7 +588,7 @@ return (
           ? "OtoDeğer, güncel Kuzey Kıbrıs araç piyasası verilerini kullanarak aracınızın tahmini piyasa değerini hesaplamanıza yardımcı olur. Yıl, marka, model ve kategoriyi seçerek aracınızın güncel değer aralığını saniyeler içinde öğrenebilirsiniz."
           : lang === "ru"
           ? "OtoDeğer использует актуальные данные автомобильного рынка Северного Кипра, чтобы помочь оценить текущую рыночную стоимость вашего автомобиля. Выберите год, марку, модель и категорию, чтобы за несколько секунд узнать примерный диапазон его текущей стоимости."
-          : "OtoDeğer uses current North Cyprus vehicle market data to help you estimate your car's market value. Select the year, make, model and category to see an estimated current value range in seconds."}
+          : "OtoDeğer uses current North Cyprus vehicle market data to help you estimate your vehicle's market value. Select the year, make, model and category to see an estimated current value range in seconds."}
       </div>
     </footer>
   </div>
