@@ -160,6 +160,20 @@ export default function App() {
     });
   }, []);
 
+  // Preload the ad after the initial page has loaded
+  useEffect(() => {
+    const preloadAd = () => {
+      const img = new Image();
+      img.src = "/ad.png";
+    };
+
+    if ("requestIdleCallback" in window) {
+      window.requestIdleCallback(preloadAd);
+    } else {
+      setTimeout(preloadAd, 1000);
+    }
+  }, []);
+  
   // ✅ Google Analytics (gtag.js) added here
   useEffect(() => {
     const script = document.createElement("script");
