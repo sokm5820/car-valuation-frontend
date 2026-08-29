@@ -343,7 +343,8 @@ const resetFlow = () => {
 
   const current = stepConfig[step];
 
-  return (
+return (
+  <div className="page-shell">
     <div className="app-container">
       <div style={{ position: "relative", fontFamily: "Poppins, sans-serif" }}>
         <div
@@ -570,7 +571,26 @@ const resetFlow = () => {
     </div>
   </div>
 )}
-      <Analytics />
+            <Analytics />
     </div>
-  );
+
+    <footer className="seo-footer">
+      <div className="seo-footer-title">
+        {lang === "tr"
+          ? "Kuzey Kıbrıs Araç Değerleme"
+          : lang === "ru"
+          ? "Оценка автомобиля на Северном Кипре"
+          : "North Cyprus Car Valuation"}
+      </div>
+
+      <div className="seo-footer-text">
+        {lang === "tr"
+          ? "OtoDeğer, güncel Kuzey Kıbrıs araç piyasası verilerini kullanarak aracınızın tahmini piyasa değerini hesaplamanıza yardımcı olur. Yıl, marka, model ve kategoriyi seçerek aracınızın güncel değer aralığını saniyeler içinde öğrenebilirsiniz."
+          : lang === "ru"
+          ? "OtoDeğer использует актуальные данные автомобильного рынка Северного Кипра, чтобы помочь оценить текущую рыночную стоимость вашего автомобиля. Выберите год, марку, модель и категорию, чтобы за несколько секунд узнать примерный диапазон его текущей стоимости."
+          : "OtoDeğer uses current North Cyprus vehicle market data to help you estimate your car's market value. Select the year, make, model and category to see an estimated current value range in seconds."}
+      </div>
+    </footer>
+  </div>
+);
 }
