@@ -345,6 +345,7 @@ const resetFlow = () => {
             src="https://res.cloudinary.com/dtaihpiwt/image/upload/v1777154527/SHOPTECH_LOGO_9_hnwij5.png"
             style={{ height: 24 }}
             alt="logo"
+            fetchPriority="high"
           />
           <div style={{ fontSize: 12, color: "#0f172a" }}>
             @analist.kibris
