@@ -26,6 +26,7 @@ body {
 .app-container {
   width: 100%;
   max-width: 1040px;
+  min-height: 100vh;
   margin: 0 auto;
   padding: 26px 24px;
 
@@ -52,6 +53,9 @@ body {
   font-weight: 700;
   letter-spacing: -0.2px;
   white-space: nowrap;
+  color: #0f172a;
+  opacity: 1;
+  visibility: visible;
 }
 
 .subtitle {
@@ -744,7 +748,7 @@ body {
 ================================ */
 
 .seo-section {
-  margin-top: 28px;
+  margin-top: auto;
   padding-top: 18px;
   padding-bottom: 8px;
   border-top: 1px solid #e5e7eb;
