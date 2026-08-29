@@ -6,7 +6,7 @@ import { Analytics } from "@vercel/analytics/react";
 const API = "https://car-valuation-backend.onrender.com";
 
 const ad = {
-  img: "/ad.png",
+  img: "/ad.webp",
   url: "https://wa.me/905488940154?text=Merhaba,%20ara%C3%A7%20sigortas%C4%B1%20hakk%C4%B1nda%20bilgi%20almak%20istiyorum.",
 };
 
@@ -164,7 +164,7 @@ export default function App() {
   useEffect(() => {
     const preloadAd = () => {
       const img = new Image();
-      img.src = "/ad.png";
+      img.src = "/ad.webp";
     };
 
     if ("requestIdleCallback" in window) {
