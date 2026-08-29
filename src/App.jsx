@@ -12,7 +12,7 @@ const ad = {
 
 const t = {
   en: {
-    title: "VEHICLE VALUATION",
+    title: "CYPRUS VEHICLE VALUATION",
     subtitle: "Your vehicle's value in just 4 clicks",
     restart: "Search another Vehicle",
 
@@ -48,7 +48,7 @@ const t = {
   },
 
   tr: {
-    title: "ARAÇ DEĞERLEME",
+    title: "KIBRIS ARAÇ DEĞERLEME",
     subtitle: "Aracınızın değeri sadece 4 adımda",
     restart: "Başka Araç Ara",
 
@@ -84,7 +84,7 @@ const t = {
   },
 
   ru: {
-    title: "ОЦЕНКА АВТОМОБИЛЯ",
+    title: "ОЦЕНКА АВТОМОБИЛЯ — КИПР",
     subtitle: "Оценка автомобиля всего за 4 шага",
     restart: "Найти другой автомобиль",
 
