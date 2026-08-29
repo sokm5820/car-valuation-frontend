@@ -394,39 +394,39 @@ const resetFlow = () => {
 
         <div className="header-row">
           <div style={{ textAlign: "left" }}>
-            <h1 className="title">{text.title}</h1>
+            <div className="title">{text.title}</div>
 
-            <div
-              style={{
-                fontSize: 12,
-                color: "#2563eb",
-                marginTop: 2,
-              }}
-            >
+            <div style={{ fontSize: 12, color: "#2563eb" }}>
               {text.subtitle}
             </div>
           </div>
 
-          <div style={{ display: "flex", gap: 6 }}>
-            {["tr", "en", "ru"].map((l) => (
-              <button
-                key={l}
-                onClick={() => changeLang(l)}
-                className={`lang-btn ${lang === l ? "active" : ""}`}
-              >
-                {l.toUpperCase()}
-              </button>
-            ))}
-          </div>
-        </div>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-end",
+              gap: 6,
+            }}
+          >
+            <div style={{ display: "flex", gap: 6 }}>
+              {["tr", "en", "ru"].map((l) => (
+                <button
+                  key={l}
+                  onClick={() => changeLang(l)}
+                  className={`lang-btn ${lang === l ? "active" : ""}`}
+                >
+                  {l.toUpperCase()}
+                </button>
+              ))}
+            </div>
 
-        {step > 1 && (
-          <div className="back-row">
-            <button onClick={goBack} className="back-btn">
-              ← {text.back}
-            </button>
+            {step > 1 && (
+              <button onClick={goBack} className="back-btn">
+                ← {text.back}
+              </button>
+            )}
           </div>
-        )}
         </div>
 
         {step < 5 && (
@@ -602,7 +602,7 @@ const resetFlow = () => {
         className="seo-section"
         aria-label={text.seoTitle}
       >
-        <h2>{text.seoTitle}</h2>
+        <h1>{text.seoTitle}</h1>
         <p>{text.seoText}</p>
       </section>
 

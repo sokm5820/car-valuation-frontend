@@ -50,19 +50,15 @@ body {
 .header-row {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
 }
 
 .title {
   font-size: 18px;
   font-weight: 700;
-  line-height: 1.2;
   letter-spacing: -0.2px;
   white-space: nowrap;
-  color: #0f172a !important;
-  -webkit-text-fill-color: #0f172a;
-  opacity: 1 !important;
-  visibility: visible;
+  color: #0f172a;
 }
 
 .subtitle {
@@ -106,13 +102,6 @@ body {
    BACK BUTTON
 ================================ */
 
-.back-row {
-  display: flex;
-  justify-content: flex-end;
-  height: 20px;
-  margin-top: 2px;
-}
-
 .back-btn {
   font-size: 11px;
   color: #475569;
@@ -121,9 +110,7 @@ body {
   cursor: pointer;
   font-weight: 600;
   opacity: 0.9;
-  margin: 0;
-  padding: 0;
-  line-height: 1.2;
+  margin-top: 6px;
 }
 
 .back-btn:hover {
@@ -775,7 +762,7 @@ body {
   text-align: left;
 }
 
-.seo-section h2 {
+.seo-section h1 {
   margin: 0 0 6px;
   padding: 0;
   color: #475569;
