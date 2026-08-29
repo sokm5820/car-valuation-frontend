@@ -4,4 +4,4 @@ Allow: /
 User-agent: OAI-SearchBot
 Allow: /
 
-Sitemap: https://otodeger.online/sitemap.xml
+Sitemap: https://www.otodeger.online/sitemap.xml
