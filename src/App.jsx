@@ -14,6 +14,8 @@ const t = {
   en: {
     title: "VEHICLE VALUATION",
     subtitle: "Your vehicle's value in just 4 clicks",
+    seoTitle: "North Cyprus Car Valuation",
+    seoText: "OtoDeğer uses current North Cyprus used-car market data to help estimate your vehicle's market value. Select the year, make, model and category to see an estimated value and current price range in seconds.",
     restart: "Search another Vehicle",
 
     sell: "Sell this Vehicle",
@@ -50,6 +52,8 @@ const t = {
   tr: {
     title: "ARAÇ DEĞERLEME",
     subtitle: "Aracınızın değeri sadece 4 adımda",
+    seoTitle: "Kuzey Kıbrıs Araç Değerleme",
+    seoText: "OtoDeğer, Kuzey Kıbrıs ikinci el araç piyasasındaki güncel verileri kullanarak aracınızın tahmini piyasa değerini öğrenmenize yardımcı olur. Yıl, marka, model ve kategori seçerek aracınızın güncel değerini ve fiyat aralığını saniyeler içinde görebilirsiniz.",
     restart: "Başka Araç Ara",
 
     sell: "Bu Aracı Sat",
@@ -86,6 +90,8 @@ const t = {
   ru: {
     title: "ОЦЕНКА АВТОМОБИЛЯ",
     subtitle: "Оценка автомобиля всего за 4 шага",
+    seoTitle: "Оценка автомобиля на Северном Кипре",
+    seoText: "OtoDeğer использует актуальные данные рынка подержанных автомобилей Северного Кипра, чтобы помочь оценить рыночную стоимость вашего автомобиля. Выберите год, марку, модель и категорию, чтобы увидеть ориентировочную стоимость и текущий диапазон цен.",
     restart: "Найти другой автомобиль",
 
     sell: "Продать автомобиль",
@@ -147,6 +153,41 @@ export default function App() {
   );
 
   const text = t[lang] || t.en;
+  useEffect(() => {
+  const seo = {
+    tr: {
+      title: "Kıbrıs Araç Değerleme | Aracınız Ne Kadar Eder? | OtoDeğer",
+      description:
+        "Kuzey Kıbrıs araç değerleme aracı. Aracınızın güncel piyasa değerini ve fiyat aralığını saniyeler içinde öğrenin.",
+    },
+    en: {
+      title: "North Cyprus Car Valuation | OtoDeğer",
+      description:
+        "Find out how much your car is worth in North Cyprus using current vehicle market data.",
+    },
+    ru: {
+      title: "Оценка автомобиля на Северном Кипре | OtoDeğer",
+      description:
+        "Узнайте ориентировочную стоимость автомобиля на Северном Кипре на основе актуальных рыночных данных.",
+    },
+  };
+
+  const currentSeo = seo[lang] || seo.tr;
+
+  document.title = currentSeo.title;
+  document.documentElement.lang = lang;
+
+  const metaDescription = document.querySelector(
+    'meta[name="description"]'
+  );
+
+  if (metaDescription) {
+    metaDescription.setAttribute(
+      "content",
+      currentSeo.description
+    );
+  }
+}, [lang]);
 
   const fetchJSON = async (url, options) => {
     const res = await fetch(url, options);
@@ -353,7 +394,7 @@ const resetFlow = () => {
 
         <div className="header-row">
           <div style={{ textAlign: "left" }}>
-            <div className="title">{text.title}</div>
+            <h1 className="title">{text.title}</h1>
             <div style={{ fontSize: 12, color: "#2563eb" }}>
               {text.subtitle}
             </div>
@@ -417,7 +458,9 @@ const resetFlow = () => {
 
       {step === 5 && result && (
         <div className="result">
-          <h1>£{animatedValue.toLocaleString()}</h1>
+          <h2 className="result-value">
+            £{animatedValue.toLocaleString()}
+          </h2>
 
           <p>
             £{result.min_price.toLocaleString()} – £
@@ -555,6 +598,14 @@ const resetFlow = () => {
     </div>
   </div>
 )}
+      <section
+        className="seo-section"
+        aria-label={text.seoTitle}
+      >
+        <h2>{text.seoTitle}</h2>
+        <p>{text.seoText}</p>
+      </section>
+
       <Analytics />
     </div>
   );
