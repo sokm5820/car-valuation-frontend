@@ -12,7 +12,7 @@ const ad = {
 
 const t = {
   en: {
-    title: "CYPRUS VEHICLE VALUATION",
+    title: "VEHICLE VALUATION",
     subtitle: "Your vehicle's value in just 4 clicks",
     restart: "Search another Vehicle",
 
