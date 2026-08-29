@@ -395,41 +395,41 @@ const resetFlow = () => {
         <div className="header-row">
           <div style={{ textAlign: "left" }}>
             <h1 className="title">{text.title}</h1>
-            <div style={{ fontSize: 12, color: "#2563eb" }}>
+
+            <div
+              style={{
+                fontSize: 12,
+                color: "#2563eb",
+                marginTop: 2,
+              }}
+            >
               {text.subtitle}
             </div>
           </div>
 
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "flex-end",
-              gap: 6,
-            }}
-          >
-            <div style={{ display: "flex", gap: 6 }}>
-              {["tr", "en", "ru"].map((l) => (
-                <button
-                  key={l}
-                  onClick={() => changeLang(l)}
-                  className={`lang-btn ${lang === l ? "active" : ""}`}
-                >
-                  {l.toUpperCase()}
-                </button>
-              ))}
-            </div>
-
-            {step > 1 && (
-              <button onClick={goBack} className="back-btn">
-                ← {text.back}
+          <div style={{ display: "flex", gap: 6 }}>
+            {["tr", "en", "ru"].map((l) => (
+              <button
+                key={l}
+                onClick={() => changeLang(l)}
+                className={`lang-btn ${lang === l ? "active" : ""}`}
+              >
+                {l.toUpperCase()}
               </button>
-            )}
+            ))}
           </div>
         </div>
-      </div>
 
-      {step < 5 && (
+        {step > 1 && (
+          <div className="back-row">
+            <button onClick={goBack} className="back-btn">
+              ← {text.back}
+            </button>
+          </div>
+        )}
+        </div>
+
+        {step < 5 && (
         <div className="step-block">
           <div className="progress">
             <div

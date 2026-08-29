@@ -106,6 +106,13 @@ body {
    BACK BUTTON
 ================================ */
 
+.back-row {
+  display: flex;
+  justify-content: flex-end;
+  height: 20px;
+  margin-top: 2px;
+}
+
 .back-btn {
   font-size: 11px;
   color: #475569;
@@ -114,7 +121,9 @@ body {
   cursor: pointer;
   font-weight: 600;
   opacity: 0.9;
-  margin-top: 6px;
+  margin: 0;
+  padding: 0;
+  line-height: 1.2;
 }
 
 .back-btn:hover {
