@@ -574,7 +574,7 @@ return (
             <Analytics />
     </div>
 
-    <footer className="seo-footer">
+    <footer className={`seo-footer ${step < 5 ? "seo-footer-home" : ""}`}>
       <div className="seo-footer-title">
         {lang === "tr"
           ? "Kuzey Kıbrıs Araç Değerleme"
