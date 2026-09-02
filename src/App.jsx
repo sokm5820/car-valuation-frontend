@@ -376,7 +376,7 @@ const resetFlow = () => {
 
 return (
   <div className="page-shell">
-    <div className="app-container">
+    <main className="app-container">
       <div style={{ position: "relative", fontFamily: "Poppins, sans-serif" }}>
         <div
           style={{
@@ -621,7 +621,7 @@ return (
   </div>
 )}
             <Analytics />
-    </div>
+    </main>
 
     <footer className={`seo-footer ${step < 5 ? "seo-footer-home" : ""}`}>
       <div className="seo-footer-title">
