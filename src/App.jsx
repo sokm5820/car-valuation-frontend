@@ -161,18 +161,11 @@ export default function App() {
     });
   }, []);
 
-  // Preload the ad after the initial page has loaded
+  // Preload and decode the ad immediately in the background
   useEffect(() => {
-    const preloadAd = () => {
-      const img = new Image();
-      img.src = "/ad.webp";
-    };
-
-    if ("requestIdleCallback" in window) {
-      window.requestIdleCallback(preloadAd);
-    } else {
-      setTimeout(preloadAd, 1000);
-    }
+    const img = new Image();
+    img.src = ad.img;
+    img.decode?.().catch(() => {});
   }, []);
   
   // ✅ Google Analytics (gtag.js) added here
