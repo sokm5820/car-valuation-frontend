@@ -44,7 +44,7 @@ body {
 .header-row {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
 }
 
 .title {
@@ -96,17 +96,20 @@ body {
 
 .back-btn {
   font-size: 11px;
-  color: #475569;
+  color: #94a3b8;
   background: transparent;
   border: none;
   cursor: pointer;
   font-weight: 600;
-  opacity: 0.9;
+  opacity: 1;
   margin-top: 6px;
 }
 
-.back-btn:hover {
-  opacity: 0.6;
+.back-btn:hover,
+.back-btn:focus,
+.back-btn:active {
+  color: #94a3b8;
+  opacity: 1;
 }
 
 /* ================================

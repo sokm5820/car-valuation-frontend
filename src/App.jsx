@@ -426,11 +426,18 @@ return (
               ))}
             </div>
 
-            {step > 1 && (
-              <button onClick={goBack} className="back-btn">
-                ← {text.back}
-              </button>
-            )}
+            <button
+              onClick={goBack}
+              className="back-btn"
+              style={{
+                visibility: step > 1 ? "visible" : "hidden",
+                pointerEvents: step > 1 ? "auto" : "none",
+              }}
+              aria-hidden={step <= 1}
+              tabIndex={step > 1 ? 0 : -1}
+            >
+              ← {text.back}
+            </button>
           </div>
         </div>
       </div>
