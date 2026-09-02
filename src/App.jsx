@@ -6,6 +6,7 @@ import { Analytics } from "@vercel/analytics/react";
 const API = "https://car-valuation-backend.onrender.com";
 
 const ad = {
+  name: "Zirve Sigorta",
   img: "/ad.webp",
   url: "https://wa.me/905488940154?text=Merhaba,%20ara%C3%A7%20sigortas%C4%B1%20hakk%C4%B1nda%20bilgi%20almak%20istiyorum.",
 };
@@ -198,6 +199,12 @@ export default function App() {
     localStorage.setItem("lang", l);
   };
 
+  const trackEvent = (eventName, params = {}) => {
+    if (typeof window.gtag === "function") {
+      window.gtag("event", eventName, params);
+    }
+  };
+
   const handleYear = async (v) => {
     setYear(v);
     setBrands(await fetchJSON(`${API}/brands?year=${v}`));
@@ -233,6 +240,15 @@ export default function App() {
 
     setResult(data);
     setStep(5);
+
+    trackEvent("valuation_completed", {
+      vehicle_year: year,
+      vehicle_brand: brand,
+      vehicle_model: model,
+      vehicle_category: c,
+      median_price: data?.median_price || 0,
+      language: lang,
+    });
   };
 
   const submitLead = async () => {
@@ -278,6 +294,15 @@ export default function App() {
     }
 
     setLeadSubmitted(true);
+
+    trackEvent("seller_lead_submitted", {
+      vehicle_year: year,
+      vehicle_brand: brand,
+      vehicle_model: model,
+      vehicle_category: category,
+      median_price: result?.median_price || 0,
+      language: lang,
+    });
 
   } catch (error) {
     console.error("Lead submission error:", error);
@@ -340,6 +365,19 @@ const resetFlow = () => {
 
     requestAnimationFrame(animate);
   }, [result]);
+
+  useEffect(() => {
+    if (step === 5 && result) {
+      trackEvent("sponsor_view", {
+        sponsor_name: ad.name,
+        vehicle_year: year,
+        vehicle_brand: brand,
+        vehicle_model: model,
+        vehicle_category: category,
+        language: lang,
+      });
+    }
+  }, [step, result]);
 
   const current = stepConfig[step];
 
@@ -456,6 +494,14 @@ return (
       if (!leadSubmitted) {
         setShowLeadForm(true);
         setLeadError("");
+
+        trackEvent("sell_form_opened", {
+          vehicle_year: year,
+          vehicle_brand: brand,
+          vehicle_model: model,
+          vehicle_category: category,
+          language: lang,
+        });
       }
     }}
     className={`btn-sell-action ${
@@ -473,6 +519,16 @@ return (
     href={ad.url}
     target="_blank"
     rel="noopener noreferrer"
+    onClick={() =>
+      trackEvent("sponsor_click", {
+        sponsor_name: ad.name,
+        vehicle_year: year,
+        vehicle_brand: brand,
+        vehicle_model: model,
+        vehicle_category: category,
+        language: lang,
+      })
+    }
   >
     <img src={ad.img} alt="ad" />
   </a>
@@ -585,10 +641,10 @@ return (
 
       <div className="seo-footer-text">
         {lang === "tr"
-          ? "OtoDeğer, güncel Kuzey Kıbrıs araç piyasası verilerini kullanarak aracınızın tahmini piyasa değerini hesaplamanıza yardımcı olur. Yıl, marka, model ve kategoriyi seçerek aracınızın güncel değer aralığını saniyeler içinde öğrenebilirsiniz."
+          ? "OtoDeğer, güncel piyasa verileriyle Kuzey Kıbrıs'taki araçların tahmini değer aralığını hesaplar."
           : lang === "ru"
-          ? "OtoDeğer использует актуальные данные автомобильного рынка Северного Кипра, чтобы помочь оценить текущую рыночную стоимость вашего автомобиля. Выберите год, марку, модель и категорию, чтобы за несколько секунд узнать примерный диапазон его текущей стоимости."
-          : "OtoDeğer uses current North Cyprus vehicle market data to help you estimate your vehicle's market value. Select the year, make, model and category to see an estimated current value range in seconds."}
+          ? "OtoDeğer рассчитывает примерный диапазон стоимости автомобилей на Северном Кипре на основе актуальных рыночных данных."
+          : "OtoDeğer estimates vehicle value ranges in North Cyprus using current market data."}
       </div>
     </footer>
   </div>
