@@ -406,14 +406,7 @@ return (
             </div>
           </div>
 
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "flex-end",
-              gap: 6,
-            }}
-          >
+          <div className="header-controls">
             <div style={{ display: "flex", gap: 6 }}>
               {["tr", "en", "ru"].map((l) => (
                 <button
@@ -428,13 +421,9 @@ return (
 
             <button
               onClick={goBack}
-              className="back-btn"
-              style={{
-                visibility: step > 1 ? "visible" : "hidden",
-                pointerEvents: step > 1 ? "auto" : "none",
-              }}
-              aria-hidden={step <= 1}
-              tabIndex={step > 1 ? 0 : -1}
+              className={`back-btn ${step === 1 ? "back-btn-hidden" : ""}`}
+              aria-hidden={step === 1}
+              tabIndex={step === 1 ? -1 : 0}
             >
               ← {text.back}
             </button>
