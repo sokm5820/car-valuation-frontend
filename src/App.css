@@ -119,9 +119,12 @@ body {
   transition: color 0.18s ease, opacity 0.18s ease;
 }
 
-.back-btn:hover {
-  color: #334155;
-  opacity: 1;
+.back-btn:hover,
+.back-btn:focus,
+.back-btn:active {
+  color: #64748b;
+  background: transparent;
+  opacity: 0.8;
 }
 
 .back-btn-hidden {
